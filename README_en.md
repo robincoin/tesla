@@ -29,7 +29,6 @@ tesla is fully integrated with "summerframework".  It supports "API sharding" ac
 * API request body validation Plugin: validates request body using self-defined json-schema
 * Groovy script Plugin: Inject groovy script at runtime, to execute extra business logic
 * Mock API Plugin: Mock any API response. with this plug-in, requests are not routed to endpoints. The plugin renders response content with configured freemarker template.
-* Groovy脚本插件：可动态在调用链中插入一段java脚本，来执行需要的逻辑
 * RPC protocol conversion Plugin: Convert an HTTP rquest to dubbo/GRPC backend service call, including service discovery, parameter transformation.
 * URL-Rewrite Plugin: This plugin offers URL-rewriting rules by extracting incoming URL parameters and replace placeholders on endpoint URL
 * Token Generatior Plugin: Generates JWT token from response content
