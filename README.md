@@ -78,4 +78,3 @@ tesla还与summerframework结合，通过gateway为入口，实现了整个调�
  * 访问gateway真正路由转发
   http://localhost:9000
 
-For English [English Version] (https://github.com/ke-finance/tesla/blob/master/README_en.md)
