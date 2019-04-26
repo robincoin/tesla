@@ -1,4 +1,4 @@
-# README: [English](https://github.com/ke-finance/tesla/blob/master/README_en.md) | [中文](https://github.com/ke-finance/tesla/blob/master/README.md)
+[English](https://github.com/ke-finance/tesla/blob/master/README_en.md) | [中文](https://github.com/ke-finance/tesla/blob/master/README.md)
 
 # 概述
 
