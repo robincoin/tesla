@@ -45,7 +45,8 @@ tesla还与summerframework结合，通过gateway为入口，实现了整个调�
 
  
 # 使用说明
-
+ * 构建[summerframework](https://github.com/ke-finance/summerframework)
+ 
  * mvn打包及打镜像
  
  ```
