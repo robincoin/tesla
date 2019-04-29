@@ -67,11 +67,7 @@
 			<groupId>com.squareup.okhttp</groupId>
 			<artifactId>okhttp</artifactId>
 		</dependency>
-		<!-- drools and groovy dynamic route -->
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>knowledge-api</artifactId>
-		</dependency>
+		<!--groovy dynamic route -->
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
