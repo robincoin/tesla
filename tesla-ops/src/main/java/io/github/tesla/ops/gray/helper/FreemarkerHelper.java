@@ -47,12 +47,9 @@ public class FreemarkerHelper {
     /**
      * 执行Groovy脚本
      * 
-     * @param groovy
-     *            脚本
-     * @param funcName
-     *            函数名
-     * @param args
-     *            参数
+     * @param groovy 脚本
+     * @param funcName 函数名
+     * @param args 参数
      * @return
      */
     public static Object executeGroovy(String groovy, String funcName, Object... args) {

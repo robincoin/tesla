@@ -16,13 +16,13 @@ public class JarStreamClassLoader extends ByteArrayClassLoader {
     /**
      * Constructor.
      */
-    public JarStreamClassLoader() {}
+    public JarStreamClassLoader() {
+    }
 
     /**
      * Constructor.
      * 
-     * @param jarInStream
-     *            the stream to read from
+     * @param jarInStream the stream to read from
      * @throws IOException
      */
     public JarStreamClassLoader(JarInputStream jarInStream) throws IOException {
@@ -38,8 +38,7 @@ public class JarStreamClassLoader extends ByteArrayClassLoader {
      * <b>Warning:</b> This method is not well tested and not all packages can be loaded!
      * </p>
      * 
-     * @param jarInStream
-     *            the stream to read from
+     * @param jarInStream the stream to read from
      * @return a list containing all classes of the stream that could be loaded
      * @throws IOException
      */

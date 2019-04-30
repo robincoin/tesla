@@ -7,10 +7,8 @@ public class UnresolvedClass {
     /**
      * Constructor.
      * 
-     * @param name
-     *            the class name
-     * @param data
-     *            the contents of the class file
+     * @param name the class name
+     * @param data the contents of the class file
      */
     public UnresolvedClass(String name, byte[] data) {
         this.name = name;
@@ -38,8 +36,7 @@ public class UnresolvedClass {
     /**
      * Defines the data of this unresolved class.
      * 
-     * @param data
-     *            the data to set
+     * @param data the data to set
      */
     public void setData(byte[] data) {
         this.data = data;
@@ -48,8 +45,7 @@ public class UnresolvedClass {
     /**
      * Defines the name of this unresolved class.
      * 
-     * @param name
-     *            the name to set
+     * @param name the name to set
      */
     public void setName(String name) {
         this.name = name;

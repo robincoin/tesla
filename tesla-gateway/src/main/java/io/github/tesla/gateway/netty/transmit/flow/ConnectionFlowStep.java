@@ -16,10 +16,8 @@ public abstract class ConnectionFlowStep {
     /**
      * Construct a new step in a connection flow.
      *
-     * @param connection
-     *            the connection that we're working on
-     * @param state
-     *            the state that the connection will show while we're processing this step
+     * @param connection the connection that we're working on
+     * @param state the state that the connection will show while we're processing this step
      */
     public ConnectionFlowStep(ProxyConnection connection, ConnectionState state) {
         super();
@@ -94,10 +92,8 @@ public abstract class ConnectionFlowStep {
      * Some {@link ConnectionFlowStep}s do need to read the messages, so they override this method as appropriate.
      * </p>
      *
-     * @param flow
-     *            our {@link ConnectionFlow}
-     * @param msg
-     *            the message read from the underlying connection
+     * @param flow our {@link ConnectionFlow}
+     * @param msg the message read from the underlying connection
      */
     public void read(ConnectionFlow flow, Object msg) {
         LOG.debug("Received message while in the middle of connecting: {}", msg);

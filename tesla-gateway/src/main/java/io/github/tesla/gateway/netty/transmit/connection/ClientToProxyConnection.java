@@ -336,8 +336,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
      * requests to proxies.
      * </pre>
      *
-     * @param httpRequest
-     *            the request to evaluate
+     * @param httpRequest the request to evaluate
      * @return true if the specified request is a request to an origin server, otherwise false
      */
     private boolean isRequestToOriginServer(HttpRequest httpRequest) {
@@ -375,17 +374,12 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
     /**
      * Send a response to the client.
      *
-     * @param serverConnection
-     *            the ProxyToServerConnection that's responding
-     * @param filters
-     *            the filters to apply to the response
-     * @param currentHttpRequest
-     *            the HttpRequest that prompted this response
-     * @param currentHttpResponse
-     *            the HttpResponse corresponding to this data (when doing chunked transfers, this is the initial
-     *            HttpResponse object that came in before the other chunks)
-     * @param httpObject
-     *            the data with which to respond
+     * @param serverConnection the ProxyToServerConnection that's responding
+     * @param filters the filters to apply to the response
+     * @param currentHttpRequest the HttpRequest that prompted this response
+     * @param currentHttpResponse the HttpResponse corresponding to this data (when doing chunked transfers, this is the
+     *        initial HttpResponse object that came in before the other chunks)
+     * @param httpObject the data with which to respond
      */
     public void respond(ProxyToServerConnection serverConnection, HttpFiltersAdapter filters,
         HttpRequest currentHttpRequest, HttpResponse currentHttpResponse, HttpObject httpObject) {
@@ -569,8 +563,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
      *
      * @param serverConnection
      * @param lastStateBeforeFailure
-     * @param cause
-     *            what caused the failure
+     * @param cause what caused the failure
      * @return true if we're falling back to a another chained proxy (or direct connection) and trying again
      */
     public boolean serverConnectionFailed(ProxyToServerConnection serverConnection,
@@ -820,12 +813,9 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
      * in either the request or the response header fields indicates that the connection SHOULD NOT be considered
      * `persistent' (section 8.1) after the current request/response is complete."
      *
-     * @param req
-     *            The request.
-     * @param res
-     *            The response.
-     * @param msg
-     *            The message.
+     * @param req The request.
+     * @param res The response.
+     * @param msg The message.
      * @return Returns true if the connection should close.
      */
     private boolean shouldCloseServerConnection(HttpRequest req, HttpResponse res, HttpObject msg) {
@@ -935,8 +925,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
      * Switch the de-facto standard "Proxy-Connection" header to "Connection" when we pass it along to the remote host.
      * This is largely undocumented but seems to be what most browsers and servers expect.
      *
-     * @param headers
-     *            The headers to modify
+     * @param headers The headers to modify
      */
     private void switchProxyConnectionHeader(HttpHeaders headers) {
         String proxyConnectionKey = "Proxy-Connection";
@@ -954,8 +943,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
      * connection-token in this field, remove any header field(s) from the message with the same name as the
      * connection-token.
      *
-     * @param headers
-     *            The headers to modify
+     * @param headers The headers to modify
      */
     private void stripConnectionTokens(HttpHeaders headers) {
         if (headers.contains(HttpHeaderNames.CONNECTION)) {
@@ -972,8 +960,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
     /**
      * Removes all headers that should not be forwarded. See RFC 2616 13.5.1 End-to-end and Hop-by-hop Headers.
      *
-     * @param headers
-     *            The headers to modify
+     * @param headers The headers to modify
      */
     private void stripHopByHopHeaders(HttpHeaders headers) {
         Set<String> headerNames = headers.names();
@@ -993,8 +980,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
      * HTTP HEAD request, the response will contain no body, but the Content-Length header will be set to the value it
      * would have been if this 502 Bad Gateway were in response to a GET.
      *
-     * @param httpRequest
-     *            the HttpRequest that is resulting in the Bad Gateway response
+     * @param httpRequest the HttpRequest that is resulting in the Bad Gateway response
      * @return true if the connection will be kept open, or false if it will be disconnected
      */
     private boolean writeBadGateway(HttpRequest httpRequest) {
@@ -1030,8 +1016,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
      * Content-Length header will be set to the value it would have been if this 504 Gateway Timeout were in response to
      * a GET.
      *
-     * @param httpRequest
-     *            the HttpRequest that is resulting in the Gateway Timeout response
+     * @param httpRequest the HttpRequest that is resulting in the Gateway Timeout response
      * @return true if the connection will be kept open, or false if it will be disconnected
      */
     private boolean writeGatewayTimeout(HttpRequest httpRequest) {
@@ -1053,8 +1038,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
      * disconnected immediately). If the response is not a Bad Gateway or Gateway Timeout response, the response's
      * headers will be modified to reflect proxying, including adding a Via header, Date header, etc.
      *
-     * @param httpResponse
-     *            the response to return to the client
+     * @param httpResponse the response to return to the client
      * @return true if the connection will be kept open, or false if it will be disconnected.
      */
     private boolean respondWithShortCircuitResponse(HttpResponse httpResponse) {

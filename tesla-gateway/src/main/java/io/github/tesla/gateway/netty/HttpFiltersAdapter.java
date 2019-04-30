@@ -176,22 +176,28 @@ public class HttpFiltersAdapter {
 
     }
 
-    public void proxyToServerConnectionFailed() {}
+    public void proxyToServerConnectionFailed() {
+    }
 
-    public void proxyToServerConnectionQueued() {}
+    public void proxyToServerConnectionQueued() {
+    }
 
-    public void proxyToServerConnectionSSLHandshakeStarted() {}
+    public void proxyToServerConnectionSSLHandshakeStarted() {
+    }
 
-    public void proxyToServerConnectionStarted() {}
+    public void proxyToServerConnectionStarted() {
+    }
 
-    public void proxyToServerConnectionSucceeded(ChannelHandlerContext serverCtx) {}
+    public void proxyToServerConnectionSucceeded(ChannelHandlerContext serverCtx) {
+    }
 
     public HttpResponse proxyToServerRequest(HttpObject httpObject) {
         this.logForward(httpObject);
         return null;
     }
 
-    public void proxyToServerResolutionFailed(String hostAndPort) {}
+    public void proxyToServerResolutionFailed(String hostAndPort) {
+    }
 
     public InetSocketAddress proxyToServerResolutionStarted(String resolvingServerHostAndPort) {
         return null;
@@ -207,11 +213,14 @@ public class HttpFiltersAdapter {
         return httpObject;
     }
 
-    public void serverToProxyResponseReceived() {}
+    public void serverToProxyResponseReceived() {
+    }
 
-    public void serverToProxyResponseReceiving() {}
+    public void serverToProxyResponseReceiving() {
+    }
 
-    public void serverToProxyResponseTimedOut() {}
+    public void serverToProxyResponseTimedOut() {
+    }
 
     /**
      * help method

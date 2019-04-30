@@ -24,8 +24,7 @@ public class AccessControlRequestPlugin extends AbstractRequestPlugin {
     /**
      * @desc:
      * @method: doFilter
-     * @param: [servletRequest,
-     *             realHttpObject, filterParam] filterParam接受json类型字符串
+     * @param: [servletRequest, realHttpObject, filterParam] filterParam接受json类型字符串
      * @return: io.netty.handler.codec.http.HttpResponse
      * @auther: zhipingzhang
      * @date: 2018/11/20 16:57

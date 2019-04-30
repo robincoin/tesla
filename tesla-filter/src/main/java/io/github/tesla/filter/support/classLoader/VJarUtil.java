@@ -21,8 +21,7 @@ public class VJarUtil {
     /**
      * Returns the name of all classes in the specified stream.
      *
-     * @param jarInStream
-     *            the stream to read
+     * @param jarInStream the stream to read
      * @return a list containing the names of all classes
      * @throws IOException
      */
@@ -60,8 +59,7 @@ public class VJarUtil {
      * Loads all classes of the specified jar archive. If errors occure while loading a class it will be silently
      * ignored.
      *
-     * @param f
-     *            jar file
+     * @param f jar file
      * @return all classes of the specified jar archive
      */
     public static Collection<Class<?>> loadClasses(File f, ClassLoader loader) {
@@ -100,8 +98,7 @@ public class VJarUtil {
     /**
      * Converts a path to class name, i.e., replaces "/" by "." and removes the ".class" extension.
      *
-     * @param path
-     *            the path to convert
+     * @param path the path to convert
      * @return the class name
      */
     public static String pathToClassName(String path) {
@@ -111,8 +108,7 @@ public class VJarUtil {
     /**
      * Reads the contents of the current jar entry of the specified jar input stream and stores it in a byte array.
      *
-     * @param jarInStream
-     *            the stream to read from
+     * @param jarInStream the stream to read from
      * @return the contents of the current jar entry
      * @throws IOException
      */

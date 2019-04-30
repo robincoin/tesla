@@ -54,7 +54,8 @@ public class HttpProxyServerBootstrap {
     private int maxChunkSize = MAX_CHUNK_SIZE_DEFAULT;
     private boolean allowRequestToOriginServer = false;
 
-    public HttpProxyServerBootstrap() {}
+    public HttpProxyServerBootstrap() {
+    }
 
     public HttpProxyServerBootstrap(Properties props) {
         this.withUseDnsSec(ProxyUtils.extractBooleanDefaultFalse(props, "dnssec"));

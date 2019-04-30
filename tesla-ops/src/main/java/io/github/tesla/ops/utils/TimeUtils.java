@@ -95,10 +95,8 @@ public class TimeUtils {
     /**
      * 使用时、分构造一个时间
      * 
-     * @param hour
-     *            小时
-     * @param minute
-     *            分钟
+     * @param hour 小时
+     * @param minute 分钟
      */
     public TimeUtils(int hour, int minute) {
         this(0, hour, minute, 0);
@@ -107,12 +105,9 @@ public class TimeUtils {
     /**
      * 使用时、分、秒构造一个时间
      * 
-     * @param hour
-     *            小时
-     * @param minute
-     *            分钟
-     * @param second
-     *            秒
+     * @param hour 小时
+     * @param minute 分钟
+     * @param second 秒
      */
     public TimeUtils(int hour, int minute, int second) {
         this(0, hour, minute, second);
@@ -121,14 +116,10 @@ public class TimeUtils {
     /**
      * 使用天、时、分、秒构造时间，进行全字符的构造
      * 
-     * @param day
-     *            天
-     * @param hour
-     *            时
-     * @param minute
-     *            分
-     * @param second
-     *            秒
+     * @param day 天
+     * @param hour 时
+     * @param minute 分
+     * @param second 秒
      */
     public TimeUtils(int day, int hour, int minute, int second) {
         initialize(day, hour, minute, second);
@@ -147,8 +138,7 @@ public class TimeUtils {
      * 使用一个字符串构造时间<br/>
      * Time time = new Time("14:22:23");
      * 
-     * @param time
-     *            字符串格式的时间，默认采用“:”作为分隔符
+     * @param time 字符串格式的时间，默认采用“:”作为分隔符
      */
     public TimeUtils(String time) {
         this(time, null);
@@ -159,8 +149,7 @@ public class TimeUtils {
      * 使用一个字符串构造时间，指定分隔符<br/>
      * Time time = new Time("14-22-23", "-");
      * 
-     * @param time
-     *            字符串格式的时间
+     * @param time 字符串格式的时间
      */
     public TimeUtils(String time, String timeSeparator) {
         if (timeSeparator != null) {
@@ -172,8 +161,7 @@ public class TimeUtils {
     /**
      * 将时间进行“加”运算，即加上一个时间
      * 
-     * @param time
-     *            需要加的时间
+     * @param time 需要加的时间
      * @return 运算后的时间
      */
     public TimeUtils addTime(TimeUtils time) {
@@ -212,8 +200,7 @@ public class TimeUtils {
     /**
      * 获得时间字段的值
      * 
-     * @param field
-     *            时间字段常量
+     * @param field 时间字段常量
      * @return 该时间字段的值
      */
     public int get(int field) {
@@ -290,10 +277,8 @@ public class TimeUtils {
     /**
      * 设置时间字段的值
      * 
-     * @param field
-     *            时间字段常量
-     * @param value
-     *            时间字段的值
+     * @param field 时间字段常量
+     * @param value 时间字段的值
      */
     public void set(int field, int value) {
         if (value < minFields[field]) {
@@ -311,8 +296,7 @@ public class TimeUtils {
     /**
      * 设置时间字段的分隔符（用于字符串格式的时间）
      * 
-     * @param timeSeparator
-     *            分隔符字符串
+     * @param timeSeparator 分隔符字符串
      */
     public void setTimeSeparator(String timeSeparator) {
         this.timeSeparator = timeSeparator;
@@ -321,8 +305,7 @@ public class TimeUtils {
     /**
      * 将时间进行“减”运算，即减去一个时间
      * 
-     * @param time
-     *            需要减的时间
+     * @param time 需要减的时间
      * @return 运算后的时间
      */
     public TimeUtils subtractTime(TimeUtils time) {

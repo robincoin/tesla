@@ -105,8 +105,7 @@ public class FreemarkerMapperUtil {
      * 如报文体为User{"name":"bkjk","token":"123456"},则在模板中使用${body.name}即可获得
      *
      * @param request
-     * @param ftlTemplate
-     *            Freemarker模板
+     * @param ftlTemplate Freemarker模板
      * @return
      */
     public static String format(HttpServletRequest request, Object requestBody, String ftlTemplate) {
@@ -119,8 +118,7 @@ public class FreemarkerMapperUtil {
      * 如报文体为{"name":"bkjk","token":"123456"},则在模板中使用${body.name}即可获得
      *
      * @param request
-     * @param ftlTemplate
-     *            Freemarker模板
+     * @param ftlTemplate Freemarker模板
      * @return
      */
     public static String format(HttpServletRequest request, String requestBody, String ftlTemplate) {
@@ -166,10 +164,8 @@ public class FreemarkerMapperUtil {
     /**
      * 格式化json数据 如原数据为{"name":"bkjk"},则在模板中使用${body.name}即可获得
      *
-     * @param request
-     *            原数据
-     * @param ftlTemplate
-     *            格式化模板(Freemarker)
+     * @param request 原数据
+     * @param ftlTemplate 格式化模板(Freemarker)
      * @return
      */
     public static String formatForJsonPath(String request, String ftlTemplate) {
@@ -197,8 +193,7 @@ public class FreemarkerMapperUtil {
      * 如报文参数为{"name":"bkjk","token":"123456"},则在模板中使用${parameter.name}即可获得
      *
      * @param request
-     * @param ftlTemplate
-     *            Freemarker模板
+     * @param ftlTemplate Freemarker模板
      * @return
      */
     public static String formatForRequestWithoutBody(HttpServletRequest request, String ftlTemplate) {

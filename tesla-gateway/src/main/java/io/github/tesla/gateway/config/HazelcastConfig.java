@@ -71,7 +71,8 @@ public class HazelcastConfig {
                 return new DiscoveryService() {
 
                     @Override
-                    public void destroy() {}
+                    public void destroy() {
+                    }
 
                     @Override
                     public Map<String, Object> discoverLocalMetadata() {
@@ -100,7 +101,8 @@ public class HazelcastConfig {
                     }
 
                     @Override
-                    public void start() {}
+                    public void start() {
+                    }
 
                 };
             }

@@ -249,7 +249,8 @@ public class EurekaInstanceConfigBean implements EurekaInstanceConfig, Environme
         return getHostName(false);
     }
 
-    private EurekaInstanceConfigBean() {}
+    private EurekaInstanceConfigBean() {
+    }
 
     public EurekaInstanceConfigBean(InetUtils inetUtils) {
 

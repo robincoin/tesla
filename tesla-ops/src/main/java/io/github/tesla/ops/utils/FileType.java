@@ -125,6 +125,7 @@ public class FileType {
 
     }
 
-    private FileType() {}
+    private FileType() {
+    }
 
 }

@@ -35,7 +35,8 @@ public class InetUtils implements Closeable {
         private String ipAddress;
         private String hostname;
 
-        public HostInfo() {}
+        public HostInfo() {
+        }
 
         public HostInfo(String hostname) {
             this.hostname = hostname;
