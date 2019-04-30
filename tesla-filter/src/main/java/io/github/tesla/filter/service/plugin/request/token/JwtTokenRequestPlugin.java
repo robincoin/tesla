@@ -40,11 +40,7 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/28 16:59
- * @description:
- */
+
 @AuthType(authType = "jwt", definitionClazz = JWTTokenDefinition.class)
 public class JwtTokenRequestPlugin extends AuthRequestPlugin {
     public static final String AUTHORIZATION_HEADER_VALUE_PREFIX = "Bearer ";

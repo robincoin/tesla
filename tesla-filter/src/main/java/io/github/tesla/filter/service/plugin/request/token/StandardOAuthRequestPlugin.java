@@ -23,11 +23,6 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 14:32
- * @description: auth filter之Oauth的实现
- */
 @AuthType(authType = "standardOauth", definitionClazz = StandardOauthDefinition.class)
 public class StandardOAuthRequestPlugin extends AuthRequestPlugin {
     private static final String OAUTH_ACCESS_TOKEN = "access_token";

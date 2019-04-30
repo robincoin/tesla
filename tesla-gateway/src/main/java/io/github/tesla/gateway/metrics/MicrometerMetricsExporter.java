@@ -7,12 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.bkjk.platform.monitor.Monitors;
 
-/**
- * @Program: tesla
- * @Description:
- * @Author: shaoze.wang
- * @Create: 2018/11/27 14:17
- **/
 public class MicrometerMetricsExporter extends MetricsExporter {
 
     public final static String PREFIX = "tesla.";

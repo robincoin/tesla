@@ -3,7 +3,7 @@ package io.github.tesla.common.domain;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 /**
- * @author: zhipingzhang
+ * 
  * @date: 2018/11/20 11:03
  * @description:
  */

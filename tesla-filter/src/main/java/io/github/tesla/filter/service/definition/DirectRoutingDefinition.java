@@ -8,11 +8,7 @@ import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.utils.JsonUtils;
 import io.github.tesla.filter.utils.SnowflakeIdWorker;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 15:21
- * @description:
- */
+
 public class DirectRoutingDefinition extends PluginDefinition {
 
     private String targetHostPort;

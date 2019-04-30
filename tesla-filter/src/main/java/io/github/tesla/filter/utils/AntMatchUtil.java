@@ -85,7 +85,7 @@ public class AntMatchUtil {
     }
 
     /**
-     * @author: zhipingzhang
+     * 
      * @date: 2018/11/16 14:55
      * @description: 统一处理path
      */
@@ -110,7 +110,7 @@ public class AntMatchUtil {
     }
 
     /**
-     * @author: zhipingzhang
+     * 
      * @date: 2018/11/16 14:20
      * @description:返回null证明不匹配 最复杂的情况下支持的匹配串请看AntMatchTestTest的junit case
      */
@@ -186,7 +186,7 @@ public class AntMatchUtil {
     }
 
     /**
-     * @author: zhipingzhang
+     * 
      * @date: 2018/11/16 15:20
      * @description: 校验是否满足path规则
      */

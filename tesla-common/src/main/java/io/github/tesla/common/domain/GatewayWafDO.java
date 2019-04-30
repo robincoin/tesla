@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 import com.baomidou.mybatisplus.annotation.*;
 
 /**
- * @author: zhipingzhang
+ * 
  * @date: 2018/11/20 11:03
  * @description:
  */

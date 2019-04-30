@@ -47,10 +47,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 
-/**
- * @author liushiming
- * @version HttpFiltersAdapter.java, v 0.0.1 2018年1月24日 下午3:06:25 liushiming
- */
+
 public class HttpFiltersAdapter {
     private static Logger logger = LoggerFactory.getLogger(HttpFiltersAdapter.class);
 

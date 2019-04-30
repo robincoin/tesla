@@ -7,11 +7,7 @@ import com.google.common.base.Preconditions;
 import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.utils.JsonUtils;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 15:21
- * @description:
- */
+
 public class SpringCloudRoutingDefinition extends PluginDefinition {
 
     private String serviceName;

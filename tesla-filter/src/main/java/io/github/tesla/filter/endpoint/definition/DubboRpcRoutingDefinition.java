@@ -9,11 +9,7 @@ import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.utils.JsonUtils;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 15:21
- * @description:
- */
+
 public class DubboRpcRoutingDefinition extends PluginDefinition {
 
     private String serviceName;
