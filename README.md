@@ -82,5 +82,4 @@ tesla还与summerframework结合，通过gateway为入口，实现了整个调�
  * 测试URL
   http://localhost:9000/demo-order-service-spring-cloud/queryName/1
 
- * mvn打包及打镜像URL
- * mvn打包及打镜像
+ 
