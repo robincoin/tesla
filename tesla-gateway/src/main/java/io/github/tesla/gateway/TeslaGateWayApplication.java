@@ -16,7 +16,11 @@ import static com.hazelcast.util.EmptyStatement.ignore;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.net.*;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.ServerSocket;
+import java.net.SocketException;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -40,14 +44,16 @@ import io.github.tesla.gateway.netty.HttpProxyServer;
  * @author liushiming
  * @version TeslaGateWayApplication.java, v 0.0.1 2018年1月24日 下午4:37:37 liushiming
  */
-@ComponentScan(basePackages = {"io.github.tesla"})
-@MapperScan(basePackages = {TeslaGateWayApplication.SCAN_PACKAGE}, annotationClass = Mapper.class)
+@ComponentScan(basePackages = {TeslaGateWayApplication.SCAN_COMPONENT_PACKAGE})
+@MapperScan(basePackages = {TeslaGateWayApplication.SCAN_MAPPER_PACKAGE}, annotationClass = Mapper.class)
 @SpringBootApplication(exclude = {ValidationAutoConfiguration.class, DataSourceAutoConfiguration.class})
 public class TeslaGateWayApplication implements CommandLineRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TeslaGateWayApplication.class);
 
-    protected static final String SCAN_PACKAGE = "io.github.tesla.common";
+    protected static final String SCAN_MAPPER_PACKAGE = "io.github.tesla.common";
+
+    protected static final String SCAN_COMPONENT_PACKAGE = "io.github.tesla";
 
     private static final int MAX_PORT = 100;
 
