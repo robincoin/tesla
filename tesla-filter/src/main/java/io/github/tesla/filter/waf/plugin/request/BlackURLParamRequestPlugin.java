@@ -1,7 +1,6 @@
 package io.github.tesla.filter.waf.plugin.request;
 
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +31,7 @@ public class BlackURLParamRequestPlugin extends AbstractRequestPlugin {
         String url = null;
         try {
             String uri = servletRequest.getRequestURL().toString();
-            url = URLDecoder.decode(uri, StandardCharsets.UTF_8);
+            url = URLDecoder.decode(uri);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -44,8 +44,8 @@ public class AuthRequestPlugin extends AbstractRequestPlugin {
         }
         // 根据注解得到对应的实现filter，并执行
         try {
-            AuthRequestPlugin authRequestPlugin = ClassUtils.getSingleBeanWithAnno(this.getClass().getPackageName(),
-                AuthType.class, authDefinition.getAuthType(), "value");
+            AuthRequestPlugin authRequestPlugin = ClassUtils.getSingleBeanWithAnno(
+                this.getClass().getPackage().getName(), AuthType.class, authDefinition.getAuthType(), "value");
             return authRequestPlugin.doFilter(servletRequest, realHttpObject, authDefinition.getAuthParamJson());
         } catch (Exception e) {
             AbstractPlugin.LOGGER.error(e.getMessage(), e);

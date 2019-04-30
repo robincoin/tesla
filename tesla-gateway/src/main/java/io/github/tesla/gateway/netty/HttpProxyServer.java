@@ -17,7 +17,13 @@ import io.github.tesla.gateway.netty.transmit.connection.ClientToProxyConnection
 import io.github.tesla.gateway.netty.transmit.support.HostResolver;
 import io.github.tesla.gateway.netty.transmit.support.ServerGroup;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFactory;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.ServerChannel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -194,7 +200,7 @@ public class HttpProxyServer {
         }
 
         this.boundAddress = ((InetSocketAddress)future.channel().localAddress());
-        LOG.info("Proxy started at address: " + this.boundAddress);
+        LOG.info("Tesla Proxy started at address: " + this.boundAddress);
 
         Runtime.getRuntime().addShutdownHook(jvmShutdownHook);
     }
