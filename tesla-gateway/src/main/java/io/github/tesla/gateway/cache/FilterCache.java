@@ -474,17 +474,11 @@ public class FilterCache {
             LOGGER.info("begin refresh local cache ");
             CacheConstant.READ_WRITE_LOCK.writeLock().lock();
             ClassUtils.cleanCacheBean();
-
             wafRequestLocalCacheList = Lists.newArrayList(wafRequestCacheList);
-
             wafResponseLocalCacheList = Lists.newArrayList(wafResponseCacheList);
-
             apiLocalCacheList = Lists.newArrayList(apiCacheList);
-
             AbstractPlugin.appKeyLocalDefinitionMap = Maps.newHashMap(appKeyDefinitionMap);
-
             AbstractPlugin.clearLocalCache();
-
             LOGGER.info("wafRequestLocalCache:" + JsonUtils.serializeToJson(wafRequestLocalCacheList));
             LOGGER.info("wafResponseLocalCache:" + JsonUtils.serializeToJson(wafResponseLocalCacheList));
             LOGGER.info("apiLocalCache:" + JsonUtils.serializeToJson(apiLocalCacheList));
