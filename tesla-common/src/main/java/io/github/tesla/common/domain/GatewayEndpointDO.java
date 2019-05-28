@@ -7,11 +7,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 13:56
- * @description:
- */
 @TableName("gateway_endpoint")
 public class GatewayEndpointDO implements Serializable {
 

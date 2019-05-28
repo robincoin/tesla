@@ -2,11 +2,6 @@ package io.github.tesla.common.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 
-/**
- * 
- * @date: 2018/11/20 11:03
- * @description:
- */
 @TableName("gateway_app_plugin")
 public class GatewayAppKeyPluginDO extends GatewayCommonPluginDO {
 

@@ -7,11 +7,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
-/**
- * @Auther: zhipingzhang
- * @Date: 2018/10/30 10:33
- * @Description:
- */
 @TableName("gateway_cache_refresh")
 public class GatewayCacheRefreshDO implements Serializable {
 
