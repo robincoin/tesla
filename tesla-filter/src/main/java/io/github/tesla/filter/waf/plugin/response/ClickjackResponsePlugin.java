@@ -1,6 +1,6 @@
 package io.github.tesla.filter.waf.plugin.response;
 
-import static io.github.tesla.filter.support.CorsHandlerSupport.isPreflightRequest;
+import static io.github.tesla.filter.support.cors.CorsHandlerSupport.isPreflightRequest;
 
 import io.github.tesla.filter.AbstractResponsePlugin;
 import io.github.tesla.filter.support.annnotation.WafResponsePlugin;

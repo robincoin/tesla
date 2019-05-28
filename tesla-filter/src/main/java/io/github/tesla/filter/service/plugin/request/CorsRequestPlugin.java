@@ -1,6 +1,6 @@
 package io.github.tesla.filter.service.plugin.request;
 
-import static io.github.tesla.filter.support.CorsHandlerSupport.*;
+import static io.github.tesla.filter.support.cors.CorsHandlerSupport.*;
 
 import io.github.tesla.filter.AbstractRequestPlugin;
 import io.github.tesla.filter.service.definition.CorsDefinition;

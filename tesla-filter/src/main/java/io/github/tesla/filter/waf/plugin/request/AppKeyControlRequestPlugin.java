@@ -1,6 +1,6 @@
 package io.github.tesla.filter.waf.plugin.request;
 
-import static io.github.tesla.filter.support.CorsHandlerSupport.isPreflightRequest;
+import static io.github.tesla.filter.support.cors.CorsHandlerSupport.isPreflightRequest;
 
 import java.util.Map;
 

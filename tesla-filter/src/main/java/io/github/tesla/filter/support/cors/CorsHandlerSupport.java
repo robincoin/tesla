@@ -1,4 +1,4 @@
-package io.github.tesla.filter.support;
+package io.github.tesla.filter.support.cors;
 
 import static io.netty.handler.codec.http.HttpMethod.OPTIONS;
 import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
