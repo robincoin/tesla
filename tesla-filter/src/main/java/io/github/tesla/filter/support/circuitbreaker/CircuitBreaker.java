@@ -1,9 +1,7 @@
 package io.github.tesla.filter.support.circuitbreaker;
 
 /**
- * User: Rudy Tan
- * Date: 2018/9/21
- *
+ * 
  * 熔断器接口
  */
 public interface CircuitBreaker {

@@ -14,11 +14,11 @@ public class CloseCBState implements CBState {
      * 进入当前状态的初始化时间
      */
     private long stateTime = System.currentTimeMillis();
-
     /**
      * 关闭状态，失败计数器，以及失败计数器初始化时间
      */
     private AtomicInteger failNum = new AtomicInteger(0);
+
     private long failNumClearTime = System.currentTimeMillis();
 
     public String getStateName() {
