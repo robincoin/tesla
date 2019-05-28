@@ -1,10 +1,5 @@
 package io.github.tesla.common.dto;
 
-/**
- * 
- * @date: 2018/11/20 11:03
- * @description:
- */
 public class ServicePluginDTO extends CommonPluginDTO {
 
     private String serviceId;

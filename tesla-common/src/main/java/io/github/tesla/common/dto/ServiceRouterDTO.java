@@ -2,11 +2,6 @@ package io.github.tesla.common.dto;
 
 import java.sql.Timestamp;
 
-/**
- * 
- * @date: 2018/11/20 11:03
- * @description:
- */
 public class ServiceRouterDTO {
 
     private Long id;
