@@ -24,25 +24,12 @@ import io.github.tesla.filter.utils.JsonUtils;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 16:56
- * @description:
- */
 @ServiceResponsePlugin(filterType = "ModifyHeaderResponsePlugin", definitionClazz = ModifyHeaderDefinition.class,
     filterOrder = 3, filterName = "修改Header插件")
 @EndpointResponsePlugin(filterType = "ModifyHeaderResponsePlugin", definitionClazz = ModifyHeaderDefinition.class,
     filterOrder = 9, filterName = "修改Header插件")
 public class ModifyHeaderResponsePlugin extends AbstractResponsePlugin {
 
-    /**
-     * @desc:
-     * @method: doFilter
-     * @param: [servletRequest, realHttpObject, filterParam] filterParam接受json类型字符串
-     * @return: io.netty.handler.codec.http.HttpResponse
-     * @auther: zhipingzhang
-     * @date: 2018/11/20 16:57
-     */
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
         Object filterParam) {

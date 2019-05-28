@@ -25,25 +25,12 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponse;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 16:56
- * @description:
- */
 @ServiceRequestPlugin(filterType = "ModifyHeaderRequestPlugin", definitionClazz = ModifyHeaderDefinition.class,
     filterOrder = 16, filterName = "修改Header插件")
 @EndpointRequestPlugin(filterType = "ModifyHeaderRequestPlugin", definitionClazz = ModifyHeaderDefinition.class,
     filterOrder = 9, filterName = "修改Header插件")
 public class ModifyHeaderRequestPlugin extends AbstractRequestPlugin {
 
-    /**
-     * @desc:
-     * @method: doFilter
-     * @param: [servletRequest, realHttpObject, filterParam] filterParam接受json类型字符串
-     * @return: io.netty.handler.codec.http.HttpResponse
-     * @auther: zhipingzhang
-     * @date: 2018/11/20 16:57
-     */
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
         Object filterParam) {

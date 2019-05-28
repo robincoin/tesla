@@ -17,24 +17,11 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 16:56
- * @description:
- */
 @AppKeyRequestPlugin(filterType = "QuotaRequestPlugin", filterOrder = 2, filterName = "访问API总流量限制插件")
 public class QuotaRequestPlugin extends AbstractRequestPlugin {
 
     private static Map<String, Date> quotaTimeCache;
 
-    /**
-     * @desc:
-     * @method: doFilter
-     * @param: [servletRequest,realHttpObject, filterParam] filterParam接受json类型字符串
-     * @return: io.netty.handler.codec.http.HttpResponse
-     * @auther: zhipingzhang
-     * @date: 2018/11/20 16:57
-     */
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
         Object filterParam) {
