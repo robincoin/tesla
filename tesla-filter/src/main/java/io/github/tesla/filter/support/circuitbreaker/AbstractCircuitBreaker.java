@@ -42,7 +42,6 @@ public abstract class AbstractCircuitBreaker implements CircuitBreaker {
         if (currentState.getStateName().equals(state.getStateName())) {
             return;
         }
-
         // 多线程环境加锁
         synchronized (this) {
             // 二次判断
@@ -50,7 +49,6 @@ public abstract class AbstractCircuitBreaker implements CircuitBreaker {
             if (currentState.getStateName().equals(state.getStateName())) {
                 return;
             }
-
             // 更新状态
             this.state = state;
             System.out.println("熔断器状态转移：" + currentState.getStateName() + "->" + state.getStateName());

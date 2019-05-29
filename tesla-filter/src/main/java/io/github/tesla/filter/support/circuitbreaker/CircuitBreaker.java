@@ -5,6 +5,12 @@ package io.github.tesla.filter.support.circuitbreaker;
  * 熔断器接口
  */
 public interface CircuitBreaker {
+
+    /**
+     * 带参数重置熔断器，如果参数相同则重置，否则不重置
+     */
+    void reset(String failRateForClose, int idleTimeForOpen, String passRateForHalfOpen, int failNumForHalfOpen);
+
     /**
      * 重置熔断器
      */
