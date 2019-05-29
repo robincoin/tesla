@@ -8,7 +8,7 @@ import io.github.tesla.filter.AbstractRequestPlugin;
 import io.github.tesla.filter.endpoint.definition.CircuitBreakerDefinition;
 import io.github.tesla.filter.support.annnotation.EndpointRequestPlugin;
 import io.github.tesla.filter.support.circuitbreaker.CircuitBreaker;
-import io.github.tesla.filter.support.circuitbreaker.LocalCircuitBreaker;
+import io.github.tesla.filter.support.circuitbreaker.HazelCastCircuitBreaker;
 import io.github.tesla.filter.support.servlet.NettyHttpServletRequest;
 import io.github.tesla.filter.utils.JsonUtils;
 import io.github.tesla.filter.utils.PluginUtil;
@@ -41,7 +41,7 @@ public class CircuitBreakerRequestPlugin extends AbstractRequestPlugin {
             circuitBreaker.reset(failRateForClose, idleTimeForOpen, passRateForHalfOpen, failNumForHalfOpen);
         } else {
             circuitBreaker =
-                new LocalCircuitBreaker(failRateForClose, idleTimeForOpen, passRateForHalfOpen, failNumForHalfOpen);
+                new HazelCastCircuitBreaker(failRateForClose, idleTimeForOpen, passRateForHalfOpen, failNumForHalfOpen);
             CIRCUITBREAKER_CACHE.put(uri, circuitBreaker);
         }
         servletRequest.setAttribute("_CircuitBreaker", circuitBreaker);

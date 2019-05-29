@@ -7,9 +7,9 @@ import io.github.tesla.filter.support.circuitbreaker.state.CloseCBState;
 /**
  * 本地熔断器(把它当成了工厂了)
  */
-public class LocalCircuitBreaker extends AbstractCircuitBreaker {
+public class HazelCastCircuitBreaker extends AbstractCircuitBreaker {
 
-    public LocalCircuitBreaker(String failRateForClose, int idleTimeForOpen, String passRateForHalfOpen,
+    public HazelCastCircuitBreaker(String failRateForClose, int idleTimeForOpen, String passRateForHalfOpen,
         int failNumForHalfOpen) {
         this.thresholdFailRateForClose = failRateForClose;
         this.thresholdIdleTimeForOpen = idleTimeForOpen;

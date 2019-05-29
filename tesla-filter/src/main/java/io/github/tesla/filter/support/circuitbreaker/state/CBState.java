@@ -6,6 +6,13 @@ import io.github.tesla.filter.support.circuitbreaker.AbstractCircuitBreaker;
  * 熔断器状态
  */
 public interface CBState {
+
+    String CIRCUITBREAKER_HALFOPENCBSTATE_FAILNUM = "CIRCUITBREAKER_HALFOPENCBSTATE_FAILNUM";
+
+    String CIRCUITBREAKER_HALFOPENCBSTATE_PASSNUM = "CIRCUITBREAKER_HALFOPENCBSTATE_PASSNUM";
+
+    String CIRCUITBREAKER_CLOSECBSTATE_FAILNUM = "CIRCUITBREAKER_CLOSECBSTATE_FAILNUM";
+
     /**
      * 获取当前状态名称
      */

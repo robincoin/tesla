@@ -1,7 +1,8 @@
 package io.github.tesla.filter.support.circuitbreaker.state;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import com.hazelcast.core.IAtomicLong;
 
+import io.github.tesla.filter.AbstractPlugin;
 import io.github.tesla.filter.support.circuitbreaker.AbstractCircuitBreaker;
 
 /**
@@ -17,12 +18,14 @@ public class HalfOpenCBState implements CBState {
     /**
      * 半开状态，失败计数器
      */
-    private AtomicInteger failNum = new AtomicInteger(0);
+    private IAtomicLong failNum =
+        AbstractPlugin.getHazelcastInstance().getAtomicLong(CIRCUITBREAKER_HALFOPENCBSTATE_FAILNUM);
 
     /**
      * 半开状态，允许通过的计数器
      */
-    private AtomicInteger passNum = new AtomicInteger(0);
+    private IAtomicLong passNum =
+        AbstractPlugin.getHazelcastInstance().getAtomicLong(CIRCUITBREAKER_HALFOPENCBSTATE_PASSNUM);
 
     public String getStateName() {
         // 获取当前状态名称

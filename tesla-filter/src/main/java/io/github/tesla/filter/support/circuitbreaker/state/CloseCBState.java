@@ -1,7 +1,8 @@
 package io.github.tesla.filter.support.circuitbreaker.state;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import com.hazelcast.core.IAtomicLong;
 
+import io.github.tesla.filter.AbstractPlugin;
 import io.github.tesla.filter.support.circuitbreaker.AbstractCircuitBreaker;
 
 /**
@@ -16,7 +17,8 @@ public class CloseCBState implements CBState {
     /**
      * 关闭状态，失败计数器，以及失败计数器初始化时间
      */
-    private AtomicInteger failNum = new AtomicInteger(0);
+    private IAtomicLong failNum =
+        AbstractPlugin.getHazelcastInstance().getAtomicLong(CIRCUITBREAKER_CLOSECBSTATE_FAILNUM);
 
     private long failNumClearTime = System.currentTimeMillis();
 
