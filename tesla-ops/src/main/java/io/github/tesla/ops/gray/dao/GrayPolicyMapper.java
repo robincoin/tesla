@@ -12,7 +12,7 @@ import io.github.tesla.ops.gray.domain.GrayPolicyDO;
 @Mapper
 public interface GrayPolicyMapper extends BaseMapper<GrayPolicyDO> {
 
-    @Select("select * from T_GRAY_POLICY where PLAN_ID=#{planId} and CONSUMER_SERVICE not in (select PROVIDER_SERVICE from T_GRAY_POLICY where PLAN_ID=#{planId})")
+    @Select("select * from GATEWAY_GRAY_POLICY where PLAN_ID=#{planId} and CONSUMER_SERVICE not in (select PROVIDER_SERVICE from T_GRAY_POLICY where PLAN_ID=#{planId})")
     List<GrayPolicyDO> findRootNodes(Long planId);
 
 }
