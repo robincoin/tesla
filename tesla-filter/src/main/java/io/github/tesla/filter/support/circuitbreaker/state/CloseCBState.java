@@ -9,7 +9,6 @@ import io.github.tesla.filter.support.circuitbreaker.AbstractCircuitBreaker;
  * 熔断器-关闭状态
  */
 public class CloseCBState implements CBState {
-
     /**
      * 进入当前状态的初始化时间
      */
