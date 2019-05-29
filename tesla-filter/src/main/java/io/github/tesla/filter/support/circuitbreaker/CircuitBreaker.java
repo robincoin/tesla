@@ -1,10 +1,12 @@
 package io.github.tesla.filter.support.circuitbreaker;
 
+import java.io.Serializable;
+
 /**
  * 
  * 熔断器接口
  */
-public interface CircuitBreaker {
+public interface CircuitBreaker extends Serializable {
 
     /**
      * 带参数重置熔断器，如果参数相同则重置，否则不重置

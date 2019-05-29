@@ -1,11 +1,13 @@
 package io.github.tesla.filter.support.circuitbreaker.state;
 
+import java.io.Serializable;
+
 import io.github.tesla.filter.support.circuitbreaker.AbstractCircuitBreaker;
 
 /**
  * 熔断器状态
  */
-public interface CBState {
+public interface CBState extends Serializable {
 
     String CIRCUITBREAKER_HALFOPENCBSTATE_FAILNUM = "CIRCUITBREAKER_HALFOPENCBSTATE_FAILNUM";
 

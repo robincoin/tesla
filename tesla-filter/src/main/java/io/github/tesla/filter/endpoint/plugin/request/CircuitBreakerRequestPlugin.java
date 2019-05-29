@@ -1,8 +1,6 @@
 package io.github.tesla.filter.endpoint.plugin.request;
 
-import java.util.Map;
-
-import com.google.common.collect.Maps;
+import com.hazelcast.core.IMap;
 
 import io.github.tesla.filter.AbstractRequestPlugin;
 import io.github.tesla.filter.endpoint.definition.CircuitBreakerDefinition;
@@ -21,7 +19,7 @@ import io.netty.handler.codec.http.HttpUtil;
     filterOrder = 13, filterName = "熔断插件")
 public class CircuitBreakerRequestPlugin extends AbstractRequestPlugin {
 
-    private static final Map<String, CircuitBreaker> CIRCUITBREAKER_CACHE = Maps.newConcurrentMap();
+    private static IMap<String, CircuitBreaker> CIRCUITBREAKER_CACHE;
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
@@ -29,6 +27,9 @@ public class CircuitBreakerRequestPlugin extends AbstractRequestPlugin {
         CircuitBreakerDefinition definition = JsonUtils.json2Definition(filterParam, CircuitBreakerDefinition.class);
         if (definition == null) {
             return null;
+        }
+        if (CIRCUITBREAKER_CACHE == null) {
+            CIRCUITBREAKER_CACHE = getHazelcastInstance().getMap("circuitBreakerMap");
         }
         String uri = servletRequest.getRequestURI();
         CircuitBreaker circuitBreaker = null;
