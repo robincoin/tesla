@@ -1,7 +1,7 @@
 package io.github.tesla.filter.support.circuitbreaker;
 
-import io.github.tesla.filter.support.circuitbreaker.state.CBState;
-import io.github.tesla.filter.support.circuitbreaker.state.CloseCBState;
+import io.github.tesla.filter.support.circuitbreaker.state.CircuitBreakerState;
+import io.github.tesla.filter.support.circuitbreaker.state.CloseCircuitBreakerState;
 
 /**
  * 基础熔断器
@@ -10,7 +10,7 @@ public abstract class AbstractCircuitBreaker implements CircuitBreaker {
     /**
      * 熔断器当前状态
      */
-    private volatile CBState state = new CloseCBState();
+    private volatile CircuitBreakerState state = new CloseCircuitBreakerState();
 
     /**
      * 在熔断器关闭的情况下，在多少秒内失败多少次进入，熔断打开状态（默认10分钟内，失败10次进入打开状态）
@@ -32,13 +32,13 @@ public abstract class AbstractCircuitBreaker implements CircuitBreaker {
      */
     public int thresholdFailNumForHalfOpen = 1;
 
-    public CBState getState() {
+    public CircuitBreakerState getState() {
         return state;
     }
 
-    public void setState(CBState state) {
+    public void setState(CircuitBreakerState state) {
         // 当前状态不能切换为当前状态
-        CBState currentState = getState();
+        CircuitBreakerState currentState = getState();
         if (currentState.getStateName().equals(state.getStateName())) {
             return;
         }

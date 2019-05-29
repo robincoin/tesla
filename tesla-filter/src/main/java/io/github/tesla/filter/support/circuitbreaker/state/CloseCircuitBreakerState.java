@@ -9,7 +9,7 @@ import io.github.tesla.filter.support.circuitbreaker.AbstractCircuitBreaker;
  * 
  * 熔断器-关闭状态
  */
-public class CloseCBState implements CBState {
+public class CloseCircuitBreakerState implements CircuitBreakerState {
     /**
      * 进入当前状态的初始化时间
      */
@@ -31,7 +31,7 @@ public class CloseCBState implements CBState {
         // 阀值判断，如果失败到达阀值，切换状态到打开状态
         long maxFailNum = Long.valueOf(cb.thresholdFailRateForClose.split("/")[0]);
         if (failNum.get() >= maxFailNum) {
-            cb.setState(new OpenCBState());
+            cb.setState(new OpenCircuitBreakerState());
         }
     }
 

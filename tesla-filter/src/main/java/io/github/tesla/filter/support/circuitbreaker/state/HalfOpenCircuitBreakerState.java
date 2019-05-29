@@ -8,7 +8,7 @@ import io.github.tesla.filter.support.circuitbreaker.AbstractCircuitBreaker;
 /**
  * 熔断器-半开状态
  */
-public class HalfOpenCBState implements CBState {
+public class HalfOpenCircuitBreakerState implements CircuitBreakerState {
 
     /**
      * 进入当前状态的初始化时间
@@ -41,10 +41,10 @@ public class HalfOpenCBState implements CBState {
             int maxFailNum = cb.thresholdFailNumForHalfOpen;
             if (failNum.get() >= maxFailNum) {
                 // 失败超过阀值，认为服务没有恢复，重新进入熔断打开状态
-                cb.setState(new OpenCBState());
+                cb.setState(new OpenCircuitBreakerState());
             } else {
                 // 没超过，认为服务恢复，进入熔断关闭状态
-                cb.setState(new CloseCBState());
+                cb.setState(new CloseCircuitBreakerState());
             }
         }
     }

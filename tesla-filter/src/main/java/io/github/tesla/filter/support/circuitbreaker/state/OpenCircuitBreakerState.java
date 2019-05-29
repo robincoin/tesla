@@ -5,7 +5,7 @@ import io.github.tesla.filter.support.circuitbreaker.AbstractCircuitBreaker;
 /**
  * 熔断器-打开状态
  */
-public class OpenCBState implements CBState {
+public class OpenCircuitBreakerState implements CircuitBreakerState {
     /**
      * 进入当前状态的初始化时间
      */
@@ -21,7 +21,7 @@ public class OpenCBState implements CBState {
         long now = System.currentTimeMillis();
         long idleTime = cb.thresholdIdleTimeForOpen * 1000L;
         if (stateTime + idleTime <= now) {
-            cb.setState(new HalfOpenCBState());
+            cb.setState(new HalfOpenCircuitBreakerState());
         }
     }
 

@@ -2,7 +2,7 @@ package io.github.tesla.filter.support.circuitbreaker;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.github.tesla.filter.support.circuitbreaker.state.CloseCBState;
+import io.github.tesla.filter.support.circuitbreaker.state.CloseCircuitBreakerState;
 
 /**
  * 本地熔断器(把它当成了工厂了)
@@ -18,7 +18,7 @@ public class HazelCastCircuitBreaker extends AbstractCircuitBreaker {
     }
 
     public void reset() {
-        this.setState(new CloseCBState());
+        this.setState(new CloseCircuitBreakerState());
     }
 
     private boolean isSame(String failRateForClose, int idleTimeForOpen, String passRateForHalfOpen,
@@ -36,7 +36,7 @@ public class HazelCastCircuitBreaker extends AbstractCircuitBreaker {
             this.thresholdIdleTimeForOpen = idleTimeForOpen;
             this.thresholdPassRateForHalfOpen = passRateForHalfOpen;
             this.thresholdFailNumForHalfOpen = failNumForHalfOpen;
-            this.setState(new CloseCBState());
+            this.setState(new CloseCircuitBreakerState());
         }
     }
 

@@ -7,7 +7,7 @@ import io.github.tesla.filter.support.circuitbreaker.AbstractCircuitBreaker;
 /**
  * 熔断器状态
  */
-public interface CBState extends Serializable {
+public interface CircuitBreakerState extends Serializable {
 
     String CIRCUITBREAKER_HALFOPENCBSTATE_FAILNUM = "CIRCUITBREAKER_HALFOPENCBSTATE_FAILNUM";
 
