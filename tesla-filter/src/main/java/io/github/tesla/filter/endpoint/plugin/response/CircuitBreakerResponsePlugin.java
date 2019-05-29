@@ -17,6 +17,8 @@ public class CircuitBreakerResponsePlugin extends AbstractResponsePlugin {
         CircuitBreaker circuitBreaker = (CircuitBreaker)servletRequest.getAttribute("_CircuitBreaker");
         if (httpResponse.status().code() >= 300 && circuitBreaker != null) {
             circuitBreaker.countFailNum();
+            String uri = servletRequest.getRequestURI();
+            getHazelcastInstance().getMap("circuitBreakerMap").put(uri, circuitBreaker);
         }
         servletRequest.removeAttribute("_CircuitBreaker");
         return httpResponse;

@@ -1,7 +1,5 @@
 package io.github.tesla.filter.endpoint.plugin.request;
 
-import java.util.concurrent.TimeUnit;
-
 import com.hazelcast.core.IMap;
 
 import io.github.tesla.filter.AbstractRequestPlugin;
@@ -43,10 +41,10 @@ public class CircuitBreakerRequestPlugin extends AbstractRequestPlugin {
             circuitBreaker = CIRCUITBREAKER_CACHE.get(uri);
             circuitBreaker.reset(failRateForClose, idleTimeForOpen, passRateForHalfOpen, failNumForHalfOpen);
         } else {
-            // 熔断只一天生效？ 如果永久不失效的话，hazelcast的内存怎么清理？有一些问题
+            // 不能大规模熔断，否则hazelcast吃不消
             circuitBreaker =
                 new HazelCastCircuitBreaker(failRateForClose, idleTimeForOpen, passRateForHalfOpen, failNumForHalfOpen);
-            CIRCUITBREAKER_CACHE.put(uri, circuitBreaker, 1, TimeUnit.DAYS);
+            CIRCUITBREAKER_CACHE.put(uri, circuitBreaker);
         }
         servletRequest.setAttribute("_CircuitBreaker", circuitBreaker);
         if (circuitBreaker.canPassCheck()) {
