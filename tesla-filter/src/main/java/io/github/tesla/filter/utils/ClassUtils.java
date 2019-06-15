@@ -197,7 +197,6 @@ public final class ClassUtils {
 
     private static Class searchClass(JarStreamClassLoader classLoader, String subClass, String jarFileName,
         String basePack, String ignorePackageReg) throws IOException, ClassNotFoundException {
-
         HashMap<String, Class<?>> classes = classLoader.getClasses();
         Class<?> subClazz = ClassUtils.getClass(subClass);
         for (Class<?> jarClass : classes.values()) {
@@ -214,7 +213,6 @@ public final class ClassUtils {
                 }
             }
         }
-
         return null;
     }
 
