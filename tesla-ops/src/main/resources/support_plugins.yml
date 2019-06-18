@@ -59,6 +59,3 @@ endpoint:
   CircuitBreakerRequestPlugin:
     type: CircuitBreaker
     name: 熔断
-  CircuitBreakerResponsePlugin:
-    type: CircuitBreaker
-    name: 熔断
