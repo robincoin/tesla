@@ -114,7 +114,7 @@ public class MultiDataSourceConfig {
 		}
 
 		if (properties.getTimeBetweenEvictionRunsMillis() == null) {
-			properties.setTimeBetweenEvictionRunsMillis(60000L);
+			properties.setTimeBetweenEvictionRunsMillis(1800000L);
 		}
 
 		if (properties.getMinEvictableIdleTimeMillis() == null) {
