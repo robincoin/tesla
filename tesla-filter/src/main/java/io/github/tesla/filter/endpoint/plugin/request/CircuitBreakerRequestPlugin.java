@@ -39,10 +39,8 @@ public class CircuitBreakerRequestPlugin extends AbstractRequestPlugin {
 		CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()//
 				.failureRateThreshold(failureRateThreshold)// 失败率阈值
 				.waitDurationInOpenState(Duration.ofMillis(waitDurationInOpenState))// 用来指定断路器从OPEN到HALF_OPEN状态等待的时长
-				.ringBufferSizeInHalfOpenState(ringBufferSizeInHalfOpenState)// 设置当断路器处于HALF_OPEN状态下的ring
-																				// buffer的大小，它存储了最近一段时间请求的成功失败状态
-				.ringBufferSizeInClosedState(ringBufferSizeInClosedState)// 设置当断路器处于CLOSED状态下的ring
-																			// buffer的大小，它存储了最近一段时间请求的成功失败状态
+				.ringBufferSizeInHalfOpenState(ringBufferSizeInHalfOpenState)// 设置当断路器处于HALF_OPEN状态下的ringbuffer的大小，它存储了最近一段时间请求的成功失败状态
+				.ringBufferSizeInClosedState(ringBufferSizeInClosedState)// 设置当断路器处于CLOSED状态下的ringbuffer的大小，它存储了最近一段时间请求的成功失败状态
 				.enableAutomaticTransitionFromOpenToHalfOpen()// 当waitDurationInOpenState时间一过，是否自动从OPEN切换到HALF_OPEN
 				.build();
 		CircuitBreaker circuitBreaker = CircuitBreakerRegistry.ofDefaults().circuitBreaker(uri, circuitBreakerConfig);

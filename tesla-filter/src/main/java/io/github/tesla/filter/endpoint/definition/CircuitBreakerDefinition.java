@@ -5,14 +5,19 @@ import io.github.tesla.filter.service.definition.PluginDefinition;
 
 public class CircuitBreakerDefinition extends PluginDefinition {
 
+	// 失败率阈值
 	private Integer failureRateThreshold;
 
+	// 用来指定断路器从OPEN到HALF_OPEN状态等待的时长
 	private Integer waitDurationInOpenState;
 
+	// 设置当断路器处于HALF_OPEN状态下的ringbuffer的大小，它存储了最近一段时间请求的成功失败状态
 	private Integer ringBufferSizeInHalfOpenState;
 
+	// 设置当断路器处于CLOSED状态下的ringbuffer的大小，它存储了最近一段时间请求的成功失败状态
 	private Integer ringBufferSizeInClosedState;
 
+	// 触发熔断后降级
 	private String fallback;
 
 	public Integer getFailureRateThreshold() {
