@@ -14,6 +14,9 @@ public class RequestPluginMetadata extends FilterMetadata {
     private static final Cache<Class<? extends AbstractRequestPlugin>, Object> INSTANCE_CACHE =
         CacheBuilder.newBuilder().weakKeys().weakValues().build();
 
+    protected static final Cache<Class<? extends AbstractRequestPlugin>, RequestPluginMetadata> META_CACHE =
+        CacheBuilder.newBuilder().weakKeys().weakValues().build();
+
     public Class<? extends AbstractRequestPlugin> getFilterClass() {
         return filterClass;
     }

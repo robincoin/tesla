@@ -1,7 +1,8 @@
 package io.github.tesla.filter.support.plugins;
 
-import java.lang.ref.SoftReference;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -11,8 +12,6 @@ import io.github.tesla.filter.utils.ClassUtils;
 
 public class WafResponsePluginMetadata extends ResponsePluginMetadata {
 
-    private static SoftReference<WafResponsePluginMetadata> WAFRESPONSEPLUGINMETADATAREFERENCE;
-
     WafResponsePluginMetadata(Class clz) {
         WafResponsePlugin annotation = AnnotationUtils.findAnnotation(clz, WafResponsePlugin.class);
         this.filterType = annotation.filterType();
@@ -21,15 +20,23 @@ public class WafResponsePluginMetadata extends ResponsePluginMetadata {
         this.filterClass = clz;
         this.ignoreClassType = StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType();
         this.definitionClazz = annotation.definitionClazz();
-        WAFRESPONSEPLUGINMETADATAREFERENCE = new SoftReference<WafResponsePluginMetadata>(this);
     }
 
     public static WafResponsePluginMetadata getMetadataByType(String filterType) {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, WafResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafResponsePlugin.class).filterType())) {
-                return WAFRESPONSEPLUGINMETADATAREFERENCE.get() != null ? WAFRESPONSEPLUGINMETADATAREFERENCE.get()
-                    : new WafResponsePluginMetadata(clz);
+                try {
+                    return (WafResponsePluginMetadata)META_CACHE.get(clz, new Callable<WafResponsePluginMetadata>() {
+
+                        @Override
+                        public WafResponsePluginMetadata call() throws Exception {
+                            return new WafResponsePluginMetadata(clz);
+                        }
+                    });
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return null;

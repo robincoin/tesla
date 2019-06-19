@@ -1,7 +1,8 @@
 package io.github.tesla.filter.support.plugins;
 
-import java.lang.ref.SoftReference;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -13,8 +14,6 @@ import io.github.tesla.filter.utils.ClassUtils;
 
 public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
 
-    private static SoftReference<EndpointResponsePluginMetadata> ENDPOINTRESPONSEPLUGINMETADATAREFERENCE;
-
     EndpointResponsePluginMetadata(Class clz) {
         EndpointResponsePlugin annotation = AnnotationUtils.findAnnotation(clz, EndpointResponsePlugin.class);
         this.filterType = annotation.filterType();
@@ -23,7 +22,6 @@ public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
         this.filterClass = clz;
         this.ignoreClassType = StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType();
         this.definitionClazz = annotation.definitionClazz();
-        ENDPOINTRESPONSEPLUGINMETADATAREFERENCE = new SoftReference<EndpointResponsePluginMetadata>(this);
     }
 
     public static EndpointResponsePluginMetadata getMetadataByType(String filterType) {
@@ -33,8 +31,18 @@ public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, EndpointResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, EndpointResponsePlugin.class).filterType())) {
-                return ENDPOINTRESPONSEPLUGINMETADATAREFERENCE.get() != null
-                    ? ENDPOINTRESPONSEPLUGINMETADATAREFERENCE.get() : new EndpointResponsePluginMetadata(clz);
+                try {
+                    return (EndpointResponsePluginMetadata)META_CACHE.get(clz,
+                        new Callable<EndpointResponsePluginMetadata>() {
+
+                            @Override
+                            public EndpointResponsePluginMetadata call() throws Exception {
+                                return new EndpointResponsePluginMetadata(clz);
+                            }
+                        });
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return null;

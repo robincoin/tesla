@@ -1,7 +1,8 @@
 package io.github.tesla.filter.support.plugins;
 
-import java.lang.ref.SoftReference;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -12,8 +13,6 @@ import io.github.tesla.filter.utils.ClassUtils;
 
 public class ServiceRequestPluginMetadata extends RequestPluginMetadata {
 
-    private static SoftReference<ServiceRequestPluginMetadata> SERVICEREQUESTPLUGINMETADATAREFERENCE;
-
     ServiceRequestPluginMetadata(Class clz) {
         ServiceRequestPlugin annotation = AnnotationUtils.findAnnotation(clz, ServiceRequestPlugin.class);
         this.filterType = annotation.filterType();
@@ -22,7 +21,6 @@ public class ServiceRequestPluginMetadata extends RequestPluginMetadata {
         this.filterClass = clz;
         this.ignoreClassType = StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType();
         this.definitionClazz = annotation.definitionClazz();
-        SERVICEREQUESTPLUGINMETADATAREFERENCE = new SoftReference<ServiceRequestPluginMetadata>(this);
     }
 
     public static ServiceRequestPluginMetadata getMetadataByType(String filterType) {
@@ -32,8 +30,18 @@ public class ServiceRequestPluginMetadata extends RequestPluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, ServiceRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceRequestPlugin.class).filterType())) {
-                return SERVICEREQUESTPLUGINMETADATAREFERENCE.get() != null ? SERVICEREQUESTPLUGINMETADATAREFERENCE.get()
-                    : new ServiceRequestPluginMetadata(clz);
+                try {
+                    return (ServiceRequestPluginMetadata)META_CACHE.get(clz,
+                        new Callable<ServiceRequestPluginMetadata>() {
+
+                            @Override
+                            public ServiceRequestPluginMetadata call() throws Exception {
+                                return new ServiceRequestPluginMetadata(clz);
+                            }
+                        });
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return null;
