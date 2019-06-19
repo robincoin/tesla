@@ -1,5 +1,6 @@
 package io.github.tesla.filter.support.plugins;
 
+import java.lang.ref.SoftReference;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -10,6 +11,8 @@ import io.github.tesla.filter.utils.ClassUtils;
 
 public class WafResponsePluginMetadata extends ResponsePluginMetadata {
 
+    private static SoftReference<WafResponsePluginMetadata> WAFRESPONSEPLUGINMETADATAREFERENCE;
+
     WafResponsePluginMetadata(Class clz) {
         WafResponsePlugin annotation = AnnotationUtils.findAnnotation(clz, WafResponsePlugin.class);
         this.filterType = annotation.filterType();
@@ -18,13 +21,15 @@ public class WafResponsePluginMetadata extends ResponsePluginMetadata {
         this.filterClass = clz;
         this.ignoreClassType = StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType();
         this.definitionClazz = annotation.definitionClazz();
+        WAFRESPONSEPLUGINMETADATAREFERENCE = new SoftReference<WafResponsePluginMetadata>(this);
     }
 
     public static WafResponsePluginMetadata getMetadataByType(String filterType) {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, WafResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafResponsePlugin.class).filterType())) {
-                return new WafResponsePluginMetadata(clz);
+                return WAFRESPONSEPLUGINMETADATAREFERENCE.get() != null ? WAFRESPONSEPLUGINMETADATAREFERENCE.get()
+                    : new WafResponsePluginMetadata(clz);
             }
         }
         return null;

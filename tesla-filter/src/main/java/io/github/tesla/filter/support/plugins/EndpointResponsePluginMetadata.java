@@ -1,5 +1,6 @@
 package io.github.tesla.filter.support.plugins;
 
+import java.lang.ref.SoftReference;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -10,12 +11,9 @@ import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.support.annnotation.EndpointResponsePlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/28 14:33
- * @description:
- */
 public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
+
+    private static SoftReference<EndpointResponsePluginMetadata> ENDPOINTRESPONSEPLUGINMETADATAREFERENCE;
 
     EndpointResponsePluginMetadata(Class clz) {
         EndpointResponsePlugin annotation = AnnotationUtils.findAnnotation(clz, EndpointResponsePlugin.class);
@@ -25,6 +23,7 @@ public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
         this.filterClass = clz;
         this.ignoreClassType = StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType();
         this.definitionClazz = annotation.definitionClazz();
+        ENDPOINTRESPONSEPLUGINMETADATAREFERENCE = new SoftReference<EndpointResponsePluginMetadata>(this);
     }
 
     public static EndpointResponsePluginMetadata getMetadataByType(String filterType) {
@@ -34,7 +33,8 @@ public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, EndpointResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, EndpointResponsePlugin.class).filterType())) {
-                return new EndpointResponsePluginMetadata(clz);
+                return ENDPOINTRESPONSEPLUGINMETADATAREFERENCE.get() != null
+                    ? ENDPOINTRESPONSEPLUGINMETADATAREFERENCE.get() : new EndpointResponsePluginMetadata(clz);
             }
         }
         return null;

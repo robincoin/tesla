@@ -1,5 +1,6 @@
 package io.github.tesla.filter.support.plugins;
 
+import java.lang.ref.SoftReference;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -10,6 +11,8 @@ import io.github.tesla.filter.utils.ClassUtils;
 
 public class WafRequestPluginMetadata extends RequestPluginMetadata {
 
+    private static SoftReference<WafRequestPluginMetadata> WAFREQUESTPLUGINMETADATAREFERENCE;
+
     WafRequestPluginMetadata(Class clz) {
         WafRequestPlugin annotation = AnnotationUtils.findAnnotation(clz, WafRequestPlugin.class);
         this.filterType = annotation.filterType();
@@ -18,13 +21,15 @@ public class WafRequestPluginMetadata extends RequestPluginMetadata {
         this.filterClass = clz;
         this.ignoreClassType = StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType();
         this.definitionClazz = annotation.definitionClazz();
+        WAFREQUESTPLUGINMETADATAREFERENCE = new SoftReference<WafRequestPluginMetadata>(this);
     }
 
     public static WafRequestPluginMetadata getMetadataByType(String filterType) {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, WafRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafRequestPlugin.class).filterType())) {
-                return new WafRequestPluginMetadata(clz);
+                return WAFREQUESTPLUGINMETADATAREFERENCE.get() != null ? WAFREQUESTPLUGINMETADATAREFERENCE.get()
+                    : new WafRequestPluginMetadata(clz);
             }
         }
         return null;

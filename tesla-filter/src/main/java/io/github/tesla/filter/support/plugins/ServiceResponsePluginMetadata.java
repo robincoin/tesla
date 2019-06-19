@@ -1,5 +1,6 @@
 package io.github.tesla.filter.support.plugins;
 
+import java.lang.ref.SoftReference;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,8 @@ import io.github.tesla.filter.utils.ClassUtils;
 
 public class ServiceResponsePluginMetadata extends ResponsePluginMetadata {
 
+    private static SoftReference<ServiceResponsePluginMetadata> SERVICERESPONSEPLUGINMETADATAREFERENCE;
+
     ServiceResponsePluginMetadata(Class clz) {
         ServiceResponsePlugin annotation = AnnotationUtils.findAnnotation(clz, ServiceResponsePlugin.class);
         this.filterType = annotation.filterType();
@@ -19,6 +22,7 @@ public class ServiceResponsePluginMetadata extends ResponsePluginMetadata {
         this.filterClass = clz;
         this.ignoreClassType = StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType();
         this.definitionClazz = annotation.definitionClazz();
+        SERVICERESPONSEPLUGINMETADATAREFERENCE = new SoftReference<ServiceResponsePluginMetadata>(this);
     }
 
     public static ServiceResponsePluginMetadata getMetadataByType(String filterType) {
@@ -28,7 +32,8 @@ public class ServiceResponsePluginMetadata extends ResponsePluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, ServiceResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceResponsePlugin.class).filterType())) {
-                return new ServiceResponsePluginMetadata(clz);
+                return SERVICERESPONSEPLUGINMETADATAREFERENCE.get() != null
+                    ? SERVICERESPONSEPLUGINMETADATAREFERENCE.get() : new ServiceResponsePluginMetadata(clz);
             }
         }
         return null;
