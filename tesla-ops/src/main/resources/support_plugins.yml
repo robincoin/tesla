@@ -58,4 +58,4 @@ endpoint:
     name: 请求报文校验
   CircuitBreakerRequestPlugin:
     type: CircuitBreaker
-    name: 熔断
+    name: 熔断降级
