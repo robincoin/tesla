@@ -54,7 +54,6 @@ public final class ClassUtils {
     private static final Map<Pair<String, String>, AbstractPlugin> USER_RULE_JAR_FILTER_CACHE = Maps.newConcurrentMap();
     private static Logger log = LoggerFactory.getLogger(ClassUtils.class);
     private static String basePack = "io/github/tesla/filter/plugin";
-
     private static String ignorePackageReg = "io/github/tesla/filter/plugin/(request|response)/myapp/.*";
 
     private ClassUtils() {
@@ -198,7 +197,6 @@ public final class ClassUtils {
 
     private static Class searchClass(JarStreamClassLoader classLoader, String subClass, String jarFileName,
         String basePack, String ignorePackageReg) throws IOException, ClassNotFoundException {
-
         HashMap<String, Class<?>> classes = classLoader.getClasses();
         Class<?> subClazz = ClassUtils.getClass(subClass);
         for (Class<?> jarClass : classes.values()) {
@@ -215,7 +213,6 @@ public final class ClassUtils {
                 }
             }
         }
-
         return null;
     }
 

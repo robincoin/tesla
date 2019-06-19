@@ -1,6 +1,8 @@
 package io.github.tesla.filter.support.plugins;
 
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -28,7 +30,18 @@ public class ServiceResponsePluginMetadata extends ResponsePluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, ServiceResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceResponsePlugin.class).filterType())) {
-                return new ServiceResponsePluginMetadata(clz);
+                try {
+                    return (ServiceResponsePluginMetadata)META_CACHE.get(clz,
+                        new Callable<ServiceResponsePluginMetadata>() {
+
+                            @Override
+                            public ServiceResponsePluginMetadata call() throws Exception {
+                                return new ServiceResponsePluginMetadata(clz);
+                            }
+                        });
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return null;

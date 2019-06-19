@@ -1,6 +1,8 @@
 package io.github.tesla.filter.support.plugins;
 
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -24,7 +26,17 @@ public class WafRequestPluginMetadata extends RequestPluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, WafRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafRequestPlugin.class).filterType())) {
-                return new WafRequestPluginMetadata(clz);
+                try {
+                    return (WafRequestPluginMetadata)META_CACHE.get(clz, new Callable<WafRequestPluginMetadata>() {
+
+                        @Override
+                        public WafRequestPluginMetadata call() throws Exception {
+                            return new WafRequestPluginMetadata(clz);
+                        }
+                    });
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return null;

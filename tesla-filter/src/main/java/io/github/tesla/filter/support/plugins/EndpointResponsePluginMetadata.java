@@ -1,6 +1,8 @@
 package io.github.tesla.filter.support.plugins;
 
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -10,11 +12,6 @@ import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.support.annnotation.EndpointResponsePlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/28 14:33
- * @description:
- */
 public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
 
     EndpointResponsePluginMetadata(Class clz) {
@@ -34,7 +31,18 @@ public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, EndpointResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, EndpointResponsePlugin.class).filterType())) {
-                return new EndpointResponsePluginMetadata(clz);
+                try {
+                    return (EndpointResponsePluginMetadata)META_CACHE.get(clz,
+                        new Callable<EndpointResponsePluginMetadata>() {
+
+                            @Override
+                            public EndpointResponsePluginMetadata call() throws Exception {
+                                return new EndpointResponsePluginMetadata(clz);
+                            }
+                        });
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return null;
