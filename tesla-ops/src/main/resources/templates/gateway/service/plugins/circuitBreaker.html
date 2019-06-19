@@ -23,7 +23,7 @@
 
 
 <script>
-    cacheResultConfig = {
+    circuitBreakerConfig = {
         init: function (endpointDiv, authType) {
             var data = {};
             var tpl = $("#endpoint_cacheResult_tmpl").html();
@@ -39,8 +39,8 @@
             cacheResultDefinition.expireSecond = endpointDiv.find("div[name='endpoint_plugin_cacheResult']")
                 .find("input[name='expireSecond']").val();
             var plugin = {};
-            plugin.pluginType = "CacheResultPlugin";
-            plugin.pluginName = "缓存结果插件";
+            plugin.pluginType = "CircuitBreakerRequestPlugin";
+            plugin.pluginName = "熔断配置插件";
             plugin.pluginParam = JSON.stringify(cacheResultDefinition);
             pluginList.push(plugin);
             return pluginList;

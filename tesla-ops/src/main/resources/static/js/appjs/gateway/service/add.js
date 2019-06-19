@@ -200,6 +200,9 @@ function getConfig(pluginType) {
         case 'BodyValidate':
             return bodyVlidateConfig;
             break;
+        case 'CircuitBreaker':
+            return circuitBreakerConfig;
+            break;
         default:
             return undefined;
     }
