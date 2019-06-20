@@ -268,7 +268,6 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
         }
         if (newConnectionRequired) {
             try {
-                HttpFiltersAdapter currentFilters = this.currentFilters;
                 currentServerConnection = ProxyToServerConnection.create(proxyServer, this, serverHostAndPort,
                     currentFilters, httpRequest, globalTrafficShapingHandler);
                 if (currentServerConnection == null) {
