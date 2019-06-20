@@ -171,7 +171,8 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
         this.releaseAndInitCurrentRequestResource();
         // Make a copy of the original request
         this.currentRequest = copy(httpRequest);
-        currentFilters = getHttpFiltersFromProxyServer(httpRequest);
+        HttpFiltersAdapter currentFilters = getHttpFiltersFromProxyServer(httpRequest);
+        this.currentFilters = currentFilters;
         HttpResponse clientToProxyFilterResponse = currentFilters.clientToProxyRequest(httpRequest);
         if (clientToProxyFilterResponse != null) {
             LOG.debug("Responding to client with short-circuit response from filter: {}", clientToProxyFilterResponse);
@@ -248,6 +249,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
     private ConnectionState doReadHTTPInitialInternal(HttpRequest httpRequest, String serverHostAndPort) {
         LOG.debug("Finding ProxyToServerConnection for: {}", serverHostAndPort);
         ProxyToServerConnection currentServerConnection;
+        List<ProxyToServerConnection> currentServerConnectionList = this.currentServerConnectionList;
         if (!isOneToMany()) {
             currentServerConnection = isTunneling() ? currentServerConnectionList.get(0)
                 : this.oneToOneServerConnectionsByHostAndPort.get(serverHostAndPort);
@@ -266,6 +268,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
         }
         if (newConnectionRequired) {
             try {
+                HttpFiltersAdapter currentFilters = this.currentFilters;
                 currentServerConnection = ProxyToServerConnection.create(proxyServer, this, serverHostAndPort,
                     currentFilters, httpRequest, globalTrafficShapingHandler);
                 if (currentServerConnection == null) {
@@ -356,7 +359,9 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 
     @Override
     public void readHTTPChunk(HttpContent chunk) {
+        List<ProxyToServerConnection> currentServerConnectionList = this.currentServerConnectionList;
         if (!isOneToMany()) {
+            HttpFiltersAdapter currentFilters = this.currentFilters;
             currentFilters.clientToProxyRequest(chunk);
             currentFilters.proxyToServerRequest(chunk);
             currentServerConnectionList.get(0).write(chunk);
@@ -368,6 +373,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
     @Override
     public void readRaw(ByteBuf buf) {
         if (!isOneToMany()) {
+            List<ProxyToServerConnection> currentServerConnectionList = this.currentServerConnectionList;
             currentServerConnectionList.get(0).write(buf);
         } else {
             throw new UnsupportedOperationException("One to Many Request not support raw");
@@ -446,6 +452,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
                 Pair<String, String> httpResponsePair = Pair.of(serverConnection.getTag(), responseBody);
                 httpResponsePairList.add(httpResponsePair);
                 if (currentRequestList.size() == httpResponsePairList.size()) {
+                    HttpFiltersAdapter currentFilters = this.currentFilters;
                     httpObject = currentFilters.mergeResponse(httpResponsePairList);
                     writeAndRelease(httpObject, currentHttpRequest, currentHttpResponse);
                 }
@@ -504,6 +511,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
                 && this.currentRequest != null) {
                 // the idle timeout fired on the active server connection. send a timeout response to the client.
                 LOG.warn("Server timed out: {}", currConnection);
+                HttpFiltersAdapter currentFilters = this.currentFilters;
                 currentFilters.serverToProxyResponseTimedOut();
                 writeGatewayTimeout(currentRequest);
             }
@@ -1067,6 +1075,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
         this.currentRequest = null;
         // if HttpRequest decode fail,Do not proxy filter
         if (currentFilters != null) {
+            HttpFiltersAdapter currentFilters = this.currentFilters;
             HttpResponse filteredResponse = (HttpResponse)currentFilters.proxyToClientResponse(httpResponse);
             if (filteredResponse == null) {
                 disconnect();
@@ -1133,7 +1142,8 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
     }
 
     private boolean isOneToMany() {
-        return currentRequestList != null && currentRequestList.size() > 1;
+        List<ProxyToServerConnection> currentServerConnectionList = this.currentServerConnectionList;
+        return currentServerConnectionList != null && currentServerConnectionList.size() > 1;
     }
 
     private void releaseAndInitCurrentRequestResource() {
