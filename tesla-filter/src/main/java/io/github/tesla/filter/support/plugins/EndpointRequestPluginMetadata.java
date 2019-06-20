@@ -33,7 +33,7 @@ public class EndpointRequestPluginMetadata extends RequestPluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, EndpointRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, EndpointRequestPlugin.class).filterType())) {
-                return (EndpointRequestPluginMetadata)META_CACHE.putIfAbsent(clz.getName(),
+                return (EndpointRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
                     new EndpointRequestPluginMetadata(clz));
             }
         }

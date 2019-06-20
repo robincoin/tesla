@@ -28,7 +28,7 @@ public class WafRequestPluginMetadata extends RequestPluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, WafRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafRequestPlugin.class).filterType())) {
-                return (WafRequestPluginMetadata)META_CACHE.putIfAbsent(clz.getName(),
+                return (WafRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
                     new WafRequestPluginMetadata(clz));
             }
         }

@@ -31,7 +31,7 @@ public class AppKeyRequestPluginMetadata extends RequestPluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, AppKeyRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, AppKeyRequestPlugin.class).filterType())) {
-                return (AppKeyRequestPluginMetadata)META_CACHE.putIfAbsent(clz.getName(),
+                return (AppKeyRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
                     new AppKeyRequestPluginMetadata(clz));
             }
         }

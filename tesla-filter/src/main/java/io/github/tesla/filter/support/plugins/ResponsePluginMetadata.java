@@ -12,10 +12,10 @@ public class ResponsePluginMetadata extends FilterMetadata {
 
     protected Class<? extends AbstractResponsePlugin> filterClass;
 
-    private static final Map<String, Object> INSTANCE_CACHE =
+    private static final Map<String, Object> RESPONSEPLUGIN_INSTANCE_CACHE =
         Collections.synchronizedMap(new WeakHashMap<String, Object>());
 
-    protected static final Map<String, ResponsePluginMetadata> META_CACHE =
+    protected static final Map<String, ResponsePluginMetadata> RESPONSEPLUGINMETADATA_INSTANCE_CACHE =
         Collections.synchronizedMap(new WeakHashMap<String, ResponsePluginMetadata>());
 
     public Class<? extends AbstractResponsePlugin> getFilterClass() {
@@ -29,7 +29,7 @@ public class ResponsePluginMetadata extends FilterMetadata {
     @SuppressWarnings({"unchecked"})
     public <T extends ResponsePluginMetadata> T getInstance() throws Exception {
 
-        return (T)INSTANCE_CACHE.putIfAbsent(getFilterClass().getName(),
+        return (T)RESPONSEPLUGIN_INSTANCE_CACHE.putIfAbsent(getFilterClass().getName(),
             getFilterClass().getDeclaredConstructor().newInstance());
     }
 }

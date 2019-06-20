@@ -32,7 +32,7 @@ public class ServiceRequestPluginMetadata extends RequestPluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, ServiceRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceRequestPlugin.class).filterType())) {
-                return (ServiceRequestPluginMetadata)META_CACHE.putIfAbsent(clz.getName(),
+                return (ServiceRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
                     new ServiceRequestPluginMetadata(clz));
             }
         }

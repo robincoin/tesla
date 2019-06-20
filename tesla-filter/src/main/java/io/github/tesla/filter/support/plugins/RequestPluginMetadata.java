@@ -12,10 +12,10 @@ public class RequestPluginMetadata extends FilterMetadata {
 
     protected Class<? extends AbstractRequestPlugin> filterClass;
 
-    private static final Map<String, Object> INSTANCE_CACHE =
+    private static final Map<String, Object> REQUESTPLUGIN_INSTANCE_CACHE =
         Collections.synchronizedMap(new WeakHashMap<String, Object>());
 
-    protected static final Map<String, RequestPluginMetadata> META_CACHE =
+    protected static final Map<String, RequestPluginMetadata> REQUESTPLUGINMETADATA_INSTANCE_CACHE =
         Collections.synchronizedMap(new WeakHashMap<String, RequestPluginMetadata>());
 
     public Class<? extends AbstractRequestPlugin> getFilterClass() {
@@ -28,7 +28,7 @@ public class RequestPluginMetadata extends FilterMetadata {
 
     @SuppressWarnings({"unchecked"})
     public <T extends AbstractRequestPlugin> T getInstance() throws Exception {
-        return (T)INSTANCE_CACHE.putIfAbsent(getFilterClass().getName(),
+        return (T)REQUESTPLUGIN_INSTANCE_CACHE.putIfAbsent(getFilterClass().getName(),
             getFilterClass().getDeclaredConstructor().newInstance());
     }
 }

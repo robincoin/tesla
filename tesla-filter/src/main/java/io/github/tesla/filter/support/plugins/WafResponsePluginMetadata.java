@@ -28,7 +28,7 @@ public class WafResponsePluginMetadata extends ResponsePluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, WafResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafResponsePlugin.class).filterType())) {
-                return (WafResponsePluginMetadata)META_CACHE.putIfAbsent(clz.getName(),
+                return (WafResponsePluginMetadata)RESPONSEPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
                     new WafResponsePluginMetadata(clz));
             }
         }
