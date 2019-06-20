@@ -42,15 +42,11 @@ import io.github.tesla.gateway.netty.router.DirectRouting;
 import io.github.tesla.gateway.netty.router.DubboRouting;
 import io.github.tesla.gateway.netty.router.GrpcRouting;
 import io.github.tesla.gateway.netty.router.SpringCloudRouting;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
@@ -82,7 +78,7 @@ public class HttpFiltersAdapter {
                 return httpResponse;
             }
         } catch (Throwable e) {
-            httpResponse = createResponse(HttpResponseStatus.BAD_GATEWAY, serveletRequest.getNettyRequest());
+            httpResponse = ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY);
             logger.error("Client connectTo proxy request failed", e);
             return httpResponse;
         }
@@ -103,26 +99,6 @@ public class HttpFiltersAdapter {
         return httpResponse;
     }
 
-    private String convertByteBufToString(ByteBuf buf) {
-        String str;
-        if (buf.hasArray()) {
-            str = new String(buf.array(), buf.arrayOffset() + buf.readerIndex(), buf.readableBytes());
-        } else {
-            byte[] bytes = new byte[buf.readableBytes()];
-            buf.getBytes(buf.readerIndex(), bytes);
-            str = new String(bytes, 0, buf.readableBytes());
-        }
-        return str;
-    }
-
-    private HttpResponse createResponse(HttpResponseStatus httpResponseStatus, HttpRequest originalRequest) {
-        HttpHeaders httpHeaders = new DefaultHttpHeaders();
-        httpHeaders.add("Transfer-Encoding", "chunked");
-        HttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, httpResponseStatus);
-        httpResponse.headers().add(httpHeaders);
-        return httpResponse;
-    }
-
     private void logEnd(HttpResponse response) {
         long forwardTime = System.currentTimeMillis() - (this.forwardTime == 0L ? this.receivedTime : this.forwardTime);
         long completeTime = System.currentTimeMillis() - this.receivedTime;
@@ -132,7 +108,7 @@ public class HttpFiltersAdapter {
             FullHttpResponse fullHttpResponse = (FullHttpResponse)response;
             logger.info("gateway return request! method:{},url:{},status:{},param:{}", serveletRequest.getMethod(),
                 serveletRequest.getRequestURI(), response.status().code(),
-                convertByteBufToString(fullHttpResponse.content().copy()));
+                PluginUtil.convertByteBufToString(fullHttpResponse.content().copy()));
             MetricsExporter.returnedSize(serveletRequest.getMethod(), serveletRequest.getRequestURI(),
                 fullHttpResponse.status().code(), fullHttpResponse.content().readableBytes());
             MetricsExporter.returned(serveletRequest.getMethod(), serveletRequest.getRequestURI(),
@@ -149,7 +125,7 @@ public class HttpFiltersAdapter {
             logger.info("gateway forward request! method:{},url:{},host:{}", fullHttpRequest.method().name(),
                 fullHttpRequest.uri(), fullHttpRequest.headers().get(HttpHeaderNames.HOST));
             MetricsExporter.forward(serveletRequest.getMethod(), serveletRequest.getRequestURI(),
-                convertByteBufToString(fullHttpRequest.content().copy()), serveletRequest);
+                PluginUtil.convertByteBufToString(fullHttpRequest.content().copy()), serveletRequest);
         } catch (Throwable e) {
             logger.warn("log metrics failed", e);
         }
@@ -217,7 +193,7 @@ public class HttpFiltersAdapter {
 
     public void proxyToServerResolutionSucceeded(String serverHostAndPort, InetSocketAddress resolvedRemoteAddress) {
         if (resolvedRemoteAddress == null) {
-            ctx.writeAndFlush(createResponse(HttpResponseStatus.BAD_GATEWAY, serveletRequest.getNettyRequest()));
+            ctx.writeAndFlush(ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY));
         }
     }
 

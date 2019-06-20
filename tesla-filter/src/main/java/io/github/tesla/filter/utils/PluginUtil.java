@@ -44,6 +44,18 @@ public class PluginUtil {
         }
     }
 
+    public static String convertByteBufToString(ByteBuf buf) {
+        String str;
+        if (buf.hasArray()) {
+            str = new String(buf.array(), buf.arrayOffset() + buf.readerIndex(), buf.readableBytes());
+        } else {
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.getBytes(buf.readerIndex(), bytes);
+            str = new String(bytes, 0, buf.readableBytes());
+        }
+        return str;
+    }
+
     public static HttpResponse createResponse(HttpResponseStatus httpResponseStatus, HttpRequest originalRequest,
         byte[] reason) {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
