@@ -207,7 +207,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
             for (Pair<String, HttpRequest> requestPair : splitRequests) {
                 currentRequestList.add(requestPair.getValue());
             }
-            if (splitRequests.size() == 1) {
+            if (!isOneToMany()) {
                 return doReadHTTPInitialInternal(splitRequests.get(0).getValue(), splitRequests.get(0).getKey());
             } else {
                 List<Callable<ConnectionState>> oneToManyTasks = Lists.newArrayList();
