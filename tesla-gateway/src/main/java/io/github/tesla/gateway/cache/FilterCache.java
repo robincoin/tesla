@@ -66,7 +66,7 @@ import io.github.tesla.gateway.excutor.WafResponsePluginExecutor;
 @EnableScheduling
 public class FilterCache {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractScheduleCache.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FilterCache.class);
     @Autowired
     private GatewayWafService gatewayWafService;
     @Autowired
