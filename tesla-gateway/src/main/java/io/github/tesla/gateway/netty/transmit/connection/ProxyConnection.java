@@ -224,14 +224,8 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
         writeToChannel(buf);
     }
 
-    public Future<?> writeToChannel(final Object msg) {
-        return channel.eventLoop().submit(new Runnable() {
-
-            @Override
-            public void run() {
-                channel.writeAndFlush(msg);
-            }
-        });
+    public ChannelFuture writeToChannel(final Object msg) {
+        return channel.writeAndFlush(msg);
     }
 
     /***************************************************************************
@@ -336,18 +330,14 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
      * @return Future<Void> for when we're done disconnecting. If we weren't connected, this returns null.
      */
     public Future<Void> disconnect() {
-        if (channel == null) {
-            return null;
-        } else {
-            final Promise<Void> promise = channel.newPromise();
-            channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(new GenericFutureListener<Future<? super Void>>() {
-                @Override
-                public void operationComplete(Future<? super Void> future) throws Exception {
-                    closeChannel(promise);
-                }
-            });
-            return promise;
-        }
+        final Promise<Void> promise = channel.newPromise();
+        writeToChannel(Unpooled.EMPTY_BUFFER).addListener(new GenericFutureListener<Future<? super Void>>() {
+            @Override
+            public void operationComplete(Future<? super Void> future) throws Exception {
+                closeChannel(promise);
+            }
+        });
+        return promise;
     }
 
     private void closeChannel(final Promise<Void> promise) {
