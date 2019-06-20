@@ -183,10 +183,10 @@ public class HttpProxyServer {
                 return new NioServerSocketChannel();
             }
         });
+        serverBootstrap.childHandler(initializer);
         serverBootstrap.childOption(ChannelOption.TCP_NODELAY, true)//
             .option(ChannelOption.TCP_NODELAY, true)//
-            .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)//
-            .childHandler(initializer);
+            .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
         ChannelFuture future = serverBootstrap.bind(requestedAddress).addListener(new ChannelFutureListener() {
 
             @Override
