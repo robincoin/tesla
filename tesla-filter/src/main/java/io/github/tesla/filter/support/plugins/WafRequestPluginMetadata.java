@@ -27,13 +27,14 @@ public class WafRequestPluginMetadata extends RequestPluginMetadata {
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafRequestPlugin.class).filterType())) {
                 try {
-                    return (WafRequestPluginMetadata)META_CACHE.get(clz, new Callable<WafRequestPluginMetadata>() {
+                    return (WafRequestPluginMetadata)META_CACHE.get(clz.getName(),
+                        new Callable<WafRequestPluginMetadata>() {
 
-                        @Override
-                        public WafRequestPluginMetadata call() throws Exception {
-                            return new WafRequestPluginMetadata(clz);
-                        }
-                    });
+                            @Override
+                            public WafRequestPluginMetadata call() throws Exception {
+                                return new WafRequestPluginMetadata(clz);
+                            }
+                        });
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }

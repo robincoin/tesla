@@ -11,10 +11,10 @@ public class RequestPluginMetadata extends FilterMetadata {
 
     protected Class<? extends AbstractRequestPlugin> filterClass;
 
-    private static final Cache<Class<? extends AbstractRequestPlugin>, Object> INSTANCE_CACHE =
+    private static final Cache<String, Object> INSTANCE_CACHE =
         CacheBuilder.newBuilder().weakKeys().weakValues().build();
 
-    protected static final Cache<Class<? extends AbstractRequestPlugin>, RequestPluginMetadata> META_CACHE =
+    protected static final Cache<String, RequestPluginMetadata> META_CACHE =
         CacheBuilder.newBuilder().weakKeys().weakValues().build();
 
     public Class<? extends AbstractRequestPlugin> getFilterClass() {
@@ -26,7 +26,7 @@ public class RequestPluginMetadata extends FilterMetadata {
     }
 
     public <T> T getInstance() throws Exception {
-        return (T)INSTANCE_CACHE.get(filterClass, new Callable<Object>() {
+        return (T)INSTANCE_CACHE.get(filterClass.getName(), new Callable<Object>() {
 
             @Override
             public Object call() throws Exception {

@@ -31,7 +31,7 @@ public class ServiceRequestPluginMetadata extends RequestPluginMetadata {
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceRequestPlugin.class).filterType())) {
                 try {
-                    return (ServiceRequestPluginMetadata)META_CACHE.get(clz,
+                    return (ServiceRequestPluginMetadata)META_CACHE.get(clz.getName(),
                         new Callable<ServiceRequestPluginMetadata>() {
 
                             @Override

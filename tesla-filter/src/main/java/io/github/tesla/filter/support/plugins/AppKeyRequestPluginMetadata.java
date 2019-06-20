@@ -30,7 +30,7 @@ public class AppKeyRequestPluginMetadata extends RequestPluginMetadata {
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, AppKeyRequestPlugin.class).filterType())) {
                 try {
-                    return (AppKeyRequestPluginMetadata)META_CACHE.get(clz,
+                    return (AppKeyRequestPluginMetadata)META_CACHE.get(clz.getName(),
                         new Callable<AppKeyRequestPluginMetadata>() {
 
                             @Override

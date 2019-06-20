@@ -32,7 +32,7 @@ public class EndpointRequestPluginMetadata extends RequestPluginMetadata {
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, EndpointRequestPlugin.class).filterType())) {
                 try {
-                    return (EndpointRequestPluginMetadata)META_CACHE.get(clz,
+                    return (EndpointRequestPluginMetadata)META_CACHE.get(clz.getName(),
                         new Callable<EndpointRequestPluginMetadata>() {
 
                             @Override
