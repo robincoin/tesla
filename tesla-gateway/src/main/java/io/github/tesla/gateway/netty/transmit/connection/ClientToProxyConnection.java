@@ -207,32 +207,38 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
             for (Pair<String, HttpRequest> requestPair : splitRequests) {
                 currentRequestList.add(requestPair.getValue());
             }
-            List<Callable<ConnectionState>> oneToManyTasks = new ArrayList<Callable<ConnectionState>>();
-            for (Pair<String, HttpRequest> requestPair : splitRequests) {
-                if (StringUtils.isBlank(requestPair.getKey())) {
-                    continue;
-                }
-                oneToManyTasks.add(new Callable<ConnectionState>() {
-                    @Override
-                    public ConnectionState call() throws Exception {
-                        return doReadHTTPInitialInternal(requestPair.getValue(), requestPair.getKey());
-                    }
-                });
-            }
-            List<java.util.concurrent.Future<ConnectionState>> results = oneToManyThreadPool.invokeAll(oneToManyTasks);
-            boolean success = true;
-            for (java.util.concurrent.Future<ConnectionState> state : results) {
-                if (state.get() == DISCONNECT_REQUESTED) {
-                    success = false;
-                    break;
-                }
-            }
-            if (success) {
-                return AWAITING_INITIAL;
+            if (splitRequests.size() == 1) {
+                return doReadHTTPInitialInternal(splitRequests.get(0).getValue(), splitRequests.get(0).getKey());
             } else {
-                LOG.error("One to Many request,there is one server can not connection,request is :" + splitRequests);
-                writeBadGateway(httpRequest);
-                return DISCONNECT_REQUESTED;
+                List<Callable<ConnectionState>> oneToManyTasks = Lists.newArrayList();
+                for (Pair<String, HttpRequest> requestPair : splitRequests) {
+                    if (StringUtils.isBlank(requestPair.getKey())) {
+                        continue;
+                    }
+                    oneToManyTasks.add(new Callable<ConnectionState>() {
+                        @Override
+                        public ConnectionState call() throws Exception {
+                            return doReadHTTPInitialInternal(requestPair.getValue(), requestPair.getKey());
+                        }
+                    });
+                }
+                List<java.util.concurrent.Future<ConnectionState>> results =
+                    oneToManyThreadPool.invokeAll(oneToManyTasks);
+                boolean success = true;
+                for (java.util.concurrent.Future<ConnectionState> state : results) {
+                    if (state.get() == DISCONNECT_REQUESTED) {
+                        success = false;
+                        break;
+                    }
+                }
+                if (success) {
+                    return AWAITING_INITIAL;
+                } else {
+                    LOG.error(
+                        "One to Many request,there is one server can not connection,request is :" + splitRequests);
+                    writeBadGateway(httpRequest);
+                    return DISCONNECT_REQUESTED;
+                }
             }
         } catch (Throwable e) {
             return DISCONNECT_REQUESTED;
