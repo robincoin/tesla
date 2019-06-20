@@ -224,8 +224,14 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
         writeToChannel(buf);
     }
 
-    public ChannelFuture writeToChannel(final Object msg) {
-        return channel.writeAndFlush(msg);
+    public Future<?> writeToChannel(final Object msg) {
+        return channel.eventLoop().submit(new Runnable() {
+
+            @Override
+            public void run() {
+                channel.writeAndFlush(msg);
+            }
+        });
     }
 
     /***************************************************************************
@@ -334,7 +340,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
             return null;
         } else {
             final Promise<Void> promise = channel.newPromise();
-            writeToChannel(Unpooled.EMPTY_BUFFER).addListener(new GenericFutureListener<Future<? super Void>>() {
+            channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(new GenericFutureListener<Future<? super Void>>() {
                 @Override
                 public void operationComplete(Future<? super Void> future) throws Exception {
                     closeChannel(promise);
@@ -352,9 +358,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
                 } else {
                     promise.setFailure(future.cause());
                 }
-            }
-
-            ;
+            };
         });
     }
 
