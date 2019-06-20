@@ -44,9 +44,19 @@ import io.github.tesla.gateway.netty.router.GrpcRouting;
 import io.github.tesla.gateway.netty.router.SpringCloudRouting;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.*;
+import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
-
 
 public class HttpFiltersAdapter {
     private static Logger logger = LoggerFactory.getLogger(HttpFiltersAdapter.class);
@@ -173,19 +183,22 @@ public class HttpFiltersAdapter {
 
     }
 
-    public void proxyToServerConnectionFailed() {
-    }
+    public void proxyToServerConnectionFailed() {}
 
-    public void proxyToServerConnectionQueued() {
-    }
+    public void proxyToServerConnectionQueued() {}
 
-    public void proxyToServerConnectionSSLHandshakeStarted() {
-    }
+    public void proxyToServerConnectionSSLHandshakeStarted() {}
 
-    public void proxyToServerConnectionStarted() {
-    }
+    public void proxyToServerConnectionStarted() {}
 
     public void proxyToServerConnectionSucceeded(ChannelHandlerContext serverCtx) {
+        ChannelPipeline pipeline = serverCtx.pipeline();
+        if (pipeline.get("inflater") != null) {
+            pipeline.remove("inflater");
+        }
+        if (pipeline.get("aggregator") != null) {
+            pipeline.remove("aggregator");
+        }
     }
 
     public HttpResponse proxyToServerRequest(HttpObject httpObject) {
@@ -193,8 +206,7 @@ public class HttpFiltersAdapter {
         return null;
     }
 
-    public void proxyToServerResolutionFailed(String hostAndPort) {
-    }
+    public void proxyToServerResolutionFailed(String hostAndPort) {}
 
     public InetSocketAddress proxyToServerResolutionStarted(String resolvingServerHostAndPort) {
         return null;
@@ -210,14 +222,11 @@ public class HttpFiltersAdapter {
         return httpObject;
     }
 
-    public void serverToProxyResponseReceived() {
-    }
+    public void serverToProxyResponseReceived() {}
 
-    public void serverToProxyResponseReceiving() {
-    }
+    public void serverToProxyResponseReceiving() {}
 
-    public void serverToProxyResponseTimedOut() {
-    }
+    public void serverToProxyResponseTimedOut() {}
 
     /**
      * help method
