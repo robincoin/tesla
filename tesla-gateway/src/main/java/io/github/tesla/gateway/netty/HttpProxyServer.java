@@ -174,9 +174,7 @@ public class HttpProxyServer {
             @Override
             protected void initChannel(Channel ch) throws Exception {
                 new ClientToProxyConnection(HttpProxyServer.this, ch.pipeline(), globalTrafficShapingHandler);
-            }
-
-            ;
+            };
         };
         serverBootstrap.channelFactory(new ChannelFactory<ServerChannel>() {
 
@@ -206,7 +204,6 @@ public class HttpProxyServer {
 
         this.boundAddress = ((InetSocketAddress)future.channel().localAddress());
         LOG.info("Tesla Proxy started at address: " + this.boundAddress);
-
         Runtime.getRuntime().addShutdownHook(jvmShutdownHook);
     }
 

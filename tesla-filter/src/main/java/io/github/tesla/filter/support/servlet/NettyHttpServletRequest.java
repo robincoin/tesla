@@ -57,7 +57,6 @@ import io.netty.handler.ssl.SslHandler;
 
 @SuppressWarnings("deprecation")
 public class NettyHttpServletRequest implements HttpServletRequest {
-    public static final String TRACING_SPAN_KEY = "tracing_span";
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     private final FullHttpRequest request;
     private final Map<String, Object> attributes = new HashMap<String, Object>();

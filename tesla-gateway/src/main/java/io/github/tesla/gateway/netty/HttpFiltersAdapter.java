@@ -61,9 +61,9 @@ import io.netty.util.CharsetUtil;
 public class HttpFiltersAdapter {
     private static Logger logger = LoggerFactory.getLogger(HttpFiltersAdapter.class);
 
-    private final NettyHttpServletRequest serveletRequest;
-
     private final ChannelHandlerContext ctx;
+
+    private NettyHttpServletRequest serveletRequest;
 
     private long forwardTime = 0L;
 
@@ -172,15 +172,19 @@ public class HttpFiltersAdapter {
     }
 
     public HttpObject proxyToClientResponse(HttpObject httpObject) {
-        if (httpObject instanceof HttpResponse) {
-            HttpResponse serverResponse = (HttpResponse)httpObject;
-            HttpResponse response = HttpResponseFilterChain.doFilter(serveletRequest, serverResponse, ctx);
-            this.logEnd(serverResponse);
-            return response;
-        } else {
-            return httpObject;
+        try {
+            if (httpObject instanceof HttpResponse) {
+                HttpResponse serverResponse = (HttpResponse)httpObject;
+                HttpResponse response = HttpResponseFilterChain.doFilter(serveletRequest, serverResponse, ctx);
+                this.logEnd(serverResponse);
+                return response;
+            } else {
+                return httpObject;
+            }
+        } finally {
+            // clear servletrequest
+            this.serveletRequest = null;
         }
-
     }
 
     public void proxyToServerConnectionFailed() {}
