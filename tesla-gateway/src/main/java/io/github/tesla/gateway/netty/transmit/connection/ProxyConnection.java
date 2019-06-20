@@ -51,7 +51,8 @@ import io.netty.util.concurrent.Promise;
  * method. Reading can be stopped and resumed using {@link #stopReading()} and {@link #resumeReading()}.
  * </p>
  *
- * @param <I> the type of "initial" message. This will be either {@link HttpResponse} or {@link HttpRequest}.
+ * @param <I>
+ *            the type of "initial" message. This will be either {@link HttpResponse} or {@link HttpRequest}.
  */
 public abstract class ProxyConnection<I extends HttpObject> extends SimpleChannelInboundHandler<Object> {
     public final ProxyConnectionLogger LOG = new ProxyConnectionLogger(this);
@@ -66,10 +67,12 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
     /**
      * Construct a new ProxyConnection.
      *
-     * @param initialState the state in which this connection starts out
-     * @param proxyServer the {@link HttpProxyServer} in which we're running
-     * @param runsAsSslClient determines whether this connection acts as an SSL client or server (determines who does
-     *        the handshake)
+     * @param initialState
+     *            the state in which this connection starts out
+     * @param proxyServer
+     *            the {@link HttpProxyServer} in which we're running
+     * @param runsAsSslClient
+     *            determines whether this connection acts as an SSL client or server (determines who does the handshake)
      */
     public ProxyConnection(ConnectionState initialState, HttpProxyServer proxyServer) {
         become(initialState);
@@ -316,8 +319,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
      *
      * @param cause
      */
-    public void exceptionCaught(Throwable cause) {
-    }
+    public void exceptionCaught(Throwable cause) {}
 
     /***************************************************************************
      * State/Management
@@ -423,7 +425,8 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
      * By default, no-op filters are returned by DefaultHttpProxyServer. Subclasses of ProxyConnection can change this
      * behaviour.
      *
-     * @param httpRequest Filter attached to the give HttpRequest (if any)
+     * @param httpRequest
+     *            Filter attached to the give HttpRequest (if any)
      * @return
      */
     public HttpFiltersAdapter getHttpFiltersFromProxyServer(HttpRequest httpRequest) {
