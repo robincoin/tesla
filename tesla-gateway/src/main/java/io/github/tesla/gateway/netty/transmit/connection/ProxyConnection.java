@@ -287,6 +287,12 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
                 if (pipeline.get("decoder") != null) {
                     pipeline.remove("decoder");
                 }
+                if (pipeline.get("inflater") != null) {
+                    pipeline.remove("inflater");
+                }
+                if (pipeline.get("aggregator") != null) {
+                    pipeline.remove("aggregator");
+                }
                 tunneling = true;
                 return channel.newSucceededFuture();
             } catch (Throwable t) {
