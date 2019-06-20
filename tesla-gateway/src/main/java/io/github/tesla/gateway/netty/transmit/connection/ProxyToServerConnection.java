@@ -184,6 +184,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
             HttpUtil.setKeepAlive(substituteResponse, false);
             httpResponse = substituteResponse;
         }
+        HttpFiltersAdapter currentFilters = this.currentFilters;
         currentFilters.serverToProxyResponseReceiving();
         rememberCurrentResponse(httpResponse);
         respondWith(httpResponse);
@@ -308,6 +309,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
      **************************************************************************/
     @Override
     public void become(ConnectionState newState) {
+        HttpFiltersAdapter currentFilters = this.currentFilters;
         if (getCurrentState() == DISCONNECTED && newState == CONNECTING) {
             currentFilters.proxyToServerConnectionStarted();
         } else if (getCurrentState() == CONNECTING) {
@@ -499,7 +501,8 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
     }
 
     private void setupConnectionParameters() throws UnknownHostException {
-        this.remoteAddress = this.currentFilters.proxyToServerResolutionStarted(serverHostAndPort);
+        HttpFiltersAdapter currentFilters = this.currentFilters;
+        this.remoteAddress = currentFilters.proxyToServerResolutionStarted(serverHostAndPort);
         String hostAndPort = null;
         try {
             if (this.remoteAddress == null) {
