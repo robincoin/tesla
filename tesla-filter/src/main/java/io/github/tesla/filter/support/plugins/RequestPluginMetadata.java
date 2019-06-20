@@ -25,12 +25,12 @@ public class RequestPluginMetadata extends FilterMetadata {
         this.filterClass = filterClass;
     }
 
-    public <T> T getInstance() throws Exception {
-        return (T)INSTANCE_CACHE.get(filterClass.getName(), new Callable<Object>() {
+    public <T extends AbstractRequestPlugin> T getInstance() throws Exception {
+        return (T)INSTANCE_CACHE.get(filterClass.getName(), new Callable<T>() {
 
             @Override
-            public Object call() throws Exception {
-                return getFilterClass().getDeclaredConstructor().newInstance();
+            public T call() throws Exception {
+                return (T)getFilterClass().getDeclaredConstructor().newInstance();
             }
         });
 
