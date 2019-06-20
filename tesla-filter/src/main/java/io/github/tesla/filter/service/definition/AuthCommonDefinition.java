@@ -5,7 +5,6 @@ import io.github.tesla.filter.support.enums.AuthTypeEnum;
 import io.github.tesla.filter.support.enums.YesOrNoEnum;
 import io.github.tesla.filter.utils.JsonUtils;
 
-
 public class AuthCommonDefinition extends PluginDefinition {
 
     private String authType;

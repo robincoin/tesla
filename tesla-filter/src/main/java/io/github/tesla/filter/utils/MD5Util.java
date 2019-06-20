@@ -27,7 +27,8 @@ public class MD5Util {
     /**
      * MD5加密(文件) 可用于文件校验。
      *
-     * @param file 加密文件
+     * @param file
+     *            加密文件
      * @return md5 数值
      */
     public static String md5(File file) {
@@ -57,7 +58,8 @@ public class MD5Util {
     /**
      * MD5加密 32位小
      *
-     * @param string 加密字符串
+     * @param string
+     *            加密字符串
      * @return 加密结果字符串
      * @see #md5(String, String)
      */
@@ -68,8 +70,10 @@ public class MD5Util {
     /**
      * MD5加密(多次)
      *
-     * @param string 加密字符串
-     * @param times 重复加密次数
+     * @param string
+     *            加密字符串
+     * @param times
+     *            重复加密次数
      * @return 加密结果字符串
      */
     public static String md5(String string, int times) {
@@ -85,8 +89,10 @@ public class MD5Util {
     /**
      * MD5加密(加盐) 32位小
      *
-     * @param string 加密字符串
-     * @param slat 加密盐值key
+     * @param string
+     *            加密字符串
+     * @param slat
+     *            加密盐值key
      * @return 加密结果字符串
      */
     public static String md5(String string, String slat) {

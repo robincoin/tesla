@@ -22,8 +22,7 @@ public class CacheRefreshAspect {
     private Logger logger = LoggerFactory.getLogger(CacheRefreshAspect.class);
 
     @Pointcut("execution(public * io.github.tesla.common.dao.*.*(..)) && !execution( * io.github.tesla.common.dao.GatewayCacheRefreshMapper.*(..))  ")
-    public void cacheRefreshCut() {
-    }
+    public void cacheRefreshCut() {}
 
     @Autowired
     private GatewayCacheRefreshMapper cacheRefreshMapper;

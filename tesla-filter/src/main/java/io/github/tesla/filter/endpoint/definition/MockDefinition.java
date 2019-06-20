@@ -9,7 +9,6 @@ import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.utils.JsonUtils;
 
-
 public class MockDefinition extends PluginDefinition {
 
     // Y-一直启用 N-禁用

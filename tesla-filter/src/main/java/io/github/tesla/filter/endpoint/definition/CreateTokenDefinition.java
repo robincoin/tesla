@@ -6,7 +6,6 @@ import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.support.enums.CreateTokenTypeEnum;
 import io.github.tesla.filter.utils.JsonUtils;
 
-
 public class CreateTokenDefinition extends PluginDefinition {
 
     private String tokenType;

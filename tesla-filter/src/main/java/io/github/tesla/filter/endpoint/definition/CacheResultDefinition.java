@@ -7,7 +7,6 @@ import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.utils.JsonUtils;
 
-
 public class CacheResultDefinition extends PluginDefinition {
 
     // 缓存失效时间，单位秒 <=0时 缓存不失效

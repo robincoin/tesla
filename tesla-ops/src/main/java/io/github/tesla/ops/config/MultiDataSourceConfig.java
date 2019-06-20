@@ -84,7 +84,8 @@ public class MultiDataSourceConfig {
         });
         multiDataSourceSwitcher.setTargetDataSources(multiDataSources);
         multiDataSourceSwitcher.setMultiDataSourceNames(multiDataSourceShowNames);
-        multiDataSourceSwitcher.setDefaultTargetDataSource(multiDataSources.getOrDefault("default", multiDataSources.values().toArray()[0]));
+        multiDataSourceSwitcher.setDefaultTargetDataSource(
+            multiDataSources.getOrDefault("default", multiDataSources.values().toArray()[0]));
     }
 
     private void rewriteDruidDataSourceProperties(DataSourceProperties properties) {

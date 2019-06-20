@@ -56,8 +56,7 @@ public final class ClassUtils {
     private static String basePack = "io/github/tesla/filter/plugin";
     private static String ignorePackageReg = "io/github/tesla/filter/plugin/(request|response)/myapp/.*";
 
-    private ClassUtils() {
-    }
+    private ClassUtils() {}
 
     public static void cleanCacheBean() {
         USER_RULE_JAR_FILTER_CACHE.clear();
@@ -108,7 +107,8 @@ public final class ClassUtils {
      * 功能描述:
      *
      * @parmname: getFilterObject
-     * @param: [filterJarFile jarFile subClassName, 需要寻找的类的实例的父类 basePack, 需要寻找的类的所在包 ignorePackageReg：要过滤掉的包的正则表达式]
+     * @param: [filterJarFile
+     *             jarFile subClassName, 需要寻找的类的实例的父类 basePack, 需要寻找的类的所在包 ignorePackageReg：要过滤掉的包的正则表达式]
      * @return: T
      * @auther: zhipingzhang
      * @date: 2018/11/2 11:49

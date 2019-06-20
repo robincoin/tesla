@@ -8,7 +8,6 @@ import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.support.enums.YesOrNoEnum;
 import io.github.tesla.filter.utils.JsonUtils;
 
-
 public class JWTTokenDefinition extends PluginDefinition {
 
     private String issuer;

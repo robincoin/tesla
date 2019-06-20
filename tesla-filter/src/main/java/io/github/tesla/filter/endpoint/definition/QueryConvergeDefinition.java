@@ -26,7 +26,6 @@ import io.github.tesla.filter.utils.AntMatchUtil;
 import io.github.tesla.filter.utils.JsonUtils;
 import io.github.tesla.filter.utils.ProxyUtils;
 
-
 public class QueryConvergeDefinition extends PluginDefinition {
 
     private List<QueryConvergeRouter> routerList;

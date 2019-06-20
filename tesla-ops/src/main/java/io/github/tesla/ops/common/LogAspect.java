@@ -38,8 +38,7 @@ public class LogAspect {
     }
 
     @Pointcut("@annotation(io.github.tesla.ops.common.Log)")
-    public void logPointCut() {
-    }
+    public void logPointCut() {}
 
     private void saveLog(ProceedingJoinPoint joinPoint, long time) {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();

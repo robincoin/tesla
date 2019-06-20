@@ -29,8 +29,10 @@ public class ByteArrayClassLoader extends ClassLoader {
     /**
      * Adds a class from byte array.
      * 
-     * @param name the class name
-     * @param data the class file as byte array
+     * @param name
+     *            the class name
+     * @param data
+     *            the class file as byte array
      * @return the class that has been added
      */
     public Class<?> addClass(String name, byte[] data) {

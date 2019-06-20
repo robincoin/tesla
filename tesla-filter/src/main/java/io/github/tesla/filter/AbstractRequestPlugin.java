@@ -21,7 +21,6 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-
 public abstract class AbstractRequestPlugin extends AbstractPlugin {
 
     protected HttpResponse createResponse(HttpResponseStatus httpResponseStatus, HttpRequest originalRequest) {

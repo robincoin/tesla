@@ -9,7 +9,6 @@ import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.utils.JsonUtils;
 
-
 public class PathTransformDefinition extends PluginDefinition {
 
     private String patternPath;

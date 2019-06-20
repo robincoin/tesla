@@ -10,7 +10,6 @@ import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.utils.JsonUtils;
 import io.github.tesla.filter.utils.SnowflakeIdWorker;
 
-
 public class GRpcRoutingDefinition extends PluginDefinition {
 
     private String serviceName;

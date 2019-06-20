@@ -6,7 +6,6 @@ import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.support.enums.RouteTypeEnum;
 import io.github.tesla.filter.utils.JsonUtils;
 
-
 public class RpcRoutingDefinition extends PluginDefinition {
 
     private String rpcType;

@@ -28,7 +28,8 @@ public class GroovyExecuteResponsePlugin extends AbstractResponsePlugin {
     /**
      * @desc: 脚本的代码需要继承 GroovyExecuteResponsePlugin 并实现下面的方法
      * @method: doFilter
-     * @param: [servletRequest, realHttpObject]
+     * @param: [servletRequest,
+     *             realHttpObject]
      * @return: io.netty.handler.codec.http.HttpResponse
      * @auther: zhipingzhang
      * @date: 2018/11/29 17:05
