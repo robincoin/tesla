@@ -1074,7 +1074,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
     private boolean respondWithShortCircuitResponse(HttpResponse httpResponse) {
         this.currentRequest = null;
         // if HttpRequest decode fail,Do not proxy filter
-        if (currentFilters != null) {
+        if (this.currentFilters != null) {
             HttpFiltersAdapter currentFilters = this.currentFilters;
             HttpResponse filteredResponse = (HttpResponse)currentFilters.proxyToClientResponse(httpResponse);
             if (filteredResponse == null) {
