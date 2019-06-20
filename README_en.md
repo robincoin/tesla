@@ -14,6 +14,7 @@ tesla is fully integrated with "summerframework".  It supports "API sharding" ac
 * Supports Dubbo RPC endpoints，convert HTTP requests to Dubbo service calls.
 * Supports routing based-on SpringCloud service discovery, as well as direct service URLs.
 * Supports Rate Limiting、Oauth2 authentication、Jwt authenticatio, Access Key authentication，IP blacklist, Cookie blacklist、URL blacklist，User-Agent filtering, and various other plugins
+* Support circuitbreaker and fallback by resilience4j
 * Supports API monitoring, integrated with micrometer to export API metrics to influxDB and grafana UI.
 * Supports dynamic API routing rules
 * Supports service parameter manipulation and URL rewrite
