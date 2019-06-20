@@ -1,18 +1,19 @@
 package io.github.tesla.filter.support.plugins;
 
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import io.github.tesla.filter.AbstractRequestPlugin;
 import io.github.tesla.filter.support.annnotation.WafRequestPlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
 public class WafRequestPluginMetadata extends RequestPluginMetadata {
 
-    WafRequestPluginMetadata(Class clz) {
+    private static final long serialVersionUID = 1L;
+
+    WafRequestPluginMetadata(Class<? extends AbstractRequestPlugin> clz) {
         WafRequestPlugin annotation = AnnotationUtils.findAnnotation(clz, WafRequestPlugin.class);
         this.filterType = annotation.filterType();
         this.filterName = annotation.filterName();
@@ -22,22 +23,13 @@ public class WafRequestPluginMetadata extends RequestPluginMetadata {
         this.definitionClazz = annotation.definitionClazz();
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static WafRequestPluginMetadata getMetadataByType(String filterType) {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, WafRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafRequestPlugin.class).filterType())) {
-                try {
-                    return (WafRequestPluginMetadata)META_CACHE.get(clz.getName(),
-                        new Callable<WafRequestPluginMetadata>() {
-
-                            @Override
-                            public WafRequestPluginMetadata call() throws Exception {
-                                return new WafRequestPluginMetadata(clz);
-                            }
-                        });
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                return (WafRequestPluginMetadata)META_CACHE.putIfAbsent(clz.getName(),
+                    new WafRequestPluginMetadata(clz));
             }
         }
         return null;

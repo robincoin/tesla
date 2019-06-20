@@ -1,19 +1,20 @@
 package io.github.tesla.filter.support.plugins;
 
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import io.github.tesla.common.dto.ServiceDTO;
+import io.github.tesla.filter.AbstractResponsePlugin;
 import io.github.tesla.filter.support.annnotation.ServiceResponsePlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
 public class ServiceResponsePluginMetadata extends ResponsePluginMetadata {
 
-    ServiceResponsePluginMetadata(Class clz) {
+    private static final long serialVersionUID = 1L;
+
+    ServiceResponsePluginMetadata(Class<? extends AbstractResponsePlugin> clz) {
         ServiceResponsePlugin annotation = AnnotationUtils.findAnnotation(clz, ServiceResponsePlugin.class);
         this.filterType = annotation.filterType();
         this.filterName = annotation.filterName();
@@ -23,6 +24,7 @@ public class ServiceResponsePluginMetadata extends ResponsePluginMetadata {
         this.definitionClazz = annotation.definitionClazz();
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static ServiceResponsePluginMetadata getMetadataByType(String filterType) {
         if (StringUtils.isBlank(filterType)) {
             return null;
@@ -30,18 +32,8 @@ public class ServiceResponsePluginMetadata extends ResponsePluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, ServiceResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceResponsePlugin.class).filterType())) {
-                try {
-                    return (ServiceResponsePluginMetadata)META_CACHE.get(clz,
-                        new Callable<ServiceResponsePluginMetadata>() {
-
-                            @Override
-                            public ServiceResponsePluginMetadata call() throws Exception {
-                                return new ServiceResponsePluginMetadata(clz);
-                            }
-                        });
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                return (ServiceResponsePluginMetadata)META_CACHE.putIfAbsent(clz.getName(),
+                    new ServiceResponsePluginMetadata(clz));
             }
         }
         return null;

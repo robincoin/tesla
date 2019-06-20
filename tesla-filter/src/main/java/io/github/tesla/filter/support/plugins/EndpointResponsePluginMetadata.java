@@ -1,20 +1,21 @@
 package io.github.tesla.filter.support.plugins;
 
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import io.github.tesla.common.dto.EndpointDTO;
 import io.github.tesla.common.dto.ServiceDTO;
+import io.github.tesla.filter.AbstractResponsePlugin;
 import io.github.tesla.filter.support.annnotation.EndpointResponsePlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
 public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
 
-    EndpointResponsePluginMetadata(Class clz) {
+    private static final long serialVersionUID = 1L;
+
+    EndpointResponsePluginMetadata(Class<? extends AbstractResponsePlugin> clz) {
         EndpointResponsePlugin annotation = AnnotationUtils.findAnnotation(clz, EndpointResponsePlugin.class);
         this.filterType = annotation.filterType();
         this.filterName = annotation.filterName();
@@ -24,6 +25,7 @@ public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
         this.definitionClazz = annotation.definitionClazz();
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static EndpointResponsePluginMetadata getMetadataByType(String filterType) {
         if (StringUtils.isBlank(filterType)) {
             return null;
@@ -31,18 +33,8 @@ public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, EndpointResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, EndpointResponsePlugin.class).filterType())) {
-                try {
-                    return (EndpointResponsePluginMetadata)META_CACHE.get(clz,
-                        new Callable<EndpointResponsePluginMetadata>() {
-
-                            @Override
-                            public EndpointResponsePluginMetadata call() throws Exception {
-                                return new EndpointResponsePluginMetadata(clz);
-                            }
-                        });
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                return (EndpointResponsePluginMetadata)META_CACHE.putIfAbsent(clz.getName(),
+                    new EndpointResponsePluginMetadata(clz));
             }
         }
         return null;

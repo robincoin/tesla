@@ -1,18 +1,19 @@
 package io.github.tesla.filter.support.plugins;
 
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import io.github.tesla.filter.AbstractResponsePlugin;
 import io.github.tesla.filter.support.annnotation.WafResponsePlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
 public class WafResponsePluginMetadata extends ResponsePluginMetadata {
 
-    WafResponsePluginMetadata(Class clz) {
+    private static final long serialVersionUID = 1L;
+
+    WafResponsePluginMetadata(Class<? extends AbstractResponsePlugin> clz) {
         WafResponsePlugin annotation = AnnotationUtils.findAnnotation(clz, WafResponsePlugin.class);
         this.filterType = annotation.filterType();
         this.filterName = annotation.filterName();
@@ -22,21 +23,13 @@ public class WafResponsePluginMetadata extends ResponsePluginMetadata {
         this.definitionClazz = annotation.definitionClazz();
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static WafResponsePluginMetadata getMetadataByType(String filterType) {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, WafResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafResponsePlugin.class).filterType())) {
-                try {
-                    return (WafResponsePluginMetadata)META_CACHE.get(clz, new Callable<WafResponsePluginMetadata>() {
-
-                        @Override
-                        public WafResponsePluginMetadata call() throws Exception {
-                            return new WafResponsePluginMetadata(clz);
-                        }
-                    });
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                return (WafResponsePluginMetadata)META_CACHE.putIfAbsent(clz.getName(),
+                    new WafResponsePluginMetadata(clz));
             }
         }
         return null;
