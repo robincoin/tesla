@@ -27,8 +27,7 @@ public class ResponsePluginMetadata extends FilterMetadata {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <T extends ResponsePluginMetadata> T getInstance() throws Exception {
-
+    public <T extends AbstractResponsePlugin> T getInstance() throws Exception {
         return (T)RESPONSEPLUGIN_INSTANCE_CACHE.putIfAbsent(getFilterClass().getName(),
             getFilterClass().getDeclaredConstructor().newInstance());
     }
