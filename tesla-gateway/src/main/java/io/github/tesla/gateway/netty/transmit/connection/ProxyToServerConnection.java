@@ -421,7 +421,8 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
     /**
      * Configures the connection to the upstream server and begins the {@link ConnectionFlow}.
      *
-     * @param initialRequest the current HTTP request being handled
+     * @param initialRequest
+     *            the current HTTP request being handled
      */
     private void connectAndWrite(HttpRequest initialRequest) {
         LOG.debug("Starting new connection to: {}", remoteAddress);
