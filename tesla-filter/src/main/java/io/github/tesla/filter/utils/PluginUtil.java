@@ -44,19 +44,6 @@ public class PluginUtil {
         }
     }
 
-    public static HttpResponse createResponse(HttpResponseStatus httpResponseStatus, byte[] content) {
-        HttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, httpResponseStatus);
-        HttpHeaders httpHeaders = new DefaultHttpHeaders();
-        if (content != null) {
-            httpHeaders.set(HttpHeaderNames.CONTENT_LENGTH, content.length);
-            ((DefaultFullHttpResponse)httpResponse).content().writeBytes(content);
-        } else {
-            httpHeaders.set(HttpHeaderNames.CONTENT_LENGTH, HttpHeaderValues.ZERO);
-        }
-        httpResponse.headers().add(httpHeaders);
-        return httpResponse;
-    }
-
     public static HttpResponse createResponse(HttpResponseStatus httpResponseStatus, HttpRequest originalRequest,
         byte[] reason) {
         HttpHeaders httpHeaders = new DefaultHttpHeaders();

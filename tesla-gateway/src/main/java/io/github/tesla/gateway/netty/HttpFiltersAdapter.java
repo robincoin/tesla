@@ -56,7 +56,6 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
-import io.netty.util.CharsetUtil;
 
 public class HttpFiltersAdapter {
     private static Logger logger = LoggerFactory.getLogger(HttpFiltersAdapter.class);
@@ -273,18 +272,18 @@ public class HttpFiltersAdapter {
         try {
             for (Pair<String, String> responseBody : httpResponses) {
                 if (StringUtils.isNotBlank(responseBody.getRight()) && !JsonUtils.isJson(responseBody.getRight())) {
-                    return PluginUtil.createResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                        String.format("responseBody:%s is not json ", responseBody).getBytes(CharsetUtil.UTF_8));
+                    return ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1,
+                        HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                        String.format("responseBody:%s is not json ", responseBody));
                 }
             }
-            HttpResponse httpResponse = PluginUtil.createResponse(HttpResponseStatus.OK,
-                JsonUtils.convergeJson(httpResponses).getBytes(CharsetUtil.UTF_8));
-            httpResponse.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/json;charset=UTF-8");
+            HttpResponse httpResponse = ProxyUtils.createJsonFullHttpResponse(HttpVersion.HTTP_1_1,
+                HttpResponseStatus.OK, JsonUtils.convergeJson(httpResponses));
             return httpResponse;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            HttpResponse httpResponse = PluginUtil.createResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                e.getMessage().getBytes(CharsetUtil.UTF_8));
+            HttpResponse httpResponse = ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1,
+                HttpResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             return httpResponse;
         }
     }

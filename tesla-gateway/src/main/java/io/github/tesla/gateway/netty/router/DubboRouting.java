@@ -5,12 +5,13 @@ import io.github.tesla.filter.endpoint.definition.DubboRpcRoutingDefinition;
 import io.github.tesla.filter.support.servlet.NettyHttpServletRequest;
 import io.github.tesla.filter.utils.JsonUtils;
 import io.github.tesla.filter.utils.PluginUtil;
+import io.github.tesla.filter.utils.ProxyUtils;
 import io.github.tesla.gateway.protocol.dubbo.DynamicDubboClient;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
-import io.netty.util.CharsetUtil;
+import io.netty.handler.codec.http.HttpVersion;
 
 public class DubboRouting {
 
@@ -26,7 +27,7 @@ public class DubboRouting {
             String jsonOutput =
                 SpringContextHolder.getBean(DynamicDubboClient.class).doRpcRemoteCall(definition, servletRequest);
             HttpResponse response =
-                PluginUtil.createResponse(HttpResponseStatus.OK, jsonOutput.getBytes(CharsetUtil.UTF_8));
+                ProxyUtils.createJsonFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, jsonOutput);
             HttpUtil.setKeepAlive(response, false);
             return response;
         } else {
