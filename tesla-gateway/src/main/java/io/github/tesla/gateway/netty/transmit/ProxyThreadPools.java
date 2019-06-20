@@ -27,6 +27,7 @@ public class ProxyThreadPools {
 
         proxyToServerWorkerPool = new NioEventLoopGroup(outgoingWorkerThreads,
             new CategorizedThreadFactory(serverGroupName, "ProxyToServerWorker", serverGroupId), selectorProvider);
+
         proxyToServerWorkerPool.setIoRatio(90);
     }
 
