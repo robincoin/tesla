@@ -47,6 +47,18 @@ public class SpringCloudDiscovery {
         this.gateWayPort = gateWayPort;
     }
 
+    public OkHttpClient getOkHttpClient() {
+        return okHttpClient;
+    }
+
+    public DiscoveryClientWrapper getDiscoveryClientWrapper() {
+        return discoveryClientWrapper;
+    }
+
+    public int getGateWayPort() {
+        return gateWayPort;
+    }
+
     private String buildUrl(String path, String httpHost, int port) {
         final String url;
         if (HTTP_PREFIX.matcher(path).matches()) {
