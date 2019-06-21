@@ -10,6 +10,7 @@
                 <option value="open" data-authtmpl="openTmpl">开放</option>
                 <option value="standardOauth" data-authtmpl="standardOauthTmpl">标准-OAUTH2</option>
                 <option value="jwt" data-authtmpl="jwtTmpl">JWT</option>
+                <option value="jar" data-authtmpl="jarTmpl">自定义鉴权(上传Jar包)</option>
             </select>
         </div>
     </div>
@@ -114,13 +115,14 @@
 </script>
 
 <script type="text/x-handlebars-template" id="jarTmpl">
-    <div class="form-group">
-        <label class="col-sm-3 control-label">tokenHeader</label>
+     <div class="form-group">
+        <label class="col-sm-3 control-label">上传jar包</label>
+        <input type="hidden" name="fileId">
         <div class="col-sm-6">
-            <input name="tokenHeaderKey" class="form-control" placeholder="从哪个header中取token" type="text">
+            <input type="file" name="jarFile" class="form-control" accept=".jar">
+            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 请上传对于规则jar包，具体打包项目请参考tesla-jarfilter项目 </span>
         </div>
-        <span class="require_tip">*</span>
-    </div>
+     </div>
 </script>
 
 <script>
