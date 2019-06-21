@@ -146,7 +146,7 @@
                 if(jarFile.size()==1){
                    jarFile.prettyFile();
                    jarFile.change(function () {
-                     var jarName = "service:request:"+jarFile.val();
+                     var jarName = "service:::request:::"+jarFile.val();
                      divObj.find("input[name='fileId']").val(jarName);
                     });
                  }

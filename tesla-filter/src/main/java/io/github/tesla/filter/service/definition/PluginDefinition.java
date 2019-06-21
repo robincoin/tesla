@@ -11,7 +11,7 @@ public class PluginDefinition {
 
     public static final String fileTabEndPoint = "::";
 
-    public static final String fileTabService = ":";
+    public static final String fileTabService = ":::";
 
     public final static String CONVERGE_ATTR_KEY = "QueryConvergeAttr";
 
