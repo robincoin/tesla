@@ -95,10 +95,8 @@ public final class ClassUtils {
             ClassLoader loader = org.springframework.util.ClassUtils.getDefaultClassLoader();
             return org.springframework.util.ClassUtils.forName(className, loader);
         } catch (LinkageError | ClassNotFoundException e) {
-            log.error("Ignoring candidate class resource " + className + " due to " + e);
             return null;
         } catch (Throwable e) {
-            log.error("Unexpected failure when loading class resource " + className, e);
             return null;
         }
     }
@@ -199,11 +197,10 @@ public final class ClassUtils {
         String ignorePackageReg) throws IOException, ClassNotFoundException {
         HashMap<String, Class<?>> classes = classLoader.getClasses();
         // 存在集成关系的话，主要针对endpointPlugin
-        Class<?> subClazz = ClassUtils.getClass(className);
         for (Class<?> jarClass : classes.values()) {
             String jarClassName = jarClass.getName();
             // 首先精确判断
-            if (className.equals(className)) {
+            if (jarClassName.equals(className)) {
                 return jarClass;
             } else { // 其次再判断是否存在父子关系
                 jarClassName = jarClassName.replace(".", "/");
@@ -211,6 +208,7 @@ public final class ClassUtils {
                 if (StringUtils.isEmpty(ignorePackageReg) || Pattern.matches(ignorePackageReg, jarClassName)) {
                     continue;
                 }
+                Class<?> subClazz = ClassUtils.getClass(className);
                 // 这里我们需要过滤不是class文件和不在basePack包名下的类
                 if (jarClassName.startsWith(basePack)) {
                     if (subClazz.isAssignableFrom(jarClass)) {

@@ -50,6 +50,7 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 
 public class HttpFiltersAdapter {
@@ -78,6 +79,7 @@ public class HttpFiltersAdapter {
             }
         } catch (Throwable e) {
             httpResponse = ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY);
+            HttpUtil.setKeepAlive(httpResponse, false);
             logger.error("Client connectTo proxy request failed", e);
             return httpResponse;
         }
