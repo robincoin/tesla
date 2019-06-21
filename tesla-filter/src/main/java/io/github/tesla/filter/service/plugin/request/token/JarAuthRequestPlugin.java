@@ -1,8 +1,8 @@
-package io.github.tesla.filter.service.plugin.request;
+package io.github.tesla.filter.service.plugin.request.token;
 
-import io.github.tesla.filter.AbstractRequestPlugin;
-import io.github.tesla.filter.endpoint.definition.JarExecuteDefinition;
-import io.github.tesla.filter.support.annnotation.ServiceRequestPlugin;
+import io.github.tesla.filter.service.annotation.AuthType;
+import io.github.tesla.filter.service.definition.JarAuthDefinition;
+import io.github.tesla.filter.service.plugin.request.AuthRequestPlugin;
 import io.github.tesla.filter.support.servlet.NettyHttpServletRequest;
 import io.github.tesla.filter.utils.ClassUtils;
 import io.github.tesla.filter.utils.JsonUtils;
@@ -10,18 +10,17 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 
-@ServiceRequestPlugin(filterType = "JarExecuteRequestPlugin", definitionClazz = JarExecuteDefinition.class,
-    filterOrder = 6, filterName = "执行上传Jar包插件")
-public class JarExecuteRequestPlugin extends AbstractRequestPlugin {
+@AuthType(authType = "jarOauth", definitionClazz = JarAuthDefinition.class)
+public class JarAuthRequestPlugin extends AuthRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
         Object filterParam) {
-        JarExecuteDefinition definition = JsonUtils.json2Definition(filterParam, JarExecuteDefinition.class);
+        JarAuthDefinition definition = JsonUtils.json2Definition(filterParam, JarAuthDefinition.class);
         if (definition == null) {
             return null;
         }
-        JarExecuteRequestPlugin userFilter = ClassUtils.getUserJarFilterRule(JarExecuteRequestPlugin.class.getName(),
+        JarAuthRequestPlugin userFilter = ClassUtils.getUserJarFilterRule(JarAuthRequestPlugin.class.getName(),
             definition.getFileId(), getFileBytesByKey(definition.getFileId()));
         if (userFilter == null) {
             LOGGER.error(" request not found jar file ,fileId:" + definition.getFileId());

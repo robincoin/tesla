@@ -20,9 +20,6 @@
 <script type="text/x-handlebars-template" id="openTmpl">
 </script>
 
-<script type="text/x-handlebars-template" id="specialTmpl">
-</script>
-
 <script type="text/x-handlebars-template" id="oauthTmpl">
     <div class="form-group">
         <label class="col-sm-3 control-label">tokenHeader</label>
@@ -116,6 +113,15 @@
     </div>
 </script>
 
+<script type="text/x-handlebars-template" id="jarTmpl">
+    <div class="form-group">
+        <label class="col-sm-3 control-label">tokenHeader</label>
+        <div class="col-sm-6">
+            <input name="tokenHeaderKey" class="form-control" placeholder="从哪个header中取token" type="text">
+        </div>
+        <span class="require_tip">*</span>
+    </div>
+</script>
 
 <script>
     authConfig = {
