@@ -184,9 +184,7 @@ public class HttpProxyServer {
             }
         });
         serverBootstrap.childHandler(initializer);
-        serverBootstrap.childOption(ChannelOption.TCP_NODELAY, true)//
-            .option(ChannelOption.TCP_NODELAY, true)//
-            .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+        serverBootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
         ChannelFuture future = serverBootstrap.bind(requestedAddress).addListener(new ChannelFutureListener() {
 
             @Override

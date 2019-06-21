@@ -79,7 +79,6 @@ public class ByteArrayClassLoader extends ClassLoader {
                 return findSystemClass(className);
             } catch (Exception e) {
             }
-
         }
         if (result == null) {
             try {
