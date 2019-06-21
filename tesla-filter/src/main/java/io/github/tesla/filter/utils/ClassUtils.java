@@ -207,7 +207,6 @@ public final class ClassUtils {
             }
             // 这里我们需要过滤不是class文件和不在basePack包名下的类
             if (jarClassName.startsWith(basePack)) {
-
                 if (subClazz.isAssignableFrom(jarClass)) {
                     return jarClass;
                 }
