@@ -1,5 +1,6 @@
 package io.github.tesla.filter.service.plugin.request.token;
 
+import io.github.tesla.filter.endpoint.plugin.request.JarExecuteRequestPlugin;
 import io.github.tesla.filter.service.annotation.AuthType;
 import io.github.tesla.filter.service.definition.JarAuthDefinition;
 import io.github.tesla.filter.service.plugin.request.AuthRequestPlugin;
@@ -20,8 +21,9 @@ public class JarAuthRequestPlugin extends AuthRequestPlugin {
         if (definition == null) {
             return null;
         }
-        JarAuthRequestPlugin userFilter = ClassUtils.getUserJarFilterRule(JarAuthRequestPlugin.class.getName(),
-            definition.getFileId(), getFileBytesByKey(definition.getFileId()));
+        String className = definition.getClassName();
+        JarExecuteRequestPlugin userFilter = ClassUtils.getUserJarFilterRule(className, definition.getFileId(),
+            getFileBytesByKey(definition.getFileId()));
         if (userFilter == null) {
             LOGGER.error(" request not found jar file ,fileId:" + definition.getFileId());
             return null;
@@ -31,16 +33,4 @@ public class JarAuthRequestPlugin extends AuthRequestPlugin {
         return userResponse;
     }
 
-    /**
-     * @desc: 上传的Jar包执行类需实现该方法
-     * @method: doFilter
-     * @param: [servletRequest,
-     *             realHttpObject]
-     * @return: io.netty.handler.codec.http.HttpResponse
-     * @auther: zhipingzhang
-     * @date: 2018/11/29 14:36
-     */
-    public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpRequest realHttpRequest) {
-        return null;
-    }
 }

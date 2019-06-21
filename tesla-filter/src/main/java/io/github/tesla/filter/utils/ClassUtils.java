@@ -113,14 +113,14 @@ public final class ClassUtils {
      * @auther: zhipingzhang
      * @date: 2018/11/2 11:49
      */
-    public static <T> T getFilterObject(byte[] filterJarByte, String subClassName, String basePack,
+    public static <T> T getFilterObject(byte[] filterJarByte, String className, String basePack,
         String ignorePackageReg) {
 
         URL[] urls = new URL[] {};
         try {
             JarInputStream jarInputStream = new JarInputStream(new ByteArrayInputStream(filterJarByte));
             JarStreamClassLoader jarStreamClassLoader = new JarStreamClassLoader(jarInputStream);
-            Class<?> clazz = searchClass(jarStreamClassLoader, subClassName, "", basePack, ignorePackageReg);
+            Class<?> clazz = searchClass(jarStreamClassLoader, className, basePack, ignorePackageReg);
             if (clazz == null) {
                 return null;
             }
@@ -195,20 +195,27 @@ public final class ClassUtils {
         return resolver.getResources(pattern);
     }
 
-    private static Class searchClass(JarStreamClassLoader classLoader, String subClass, String jarFileName,
-        String basePack, String ignorePackageReg) throws IOException, ClassNotFoundException {
+    private static Class searchClass(JarStreamClassLoader classLoader, String className, String basePack,
+        String ignorePackageReg) throws IOException, ClassNotFoundException {
         HashMap<String, Class<?>> classes = classLoader.getClasses();
-        Class<?> subClazz = ClassUtils.getClass(subClass);
+        // 存在集成关系的话，主要针对endpointPlugin
+        Class<?> subClazz = ClassUtils.getClass(className);
         for (Class<?> jarClass : classes.values()) {
-            String jarClassName = jarClass.getName().replace(".", "/");
-            // 防止有demo存在，过滤掉
-            if (StringUtils.isEmpty(ignorePackageReg) || Pattern.matches(ignorePackageReg, jarClassName)) {
-                continue;
-            }
-            // 这里我们需要过滤不是class文件和不在basePack包名下的类
-            if (jarClassName.startsWith(basePack)) {
-                if (subClazz.isAssignableFrom(jarClass)) {
-                    return jarClass;
+            String jarClassName = jarClass.getName();
+            // 首先精确判断
+            if (className.equals(className)) {
+                return jarClass;
+            } else { // 其次再判断是否存在父子关系
+                jarClassName = jarClassName.replace(".", "/");
+                // 防止有demo存在，过滤掉
+                if (StringUtils.isEmpty(ignorePackageReg) || Pattern.matches(ignorePackageReg, jarClassName)) {
+                    continue;
+                }
+                // 这里我们需要过滤不是class文件和不在basePack包名下的类
+                if (jarClassName.startsWith(basePack)) {
+                    if (subClazz.isAssignableFrom(jarClass)) {
+                        return jarClass;
+                    }
                 }
             }
         }
