@@ -43,7 +43,6 @@ import io.github.tesla.gateway.netty.router.DubboRouting;
 import io.github.tesla.gateway.netty.router.GrpcRouting;
 import io.github.tesla.gateway.netty.router.SpringCloudRouting;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -170,15 +169,7 @@ public class HttpFiltersAdapter {
 
     public void proxyToServerConnectionStarted() {}
 
-    public void proxyToServerConnectionSucceeded(ChannelHandlerContext serverCtx) {
-        ChannelPipeline pipeline = serverCtx.pipeline();
-        if (pipeline.get("inflater") != null) {
-            pipeline.remove("inflater");
-        }
-        if (pipeline.get("aggregator") != null) {
-            pipeline.remove("aggregator");
-        }
-    }
+    public void proxyToServerConnectionSucceeded(ChannelHandlerContext serverCtx) {}
 
     public HttpResponse proxyToServerRequest(HttpObject httpObject) {
         this.logForward(httpObject);

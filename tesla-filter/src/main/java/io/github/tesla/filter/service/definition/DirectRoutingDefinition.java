@@ -65,7 +65,7 @@ public class DirectRoutingDefinition extends PluginDefinition {
         DirectRoutingDefinition definition = JsonUtils.fromJson(paramJson, DirectRoutingDefinition.class);
         Preconditions.checkArgument(StringUtils.isNotBlank(definition.getTargetHostPort()), "路由目标地址不可为空");
         definition.setServicePrefix(serviceDTO.getServicePrefix());
-        if (definition.getSelfSignCrtFileId().contains(fileTab)) {
+        if (definition.getSelfSignCrtFileId().contains(fileTabEndPoint)) {
             String fileId = SnowflakeIdWorker.nextId(PluginDefinition.filePrefix);
             Preconditions.checkNotNull(PluginDefinition.uploadFileMap.get().get(definition.getSelfSignCrtFileId()),
                 "直接路由-crt文件不可为空");

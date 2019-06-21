@@ -68,7 +68,7 @@ public class GRpcRoutingDefinition extends PluginDefinition {
         Preconditions.checkArgument(StringUtils.isNotBlank(definition.getServiceName()), "rpc-grpc路由-服务名称不可为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(definition.getProtoFileId()), "rpc-grpc路由-grpc文件不可为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(definition.getMethodName()), "rpc-grpc路由-方法不可为空");
-        if (definition.getProtoFileId().contains(fileTab)) {
+        if (definition.getProtoFileId().contains(fileTabEndPoint)) {
             String proFileId = SnowflakeIdWorker.nextId(PluginDefinition.filePrefix);
             Preconditions.checkNotNull(PluginDefinition.uploadFileMap.get().get(definition.getProtoFileId()),
                 "rpc-grpc路由-grpc文件不可为空");

@@ -26,7 +26,7 @@ public class JarExecuteDefinition extends PluginDefinition {
     public String validate(String paramJson, ServiceDTO serviceDTO, EndpointDTO endpointDTO) {
         JarExecuteDefinition definition = JsonUtils.fromJson(paramJson, JarExecuteDefinition.class);
         Preconditions.checkArgument(StringUtils.isNotBlank(definition.getFileId()), "jar包执行插件-jar文件不可为空");
-        if (definition.getFileId().contains(fileTab)) {
+        if (definition.getFileId().contains(fileTabEndPoint)) {
             String jarFileId = SnowflakeIdWorker.nextId(PluginDefinition.filePrefix);
             Preconditions.checkNotNull(PluginDefinition.uploadFileMap.get().get(definition.getFileId()),
                 "jar包执行插件-jar文件不可为空");

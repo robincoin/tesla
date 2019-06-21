@@ -141,7 +141,7 @@ public class GatewayService {
         endpointPluginDOS.forEach(pluginDO -> endpointPluginMapper.insert(pluginDO));
         if (!MapUtils.isEmpty(PluginDefinition.uploadFileMap.get())) {
             PluginDefinition.uploadFileMap.get().keySet().forEach(fileKey -> {
-                if (fileKey.contains(PluginDefinition.fileTab)) {
+                if (fileKey.contains(PluginDefinition.fileTabEndPoint)) {
                     return;
                 }
                 GatewayFileDO fileDO = new GatewayFileDO();

@@ -9,7 +9,9 @@ public class PluginDefinition {
 
     public static final String filePrefix = "file_";
 
-    public static final String fileTab = "::";
+    public static final String fileTabEndPoint = "::";
+
+    public static final String fileTabService = ":";
 
     public final static String CONVERGE_ATTR_KEY = "QueryConvergeAttr";
 

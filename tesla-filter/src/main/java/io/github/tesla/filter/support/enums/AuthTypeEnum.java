@@ -39,7 +39,8 @@ public class AuthTypeEnum {
             return paramJson;
         }
         try {
-            return authTypeEnum.clazz.getDeclaredConstructor().newInstance().validate(paramJson, serviceDTO);
+            PluginDefinition instance = authTypeEnum.clazz.getDeclaredConstructor().newInstance();
+            return instance.validate(paramJson, serviceDTO);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
