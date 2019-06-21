@@ -35,11 +35,11 @@ public class AuthTypeEnum {
         if (authTypeEnum == null) {
             throw new RuntimeException(FilterMetadata.errorMsg(authType));
         }
-        if (authTypeEnum.clazz == null) {
+        if (authTypeEnum.getClazz() == null) {
             return paramJson;
         }
         try {
-            PluginDefinition instance = authTypeEnum.clazz.getDeclaredConstructor().newInstance();
+            PluginDefinition instance = authTypeEnum.getClazz().getDeclaredConstructor().newInstance();
             return instance.validate(paramJson, serviceDTO);
         } catch (Exception e) {
             throw new RuntimeException(e);
