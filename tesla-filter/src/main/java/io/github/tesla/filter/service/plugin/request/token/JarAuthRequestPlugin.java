@@ -11,7 +11,7 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 
-@AuthType(authType = "jarOauth", definitionClazz = JarAuthDefinition.class)
+@AuthType(authType = "jarAuth", definitionClazz = JarAuthDefinition.class)
 public class JarAuthRequestPlugin extends AuthRequestPlugin {
 
     @Override
