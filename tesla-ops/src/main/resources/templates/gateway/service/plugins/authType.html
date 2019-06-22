@@ -187,7 +187,7 @@
             $('#authType').selectpicker('val', authDefinition.authType);
             var authParam = JSON.parse(authDefinition.authParamJson);
             Object.keys(authParam).forEach(function (key) {
-                $(divObj).find("input[name='" + key + "'],select[name='" + key + "']").val(authParam[key]);
+                $(divObj).find("input[name='" + key + "'],select[name='" + key + "']").not("[type='file']").val(authParam[key]);
             });
             var fileId = divObj.find("input[name='fileId']");
             if(fileId){
