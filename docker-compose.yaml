@@ -48,6 +48,7 @@ services:
     ports:
       - 9000:9000
       - 5701:5701
+      - 9091:9091
     environment:
       - DATABASE_HOST=tesla-mysql
       - DATABASE_USER=root
