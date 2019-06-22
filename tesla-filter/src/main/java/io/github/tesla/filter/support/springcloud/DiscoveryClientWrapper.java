@@ -29,17 +29,6 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClientConfig;
 
-/**
- * ClassName:DiscoveryClientWrapper <br/>
- * Function: TODO ADD FUNCTION. <br/>
- * Reason: TODO ADD REASON. <br/>
- * Date: 2018年7月5日 下午12:55:12 <br/>
- * 
- * @author liushiming
- * @version
- * @since JDK 10
- * @see
- */
 public class DiscoveryClientWrapper extends DiscoveryClient {
 
     public static final String EUREKA_METADATA_GROUP = "GROUP";
@@ -50,8 +39,6 @@ public class DiscoveryClientWrapper extends DiscoveryClient {
     public DiscoveryClientWrapper(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config) {
         super(applicationInfoManager, config);
     }
-
-    /* private Map<String, String> groupVersionMap;*/
 
     public void clearGroupVersionMap() {
         groupVersionMapList.remove();
