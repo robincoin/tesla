@@ -24,12 +24,12 @@ spring:
    #   password:
 tesla:
   datasource:
-    url: jdbc:mysql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://127.0.0.1:3306/gateway?useUnicode=true&characterEncoding=utf8
     name: TESLA
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
+    username: root
+    password: 123456
   eureka:
-    url: ${EUREKA_SERVER}
+    url: http://eureka.springcloud.cn/eureka/
   gateway:
     url: http://localhost:9000
 management:
