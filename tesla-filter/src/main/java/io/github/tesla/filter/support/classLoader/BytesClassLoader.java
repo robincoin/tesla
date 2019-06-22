@@ -19,7 +19,7 @@ public class BytesClassLoader extends ClassLoader {
     }
 
     public BytesClassLoader(byte[] jarBytes) {
-        this(jarBytes, BytesClassLoader.class.getClassLoader());
+        this(jarBytes, org.springframework.util.ClassUtils.getDefaultClassLoader());
     }
 
     public BytesClassLoader(byte[] jarBytes, ClassLoader parent) {
