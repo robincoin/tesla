@@ -8,13 +8,14 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+
 public class BytesMap {
-    private final Map<String, byte[]> table = new Hashtable<String, byte[]>();
+    private final Map<String, byte[]> table = Maps.newConcurrentMap();
 
     public void put(String name, byte[] data) {
         if (name == null || data == null) {
