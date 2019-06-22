@@ -198,7 +198,7 @@ public class HttpProxyServer {
         }
 
         this.boundAddress = ((InetSocketAddress)future.channel().localAddress());
-        LOG.info("Tesla Proxy started at address: " + this.boundAddress);
+        System.out.println("Tesla Proxy started at address: " + this.boundAddress);
         Runtime.getRuntime().addShutdownHook(jvmShutdownHook);
     }
 
