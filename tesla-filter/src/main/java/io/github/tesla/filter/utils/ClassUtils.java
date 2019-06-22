@@ -138,7 +138,7 @@ public final class ClassUtils {
         Pair<String, String> classNameAndFilterId = new ImmutablePair<String, String>(className, filterId);
         if (USER_RULE_JAR_FILTER_CACHE.get(classNameAndFilterId) == null) {
             if (filterJarByte != null && filterJarByte.length > 0) {
-                T userFilter = ClassUtils.getFilterObject(filterJarByte, className);
+                T userFilter = getFilterObject(filterJarByte, className);
                 if (userFilter == null) {
                     return null;
                 }
