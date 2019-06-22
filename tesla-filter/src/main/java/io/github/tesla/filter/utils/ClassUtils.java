@@ -55,9 +55,9 @@ public final class ClassUtils {
     // 实例化的对象 本地缓存
     private static final Map<Pair<String, String>, AbstractPlugin> USER_RULE_JAR_FILTER_CACHE =
         Collections.synchronizedMap(new WeakHashMap<Pair<String, String>, AbstractPlugin>());
-    private static Logger log = LoggerFactory.getLogger(ClassUtils.class);
-    private static String basePack = "io/github/tesla/filter/plugin";
-    private static String ignorePackageReg = "io/github/tesla/filter/plugin/(request|response)/myapp/.*";
+    private static final Logger log = LoggerFactory.getLogger(ClassUtils.class);
+    private static final String basePack = "io/github/tesla/filter/plugin";
+    private static final String ignorePackageReg = "io/github/tesla/filter/plugin/(request|response)/myapp/.*";
 
     private ClassUtils() {}
 
