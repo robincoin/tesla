@@ -224,7 +224,7 @@ public class FilterCache {
             if (apiLocalCacheList.size() != apiCacheList.size()) {
                 needRefreshLocalCache = true;
             }
-            if (AbstractPlugin.appKeyLocalDefinitionMap.size() != appKeyDefinitionMap.size()) {
+            if (AbstractPlugin.APPKEYLOCALDEFINITIONMAP.size() != appKeyDefinitionMap.size()) {
                 needRefreshLocalCache = true;
             }
         } finally {
@@ -477,12 +477,12 @@ public class FilterCache {
             wafRequestLocalCacheList = Lists.newArrayList(wafRequestCacheList);
             wafResponseLocalCacheList = Lists.newArrayList(wafResponseCacheList);
             apiLocalCacheList = Lists.newArrayList(apiCacheList);
-            AbstractPlugin.appKeyLocalDefinitionMap = Maps.newHashMap(appKeyDefinitionMap);
+            AbstractPlugin.APPKEYLOCALDEFINITIONMAP = Maps.newHashMap(appKeyDefinitionMap);
             AbstractPlugin.clearLocalCache();
             LOGGER.info("wafRequestLocalCache:" + JsonUtils.serializeToJson(wafRequestLocalCacheList));
             LOGGER.info("wafResponseLocalCache:" + JsonUtils.serializeToJson(wafResponseLocalCacheList));
             LOGGER.info("apiLocalCache:" + JsonUtils.serializeToJson(apiLocalCacheList));
-            LOGGER.info("appKeyLocalCache:" + JsonUtils.serializeToJson(AbstractPlugin.appKeyLocalDefinitionMap));
+            LOGGER.info("appKeyLocalCache:" + JsonUtils.serializeToJson(AbstractPlugin.APPKEYLOCALDEFINITIONMAP));
         } finally {
             CacheConstant.READ_WRITE_LOCK.writeLock().unlock();
         }
