@@ -29,7 +29,6 @@ public class BytesClassLoader extends ClassLoader {
 
     protected BytesMap load(byte[] bytes) {
         BytesMap bmap = new BytesMap();
-
         JarInputStream jar = null;
         try {
             jar = new JarInputStream(new ByteArrayInputStream(bytes));
