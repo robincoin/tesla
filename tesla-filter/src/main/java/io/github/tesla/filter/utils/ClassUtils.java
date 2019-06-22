@@ -16,10 +16,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.jar.JarInputStream;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -51,7 +53,8 @@ public final class ClassUtils {
     private static final Map<String, Reflections> REFLECTIONS_CACHE = Maps.newConcurrentMap();
     private static final Map<String, Object> BEAN_CACHE = Maps.newConcurrentMap();
     // 实例化的对象 本地缓存
-    private static final Map<Pair<String, String>, AbstractPlugin> USER_RULE_JAR_FILTER_CACHE = Maps.newConcurrentMap();
+    private static final Map<Pair<String, String>, AbstractPlugin> USER_RULE_JAR_FILTER_CACHE =
+        Collections.synchronizedMap(new WeakHashMap<Pair<String, String>, AbstractPlugin>());
     private static Logger log = LoggerFactory.getLogger(ClassUtils.class);
     private static String basePack = "io/github/tesla/filter/plugin";
     private static String ignorePackageReg = "io/github/tesla/filter/plugin/(request|response)/myapp/.*";
