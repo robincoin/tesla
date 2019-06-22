@@ -69,37 +69,6 @@ public class HttpFiltersAdapter {
         this.serveletRequest = new NettyHttpServletRequest((FullHttpRequest)originalRequest, ctx);
     }
 
-    public HttpResponse clientToProxyRequest(HttpObject httpObject) {
-        this.logStart();
-        HttpResponse httpResponse = null;
-        try {
-            httpResponse = HttpRequestFilterChain.doFilter(serveletRequest, httpObject, ctx);
-            if (httpResponse != null) {
-                return httpResponse;
-            }
-        } catch (Throwable e) {
-            httpResponse = ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY);
-            HttpUtil.setKeepAlive(httpResponse, false);
-            logger.error("Client connectTo proxy request failed", e);
-            return httpResponse;
-        }
-        // 路由
-        ServiceRouterExecutor routerCache = SpringContextHolder.getBean(FilterCache.class)
-            .loadServiceCache(serveletRequest.getRequestURI()).getRouterCache();
-        Object rpcParamJson = serveletRequest.getAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
-        if (RouteTypeEnum.DUBBO.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
-            httpResponse = DubboRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
-        } else if (RouteTypeEnum.GRPC.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
-            httpResponse = GrpcRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
-        } else if (RouteTypeEnum.SpringCloud.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
-            httpResponse = SpringCloudRouting.callRemote(serveletRequest, httpObject, routerCache.getParamJson());
-        } else if (RouteTypeEnum.DirectRoute.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
-            httpResponse = DirectRouting.callRemote(serveletRequest, httpObject, routerCache.getParamJson());
-        }
-        serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
-        return httpResponse;
-    }
-
     private void logEnd(HttpResponse response) {
         long forwardTime = System.currentTimeMillis() - (this.forwardTime == 0L ? this.receivedTime : this.forwardTime);
         long completeTime = System.currentTimeMillis() - this.receivedTime;
@@ -147,12 +116,43 @@ public class HttpFiltersAdapter {
         }
     }
 
+    public HttpResponse clientToProxyRequest(HttpObject httpObject) {
+        // this.logStart();
+        HttpResponse httpResponse = null;
+        try {
+            httpResponse = HttpRequestFilterChain.doFilter(serveletRequest, httpObject, ctx);
+            if (httpResponse != null) {
+                return httpResponse;
+            }
+        } catch (Throwable e) {
+            httpResponse = ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY);
+            HttpUtil.setKeepAlive(httpResponse, false);
+            logger.error("Client connectTo proxy request failed", e);
+            return httpResponse;
+        }
+        // 路由
+        ServiceRouterExecutor routerCache = SpringContextHolder.getBean(FilterCache.class)
+            .loadServiceCache(serveletRequest.getRequestURI()).getRouterCache();
+        Object rpcParamJson = serveletRequest.getAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
+        if (RouteTypeEnum.DUBBO.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
+            httpResponse = DubboRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
+        } else if (RouteTypeEnum.GRPC.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
+            httpResponse = GrpcRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
+        } else if (RouteTypeEnum.SpringCloud.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
+            httpResponse = SpringCloudRouting.callRemote(serveletRequest, httpObject, routerCache.getParamJson());
+        } else if (RouteTypeEnum.DirectRoute.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
+            httpResponse = DirectRouting.callRemote(serveletRequest, httpObject, routerCache.getParamJson());
+        }
+        serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
+        return httpResponse;
+    }
+
     public HttpObject proxyToClientResponse(HttpObject httpObject) {
         try {
             if (httpObject instanceof HttpResponse) {
                 HttpResponse serverResponse = (HttpResponse)httpObject;
                 HttpResponse response = HttpResponseFilterChain.doFilter(serveletRequest, serverResponse, ctx);
-                this.logEnd(serverResponse);
+                // this.logEnd(serverResponse);
                 return response;
             } else {
                 return httpObject;
@@ -174,7 +174,7 @@ public class HttpFiltersAdapter {
     public void proxyToServerConnectionSucceeded(ChannelHandlerContext serverCtx) {}
 
     public HttpResponse proxyToServerRequest(HttpObject httpObject) {
-        this.logForward(httpObject);
+        //this.logForward(httpObject);
         return null;
     }
 
