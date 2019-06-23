@@ -10,7 +10,7 @@ public class ResponsePluginMetadata extends FilterMetadata {
 
     private static final long serialVersionUID = 1L;
 
-    protected Class<? extends AbstractResponsePlugin> filterClass;
+    private final Class<? extends AbstractResponsePlugin> filterClass;
 
     private static final Map<String, Object> RESPONSEPLUGIN_INSTANCE_CACHE =
         Collections.synchronizedMap(new WeakHashMap<String, Object>());
@@ -18,12 +18,12 @@ public class ResponsePluginMetadata extends FilterMetadata {
     protected static final Map<String, ResponsePluginMetadata> RESPONSEPLUGINMETADATA_INSTANCE_CACHE =
         Collections.synchronizedMap(new WeakHashMap<String, ResponsePluginMetadata>());
 
-    public Class<? extends AbstractResponsePlugin> getFilterClass() {
-        return filterClass;
+    public ResponsePluginMetadata(Class<? extends AbstractResponsePlugin> filterClass) {
+        this.filterClass = filterClass;
     }
 
-    public void setFilterClass(Class<? extends AbstractResponsePlugin> filterClass) {
-        this.filterClass = filterClass;
+    public Class<? extends AbstractResponsePlugin> getFilterClass() {
+        return filterClass;
     }
 
     @SuppressWarnings({"unchecked"})

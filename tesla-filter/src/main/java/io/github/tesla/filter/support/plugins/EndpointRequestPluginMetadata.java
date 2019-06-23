@@ -11,26 +11,27 @@ import io.github.tesla.filter.AbstractRequestPlugin;
 import io.github.tesla.filter.support.annnotation.EndpointRequestPlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class EndpointRequestPluginMetadata extends RequestPluginMetadata {
 
     private static final long serialVersionUID = 1L;
 
     EndpointRequestPluginMetadata(Class<? extends AbstractRequestPlugin> clz) {
+        super(clz);
         EndpointRequestPlugin annotation = AnnotationUtils.findAnnotation(clz, EndpointRequestPlugin.class);
-        this.filterType = annotation.filterType();
-        this.filterName = annotation.filterName();
-        this.filterOrder = annotation.filterOrder();
-        this.filterClass = clz;
-        this.ignoreClassType = StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType();
-        this.definitionClazz = annotation.definitionClazz();
+        this.setFilterType(annotation.filterType());
+        this.setFilterName(annotation.filterName());
+        this.setFilterOrder(annotation.filterOrder());
+        this.setIgnoreClassType(
+            StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType());
+        this.setDefinitionClazz(annotation.definitionClazz());
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static EndpointRequestPluginMetadata getMetadataByType(String filterType) {
         if (StringUtils.isBlank(filterType)) {
             return null;
         }
-        Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, EndpointRequestPlugin.class);
+        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, EndpointRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, EndpointRequestPlugin.class).filterType())) {
                 return (EndpointRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
@@ -43,10 +44,10 @@ public class EndpointRequestPluginMetadata extends RequestPluginMetadata {
     public static String validate(String pluginType, String paramJson, ServiceDTO serviceDTO, EndpointDTO endpointDTO) {
         try {
             EndpointRequestPluginMetadata metadata = getMetadataByType(pluginType);
-            if (metadata == null || metadata.definitionClazz == null) {
+            if (metadata == null || metadata.getDefinitionClazz() == null) {
                 return paramJson;
             }
-            return metadata.definitionClazz.getDeclaredConstructor().newInstance().validate(paramJson, serviceDTO,
+            return metadata.getDefinitionClazz().getDeclaredConstructor().newInstance().validate(paramJson, serviceDTO,
                 endpointDTO);
         } catch (Exception e) {
             throw new RuntimeException(e);

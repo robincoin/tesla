@@ -16,7 +16,7 @@ public class BaseController {
         return SecurityUtils.getSubject().getPrincipals().getRealmNames().iterator().next();
     }
 
-    protected Logger logger = LoggerFactory.getLogger("controller");
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     protected CommonResponse getCommonResponse(Exception e) {
         logger.error(e.getMessage(), e);

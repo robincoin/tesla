@@ -9,23 +9,24 @@ import io.github.tesla.filter.AbstractResponsePlugin;
 import io.github.tesla.filter.support.annnotation.WafResponsePlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class WafResponsePluginMetadata extends ResponsePluginMetadata {
 
     private static final long serialVersionUID = 1L;
 
-    WafResponsePluginMetadata(Class<? extends AbstractResponsePlugin> clz) {
+    public WafResponsePluginMetadata(Class<? extends AbstractResponsePlugin> clz) {
+        super(clz);
         WafResponsePlugin annotation = AnnotationUtils.findAnnotation(clz, WafResponsePlugin.class);
-        this.filterType = annotation.filterType();
-        this.filterName = annotation.filterName();
-        this.filterOrder = annotation.filterOrder();
-        this.filterClass = clz;
-        this.ignoreClassType = StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType();
-        this.definitionClazz = annotation.definitionClazz();
+        super.setFilterType(annotation.filterType());
+        super.setFilterName(annotation.filterName());
+        super.setFilterOrder(annotation.filterOrder());
+        super.setIgnoreClassType(
+            StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType());
+        super.setDefinitionClazz(annotation.definitionClazz());
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static WafResponsePluginMetadata getMetadataByType(String filterType) {
-        Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, WafResponsePlugin.class);
+        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, WafResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafResponsePlugin.class).filterType())) {
                 return (WafResponsePluginMetadata)RESPONSEPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
@@ -38,10 +39,10 @@ public class WafResponsePluginMetadata extends ResponsePluginMetadata {
     public static String validate(String pluginType, String paramJson) {
         try {
             WafResponsePluginMetadata metadata = getMetadataByType(pluginType);
-            if (metadata == null || metadata.definitionClazz == null) {
+            if (metadata == null || metadata.getDefinitionClazz() == null) {
                 return paramJson;
             }
-            return metadata.definitionClazz.getDeclaredConstructor().newInstance().validate(paramJson);
+            return metadata.getDefinitionClazz().getDeclaredConstructor().newInstance().validate(paramJson);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

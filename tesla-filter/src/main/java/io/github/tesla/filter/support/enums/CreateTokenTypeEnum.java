@@ -27,7 +27,7 @@ public class CreateTokenTypeEnum {
     }
 
     public static CreateTokenTypeEnum fromType(String tokenType) {
-        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FilterMetadata.packageName, CreateTokenType.class);
+        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FilterMetadata.FILTER_SCAN_PACKAGE, CreateTokenType.class);
         for (Class clz : allClasses) {
             if (tokenType.equals(AnnotationUtils.findAnnotation(clz, CreateTokenType.class).tokenType())) {
                 return new CreateTokenTypeEnum(clz);

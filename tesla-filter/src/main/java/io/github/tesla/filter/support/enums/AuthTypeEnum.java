@@ -21,7 +21,7 @@ public class AuthTypeEnum {
     }
 
     public static AuthTypeEnum fromType(String authType) {
-        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FilterMetadata.packageName, AuthType.class);
+        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FilterMetadata.FILTER_SCAN_PACKAGE, AuthType.class);
         for (Class clz : allClasses) {
             if (authType.equals(AnnotationUtils.findAnnotation(clz, AuthType.class).authType())) {
                 return new AuthTypeEnum(clz);
