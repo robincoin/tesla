@@ -1,8 +1,9 @@
-package io.github.tesla.filter.endpoint.plugin.request;
+package io.github.tesla.filter.service.plugin.request.token;
 
-import io.github.tesla.filter.AbstractRequestPlugin;
-import io.github.tesla.filter.endpoint.definition.JarExecuteDefinition;
-import io.github.tesla.filter.support.annnotation.EndpointRequestPlugin;
+import io.github.tesla.filter.endpoint.plugin.request.JarExecuteRequestPlugin;
+import io.github.tesla.filter.service.annotation.AuthType;
+import io.github.tesla.filter.service.definition.JarAuthDefinition;
+import io.github.tesla.filter.service.plugin.request.AuthRequestPlugin;
 import io.github.tesla.filter.support.servlet.NettyHttpServletRequest;
 import io.github.tesla.filter.utils.ClassUtils;
 import io.github.tesla.filter.utils.JsonUtils;
@@ -10,19 +11,13 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/29 16:08
- * @description:
- */
-@EndpointRequestPlugin(filterType = "JarExecuteRequestPlugin", definitionClazz = JarExecuteDefinition.class,
-    filterOrder = 6, filterName = "执行上传Jar包插件")
-public class JarExecuteRequestPlugin extends AbstractRequestPlugin {
+@AuthType(authType = "jar", definitionClazz = JarAuthDefinition.class)
+public class JarAuthRequestPlugin extends AuthRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
         Object filterParam) {
-        JarExecuteDefinition definition = JsonUtils.json2Definition(filterParam, JarExecuteDefinition.class);
+        JarAuthDefinition definition = JsonUtils.json2Definition(filterParam, JarAuthDefinition.class);
         if (definition == null) {
             return null;
         }
@@ -38,16 +33,4 @@ public class JarExecuteRequestPlugin extends AbstractRequestPlugin {
         return userResponse;
     }
 
-    /**
-     * @desc: 上传的Jar包执行类需实现该方法
-     * @method: doFilter
-     * @param: [servletRequest,
-     *             realHttpObject]
-     * @return: io.netty.handler.codec.http.HttpResponse
-     * @auther: zhipingzhang
-     * @date: 2018/11/29 14:36
-     */
-    public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpRequest realHttpRequest) {
-        return null;
-    }
 }

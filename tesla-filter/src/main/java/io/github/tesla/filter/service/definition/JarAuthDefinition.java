@@ -1,16 +1,14 @@
-package io.github.tesla.filter.endpoint.definition;
+package io.github.tesla.filter.service.definition;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Preconditions;
 
-import io.github.tesla.common.dto.EndpointDTO;
 import io.github.tesla.common.dto.ServiceDTO;
-import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.utils.JsonUtils;
 import io.github.tesla.filter.utils.SnowflakeIdWorker;
 
-public class JarExecuteDefinition extends PluginDefinition {
+public class JarAuthDefinition extends PluginDefinition {
 
     private String fileId;
 
@@ -33,10 +31,10 @@ public class JarExecuteDefinition extends PluginDefinition {
     }
 
     @Override
-    public String validate(String paramJson, ServiceDTO serviceDTO, EndpointDTO endpointDTO) {
-        JarExecuteDefinition definition = JsonUtils.fromJson(paramJson, JarExecuteDefinition.class);
+    public String validate(String paramJson, ServiceDTO serviceDTO) {
+        JarAuthDefinition definition = JsonUtils.fromJson(paramJson, JarAuthDefinition.class);
         Preconditions.checkArgument(StringUtils.isNotBlank(definition.getFileId()), "jar包执行插件-jar文件不可为空");
-        if (definition.getFileId().contains(FILETABENDPOINT)) {
+        if (definition.getFileId().contains(FILETABSERVICE)) {
             String jarFileId = SnowflakeIdWorker.nextId(PluginDefinition.FILEPREFIX);
             Preconditions.checkNotNull(PluginDefinition.UPLOADFILEMAP.get().get(definition.getFileId()),
                 "jar包执行插件-jar文件不可为空");
@@ -47,4 +45,5 @@ public class JarExecuteDefinition extends PluginDefinition {
         }
         return JsonUtils.serializeToJson(definition);
     }
+
 }

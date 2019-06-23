@@ -9,26 +9,27 @@ import io.github.tesla.filter.AbstractRequestPlugin;
 import io.github.tesla.filter.support.annnotation.AppKeyRequestPlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class AppKeyRequestPluginMetadata extends RequestPluginMetadata {
 
     private static final long serialVersionUID = 1L;
 
-    AppKeyRequestPluginMetadata(Class<? extends AbstractRequestPlugin> clz) {
+    public AppKeyRequestPluginMetadata(Class<? extends AbstractRequestPlugin> clz) {
+        super(clz);
         AppKeyRequestPlugin annotation = AnnotationUtils.findAnnotation(clz, AppKeyRequestPlugin.class);
-        this.filterType = annotation.filterType();
-        this.filterName = annotation.filterName();
-        this.filterOrder = annotation.filterOrder();
-        this.filterClass = clz;
-        this.ignoreClassType = StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType();
-        this.definitionClazz = annotation.definitionClazz();
+        this.setFilterType(annotation.filterType());
+        this.setFilterName(annotation.filterName());
+        this.setFilterOrder(annotation.filterOrder());
+        this.setIgnoreClassType(
+            StringUtils.isBlank(annotation.ignoreClassType()) ? null : annotation.ignoreClassType());
+        this.setDefinitionClazz(annotation.definitionClazz());
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static AppKeyRequestPluginMetadata getMetadataByType(String filterType) {
         if (StringUtils.isBlank(filterType)) {
             return null;
         }
-        Set<Class<?>> allClasses = ClassUtils.findAllClasses(packageName, AppKeyRequestPlugin.class);
+        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, AppKeyRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, AppKeyRequestPlugin.class).filterType())) {
                 return (AppKeyRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),

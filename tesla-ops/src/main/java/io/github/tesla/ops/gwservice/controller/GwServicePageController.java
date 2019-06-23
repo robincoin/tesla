@@ -266,11 +266,9 @@ public class GwServicePageController extends BaseController {
                 url = "http://" + url + "/supportplugins";
                 endpointPluginsStr =
                     restTemplate.getForObject(url + "?type=" + Constant.PLUGIN_TYPE_ENDPOINT, String.class);
-            } else {
-                logger.warn("can not find tesla-gateway instance");
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.warn("can not find tesla-gateway instance");
         }
         final Map endpointPluginsMap = JsonUtils.fromJson(endpointPluginsStr, Map.class);
         FileInputStream fileInputStream = null;
@@ -280,7 +278,6 @@ public class GwServicePageController extends BaseController {
             Map map = yaml.loadAs(resourceStream, Map.class);
             Map<String, Object> pluginsMap = (Map<String, Object>)map.get(type);
             return pluginsMap.entrySet().stream()
-                // 兼容理房通的情况，请求不通gateway
                 .filter(p -> CollectionUtils.isEmpty(endpointPluginsMap) || endpointPluginsMap.containsKey(p.getKey()))
                 .map(e -> (Map<String, String>)e.getValue()).distinct()
                 .collect(Collectors.toMap(e -> e.get("type"), e -> e.get("name")));

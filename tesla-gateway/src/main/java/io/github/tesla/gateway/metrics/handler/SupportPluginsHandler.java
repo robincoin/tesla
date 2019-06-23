@@ -46,12 +46,12 @@ public class SupportPluginsHandler implements HttpHandler {
             Map<String, String> pluginsMap = Maps.newHashMap();
             switch (type) {
                 case "endpoint":
-                    pluginsMap.putAll(ClassUtils.findAllClasses(FilterMetadata.packageName, EndpointRequestPlugin.class)
+                    pluginsMap.putAll(ClassUtils.findAllClasses(FilterMetadata.FILTER_SCAN_PACKAGE, EndpointRequestPlugin.class)
                         .stream().map(clazz -> AnnotationUtils.findAnnotation(clazz, EndpointRequestPlugin.class))
                         .collect(
                             Collectors.toMap(EndpointRequestPlugin::filterType, EndpointRequestPlugin::filterName)));
                     pluginsMap.putAll(ClassUtils
-                        .findAllClasses(FilterMetadata.packageName, EndpointResponsePlugin.class).stream()
+                        .findAllClasses(FilterMetadata.FILTER_SCAN_PACKAGE, EndpointResponsePlugin.class).stream()
                         .map(clazz -> AnnotationUtils.findAnnotation(clazz, EndpointResponsePlugin.class)).collect(
                             Collectors.toMap(EndpointResponsePlugin::filterType, EndpointResponsePlugin::filterName)));
                     break;

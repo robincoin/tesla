@@ -12,19 +12,15 @@
  */
 package io.github.tesla.filter.utils;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.net.URL;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.jar.JarInputStream;
-import java.util.regex.Pattern;
+import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.reflections.Reflections;
@@ -40,21 +36,15 @@ import org.springframework.core.type.classreading.MetadataReader;
 import com.google.common.collect.Maps;
 
 import io.github.tesla.filter.AbstractPlugin;
-import io.github.tesla.filter.support.classLoader.JarStreamClassLoader;
+import io.github.tesla.filter.support.classLoader.BytesClassLoader;
 
-/**
- * @author liushiming
- * @version PackageUtil.java, v 0.0.1 2018年5月9日 上午9:59:02 liushiming
- */
+@SuppressWarnings("unchecked")
 public final class ClassUtils {
-
     private static final Map<String, Reflections> REFLECTIONS_CACHE = Maps.newConcurrentMap();
     private static final Map<String, Object> BEAN_CACHE = Maps.newConcurrentMap();
-    // 实例化的对象 本地缓存
-    private static final Map<Pair<String, String>, AbstractPlugin> USER_RULE_JAR_FILTER_CACHE = Maps.newConcurrentMap();
-    private static Logger log = LoggerFactory.getLogger(ClassUtils.class);
-    private static String basePack = "io/github/tesla/filter/plugin";
-    private static String ignorePackageReg = "io/github/tesla/filter/plugin/(request|response)/myapp/.*";
+    private static final Map<Pair<String, String>, AbstractPlugin> USER_RULE_JAR_FILTER_CACHE =
+        Collections.synchronizedMap(new WeakHashMap<Pair<String, String>, AbstractPlugin>());
+    private static final Logger log = LoggerFactory.getLogger(ClassUtils.class);
 
     private ClassUtils() {}
 
@@ -95,36 +85,20 @@ public final class ClassUtils {
             ClassLoader loader = org.springframework.util.ClassUtils.getDefaultClassLoader();
             return org.springframework.util.ClassUtils.forName(className, loader);
         } catch (LinkageError | ClassNotFoundException e) {
-            log.error("Ignoring candidate class resource " + className + " due to " + e);
             return null;
         } catch (Throwable e) {
-            log.error("Unexpected failure when loading class resource " + className, e);
             return null;
         }
     }
 
-    /**
-     * 功能描述:
-     *
-     * @parmname: getFilterObject
-     * @param: [filterJarFile
-     *             jarFile subClassName, 需要寻找的类的实例的父类 basePack, 需要寻找的类的所在包 ignorePackageReg：要过滤掉的包的正则表达式]
-     * @return: T
-     * @auther: zhipingzhang
-     * @date: 2018/11/2 11:49
-     */
-    public static <T> T getFilterObject(byte[] filterJarByte, String subClassName, String basePack,
-        String ignorePackageReg) {
-
-        URL[] urls = new URL[] {};
+    public static <T> T getFilterObject(byte[] filterJarByte, String className) {
         try {
-            JarInputStream jarInputStream = new JarInputStream(new ByteArrayInputStream(filterJarByte));
-            JarStreamClassLoader jarStreamClassLoader = new JarStreamClassLoader(jarInputStream);
-            Class<?> clazz = searchClass(jarStreamClassLoader, subClassName, "", basePack, ignorePackageReg);
+            BytesClassLoader jarStreamClassLoader = new BytesClassLoader(filterJarByte);
+            Class<?> clazz = jarStreamClassLoader.loadClass(className);
             if (clazz == null) {
                 return null;
             }
-            T object = (T)clazz.getDeclaredConstructor().newInstance();
+            T object = (T)clazz.newInstance();
             return object;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -142,11 +116,11 @@ public final class ClassUtils {
                         REFLECTIONS_CACHE.put(packageName, new Reflections(packageName));
                     }
                     Set<Class<?>> classesList = REFLECTIONS_CACHE.get(packageName).getTypesAnnotatedWith(annotation);
-                    for (Class classes : classesList) {
+                    for (Class<?> classes : classesList) {
                         if (annotation.getDeclaredMethod(methodName)
                             .invoke(AnnotationUtils.findAnnotation(classes, annotation)).equals(value)) {
                             try {
-                                BEAN_CACHE.put(key, classes.getDeclaredConstructor().newInstance());
+                                BEAN_CACHE.put(key, classes.newInstance());
                             } catch (Exception e) {
                                 log.error(e.getMessage(), e);
                                 throw e;
@@ -164,7 +138,7 @@ public final class ClassUtils {
         Pair<String, String> classNameAndFilterId = new ImmutablePair<String, String>(className, filterId);
         if (USER_RULE_JAR_FILTER_CACHE.get(classNameAndFilterId) == null) {
             if (filterJarByte != null && filterJarByte.length > 0) {
-                T userFilter = ClassUtils.getFilterObject(filterJarByte, className, basePack, ignorePackageReg);
+                T userFilter = getFilterObject(filterJarByte, className);
                 if (userFilter == null) {
                     return null;
                 }
@@ -193,27 +167,6 @@ public final class ClassUtils {
         String pattern = "classpath*:" + org.springframework.util.ClassUtils.convertClassNameToResourcePath(packageName)
             + "/**/*.class";
         return resolver.getResources(pattern);
-    }
-
-    private static Class searchClass(JarStreamClassLoader classLoader, String subClass, String jarFileName,
-        String basePack, String ignorePackageReg) throws IOException, ClassNotFoundException {
-        HashMap<String, Class<?>> classes = classLoader.getClasses();
-        Class<?> subClazz = ClassUtils.getClass(subClass);
-        for (Class<?> jarClass : classes.values()) {
-            String jarClassName = jarClass.getName().replace(".", "/");
-            // 防止有demo存在，过滤掉
-            if (StringUtils.isEmpty(ignorePackageReg) || Pattern.matches(ignorePackageReg, jarClassName)) {
-                continue;
-            }
-            // 这里我们需要过滤不是class文件和不在basePack包名下的类
-            if (jarClassName.startsWith(basePack)) {
-
-                if (subClazz.isAssignableFrom(jarClass)) {
-                    return jarClass;
-                }
-            }
-        }
-        return null;
     }
 
 }

@@ -21,7 +21,7 @@ public class AuthTypeEnum {
     }
 
     public static AuthTypeEnum fromType(String authType) {
-        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FilterMetadata.packageName, AuthType.class);
+        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FilterMetadata.FILTER_SCAN_PACKAGE, AuthType.class);
         for (Class clz : allClasses) {
             if (authType.equals(AnnotationUtils.findAnnotation(clz, AuthType.class).authType())) {
                 return new AuthTypeEnum(clz);
@@ -35,11 +35,12 @@ public class AuthTypeEnum {
         if (authTypeEnum == null) {
             throw new RuntimeException(FilterMetadata.errorMsg(authType));
         }
-        if (authTypeEnum.clazz == null) {
+        if (authTypeEnum.getClazz() == null) {
             return paramJson;
         }
         try {
-            return authTypeEnum.clazz.getDeclaredConstructor().newInstance().validate(paramJson, serviceDTO);
+            PluginDefinition instance = authTypeEnum.getClazz().getDeclaredConstructor().newInstance();
+            return instance.validate(paramJson, serviceDTO);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

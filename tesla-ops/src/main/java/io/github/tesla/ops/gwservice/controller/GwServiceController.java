@@ -77,14 +77,14 @@ public class GwServiceController extends BaseController {
                 for (String fileKey : multipartRequest.getMultiFileMap().keySet()) {
                     fileMap.put(fileKey, multipartRequest.getMultiFileMap().get(fileKey).get(0).getBytes());
                 }
-                PluginDefinition.uploadFileMap.set(fileMap);
+                PluginDefinition.UPLOADFILEMAP.set(fileMap);
             }
             serviceVO.setServiceOwner(getUsername());
             gwService.saveService(serviceVO);
         } catch (Exception e) {
             return getCommonResponse(e);
         } finally {
-            PluginDefinition.uploadFileMap.remove();
+            PluginDefinition.UPLOADFILEMAP.remove();
         }
         return CommonResponse.ok();
     }
