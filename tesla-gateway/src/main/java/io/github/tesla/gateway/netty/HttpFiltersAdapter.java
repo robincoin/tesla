@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 import com.google.common.collect.Lists;
 
@@ -56,7 +57,11 @@ import io.netty.handler.codec.http.HttpVersion;
 public class HttpFiltersAdapter {
     private static Logger logger = LoggerFactory.getLogger(HttpFiltersAdapter.class);
 
+    private static final String ENABLE_METRCIS_KEY = "server.metrcis";
+
     private final ChannelHandlerContext ctx;
+
+    private final Boolean enableMetrcis;
 
     private NettyHttpServletRequest serveletRequest;
 
@@ -67,9 +72,13 @@ public class HttpFiltersAdapter {
     public HttpFiltersAdapter(HttpRequest originalRequest, ChannelHandlerContext ctx) {
         this.ctx = ctx;
         this.serveletRequest = new NettyHttpServletRequest((FullHttpRequest)originalRequest, ctx);
+        this.enableMetrcis = SpringContextHolder.getApplicationContext().getBean(Environment.class)
+            .getProperty(ENABLE_METRCIS_KEY, Boolean.class, Boolean.FALSE);
     }
 
     private void logEnd(HttpResponse response) {
+        if (!enableMetrcis)
+            return;
         long forwardTime = System.currentTimeMillis() - (this.forwardTime == 0L ? this.receivedTime : this.forwardTime);
         long completeTime = System.currentTimeMillis() - this.receivedTime;
         logger.info(serveletRequest.getRequestURI() + " gateway, forward took [" + forwardTime + " ms], complete took ["
@@ -89,6 +98,8 @@ public class HttpFiltersAdapter {
     }
 
     private void logForward(HttpObject httpObject) {
+        if (!enableMetrcis)
+            return;
         this.forwardTime = System.currentTimeMillis();
         FullHttpRequest fullHttpRequest = (FullHttpRequest)httpObject;
         try {
@@ -102,6 +113,8 @@ public class HttpFiltersAdapter {
     }
 
     private void logStart() {
+        if (!enableMetrcis)
+            return;
         this.receivedTime = System.currentTimeMillis();
         try {
             String requestParam = JsonUtils.serializeToJson(serveletRequest.getParameterMap());
@@ -117,7 +130,7 @@ public class HttpFiltersAdapter {
     }
 
     public HttpResponse clientToProxyRequest(HttpObject httpObject) {
-        // this.logStart();
+        this.logStart();
         HttpResponse httpResponse = null;
         try {
             httpResponse = HttpRequestFilterChain.doFilter(serveletRequest, httpObject, ctx);
@@ -152,7 +165,7 @@ public class HttpFiltersAdapter {
             if (httpObject instanceof HttpResponse) {
                 HttpResponse serverResponse = (HttpResponse)httpObject;
                 HttpResponse response = HttpResponseFilterChain.doFilter(serveletRequest, serverResponse, ctx);
-                // this.logEnd(serverResponse);
+                this.logEnd(serverResponse);
                 return response;
             } else {
                 return httpObject;
@@ -174,7 +187,7 @@ public class HttpFiltersAdapter {
     public void proxyToServerConnectionSucceeded(ChannelHandlerContext serverCtx) {}
 
     public HttpResponse proxyToServerRequest(HttpObject httpObject) {
-        //this.logForward(httpObject);
+        this.logForward(httpObject);
         return null;
     }
 
