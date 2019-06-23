@@ -30,18 +30,14 @@ public class WafRequestPluginMetadata extends RequestPluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, WafRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafRequestPlugin.class).filterType())) {
-                return (WafRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
-                    new WafRequestPluginMetadata(clz));
-            }
-        }
-        return null;
-    }
-
-    public static WafRequestPluginMetadata findMetadataByType(String filterType) {
-        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, WafRequestPlugin.class);
-        for (Class clz : allClasses) {
-            if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafRequestPlugin.class).filterType())) {
-                return new WafRequestPluginMetadata(clz);
+                final String claaName = clz.getName();
+                if (REQUESTPLUGINMETADATA_INSTANCE_CACHE.containsKey(claaName)) {
+                    return (WafRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.get(claaName);
+                } else {
+                    WafRequestPluginMetadata metadata = new WafRequestPluginMetadata(clz);
+                    REQUESTPLUGINMETADATA_INSTANCE_CACHE.put(claaName, metadata);
+                    return metadata;
+                }
             }
         }
         return null;
@@ -49,7 +45,7 @@ public class WafRequestPluginMetadata extends RequestPluginMetadata {
 
     public static String validate(String pluginType, String paramJson) {
         try {
-            WafRequestPluginMetadata metadata = findMetadataByType(pluginType);
+            WafRequestPluginMetadata metadata = findAndCacheMetadataByType(pluginType);
             if (metadata == null) {
                 return paramJson;
             } else {

@@ -31,18 +31,14 @@ public class ServiceResponsePluginMetadata extends ResponsePluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, ServiceResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceResponsePlugin.class).filterType())) {
-                return (ServiceResponsePluginMetadata)RESPONSEPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
-                    new ServiceResponsePluginMetadata(clz));
-            }
-        }
-        return null;
-    }
-
-    public static ServiceResponsePluginMetadata findMetadataByType(String filterType) {
-        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, ServiceResponsePlugin.class);
-        for (Class clz : allClasses) {
-            if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceResponsePlugin.class).filterType())) {
-                return new ServiceResponsePluginMetadata(clz);
+                final String claaName = clz.getName();
+                if (RESPONSEPLUGINMETADATA_INSTANCE_CACHE.containsKey(claaName)) {
+                    return (ServiceResponsePluginMetadata)RESPONSEPLUGINMETADATA_INSTANCE_CACHE.get(claaName);
+                } else {
+                    ServiceResponsePluginMetadata metadata = new ServiceResponsePluginMetadata(clz);
+                    RESPONSEPLUGINMETADATA_INSTANCE_CACHE.put(claaName, metadata);
+                    return metadata;
+                }
             }
         }
         return null;
@@ -50,7 +46,7 @@ public class ServiceResponsePluginMetadata extends ResponsePluginMetadata {
 
     public static String validate(String pluginType, String paramJson, ServiceDTO serviceDTO) {
         try {
-            ServiceResponsePluginMetadata metadata = findMetadataByType(pluginType);
+            ServiceResponsePluginMetadata metadata = findAndCacheMetadataByType(pluginType);
             if (metadata == null) {
                 return paramJson;
             } else {

@@ -33,19 +33,14 @@ public class EndpointRequestPluginMetadata extends RequestPluginMetadata {
             ClassUtils.findAllClasses(FilterMetadata.FILTER_SCAN_PACKAGE, EndpointRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, EndpointRequestPlugin.class).filterType())) {
-                return (EndpointRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
-                    new EndpointRequestPluginMetadata(clz));
-            }
-        }
-        return null;
-    }
-
-    public static EndpointRequestPluginMetadata findMetadataByType(String filterType) {
-        Set<Class<?>> allClasses =
-            ClassUtils.findAllClasses(FilterMetadata.FILTER_SCAN_PACKAGE, EndpointRequestPlugin.class);
-        for (Class clz : allClasses) {
-            if (filterType.equals(AnnotationUtils.findAnnotation(clz, EndpointRequestPlugin.class).filterType())) {
-                return new EndpointRequestPluginMetadata(clz);
+                final String claaName = clz.getName();
+                if (REQUESTPLUGINMETADATA_INSTANCE_CACHE.containsKey(claaName)) {
+                    return (EndpointRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.get(claaName);
+                } else {
+                    EndpointRequestPluginMetadata metadata = new EndpointRequestPluginMetadata(clz);
+                    REQUESTPLUGINMETADATA_INSTANCE_CACHE.put(claaName, metadata);
+                    return metadata;
+                }
             }
         }
         return null;
@@ -53,7 +48,7 @@ public class EndpointRequestPluginMetadata extends RequestPluginMetadata {
 
     public static String validate(String pluginType, String paramJson, ServiceDTO serviceDTO, EndpointDTO endpointDTO) {
         try {
-            EndpointRequestPluginMetadata metadata = findMetadataByType(pluginType);
+            EndpointRequestPluginMetadata metadata = findAndCacheMetadataByType(pluginType);
             if (metadata == null) {
                 return paramJson;
             } else {

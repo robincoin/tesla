@@ -31,18 +31,14 @@ public class ServiceRequestPluginMetadata extends RequestPluginMetadata {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, ServiceRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceRequestPlugin.class).filterType())) {
-                return (ServiceRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
-                    new ServiceRequestPluginMetadata(clz));
-            }
-        }
-        return null;
-    }
-
-    public static ServiceRequestPluginMetadata findMetadataByType(String filterType) {
-        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, ServiceRequestPlugin.class);
-        for (Class clz : allClasses) {
-            if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceRequestPlugin.class).filterType())) {
-                return new ServiceRequestPluginMetadata(clz);
+                final String claaName = clz.getName();
+                if (REQUESTPLUGINMETADATA_INSTANCE_CACHE.containsKey(claaName)) {
+                    return (ServiceRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.get(claaName);
+                } else {
+                    ServiceRequestPluginMetadata metadata = new ServiceRequestPluginMetadata(clz);
+                    REQUESTPLUGINMETADATA_INSTANCE_CACHE.put(claaName, metadata);
+                    return metadata;
+                }
             }
         }
         return null;
@@ -50,7 +46,7 @@ public class ServiceRequestPluginMetadata extends RequestPluginMetadata {
 
     public static String validate(String pluginType, String paramJson, ServiceDTO serviceDTO) {
         try {
-            ServiceRequestPluginMetadata metadata = findMetadataByType(pluginType);
+            ServiceRequestPluginMetadata metadata = findAndCacheMetadataByType(pluginType);
             if (metadata == null) {
                 return paramJson;
             } else {
