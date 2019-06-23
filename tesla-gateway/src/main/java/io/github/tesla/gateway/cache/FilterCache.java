@@ -111,7 +111,7 @@ public class FilterCache {
         List<ServiceResponsePluginExecutor> reponseFilterCaches, CommonPluginDTO servicePluginDTO,
         Set<String> ignoreClassSet) throws Exception {
         RequestPluginMetadata requestPluginEnum =
-            ServiceRequestPluginMetadata.getMetadataByType(servicePluginDTO.getPluginType());
+            ServiceRequestPluginMetadata.findAndCacheMetadataByType(servicePluginDTO.getPluginType());
         CommonPluginExecutor cache = initBaseFilterCache(servicePluginDTO);
         if (requestPluginEnum != null) {
             cache = buildAndAddRequestFilter(requestFilterCaches, ignoreClassSet, requestPluginEnum, cache);
@@ -119,7 +119,7 @@ public class FilterCache {
                 return;
         }
         ResponsePluginMetadata responsePluginEnum =
-            ServiceResponsePluginMetadata.getMetadataByType(servicePluginDTO.getPluginType());
+            ServiceResponsePluginMetadata.findAndCacheMetadataByType(servicePluginDTO.getPluginType());
         if (responsePluginEnum != null) {
             cache = buildAndAddResponseFilter(reponseFilterCaches, ignoreClassSet, cache, responsePluginEnum);
             if (cache == null)
@@ -131,7 +131,7 @@ public class FilterCache {
         List<ServiceResponsePluginExecutor> reponseFilterCaches, CommonPluginDTO endpointPluginDTO,
         Set<String> ignoreClassSet) throws Exception {
         RequestPluginMetadata requestPluginEnum =
-            EndpointRequestPluginMetadata.getMetadataByType(endpointPluginDTO.getPluginType());
+            EndpointRequestPluginMetadata.findAndCacheMetadataByType(endpointPluginDTO.getPluginType());
         CommonPluginExecutor cache = initBaseFilterCache(endpointPluginDTO);
         if (requestPluginEnum != null) {
             cache = buildAndAddRequestFilter(requestFilterCaches, ignoreClassSet, requestPluginEnum, cache);
@@ -139,7 +139,7 @@ public class FilterCache {
                 return;
         }
         ResponsePluginMetadata responsePluginEnum =
-            EndpointResponsePluginMetadata.getMetadataByType(endpointPluginDTO.getPluginType());
+            EndpointResponsePluginMetadata.findAndCacheMetadataByType(endpointPluginDTO.getPluginType());
         if (responsePluginEnum != null) {
             cache = buildAndAddResponseFilter(reponseFilterCaches, ignoreClassSet, cache, responsePluginEnum);
             if (cache == null)
@@ -319,7 +319,7 @@ public class FilterCache {
         Set<String> ignoreClassSet = Sets.newHashSet();
         for (GatewayWafDO waf : wafDOS) {
             try {
-                WafRequestPluginMetadata requestEnum = WafRequestPluginMetadata.getMetadataByType(waf.getWafType());
+                WafRequestPluginMetadata requestEnum = WafRequestPluginMetadata.findAndCacheMetadataByType(waf.getWafType());
                 if (requestEnum != null) {
                     WafRequestPluginExecutor cache = new WafRequestPluginExecutor();
                     cache.setFilterName(waf.getWafName());
@@ -335,7 +335,7 @@ public class FilterCache {
                     cache.setRequestPluginEnum(requestEnum);
                     tmpWafRequestCacheList.add(cache);
                 }
-                WafResponsePluginMetadata responseEnum = WafResponsePluginMetadata.getMetadataByType(waf.getWafType());
+                WafResponsePluginMetadata responseEnum = WafResponsePluginMetadata.findAndCacheMetadataByType(waf.getWafType());
                 if (responseEnum != null) {
                     WafResponsePluginExecutor cache = new WafResponsePluginExecutor();
                     cache.setFilterName(waf.getWafName());

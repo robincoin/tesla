@@ -8,6 +8,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import io.github.tesla.common.dto.EndpointDTO;
 import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.AbstractResponsePlugin;
+import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.support.annnotation.EndpointResponsePlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
@@ -27,10 +28,7 @@ public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
         this.setDefinitionClazz(annotation.definitionClazz());
     }
 
-    public static EndpointResponsePluginMetadata getMetadataByType(String filterType) {
-        if (StringUtils.isBlank(filterType)) {
-            return null;
-        }
+    public static EndpointResponsePluginMetadata findAndCacheMetadataByType(String filterType) {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, EndpointResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, EndpointResponsePlugin.class).filterType())) {
@@ -41,14 +39,25 @@ public class EndpointResponsePluginMetadata extends ResponsePluginMetadata {
         return null;
     }
 
+    public static EndpointResponsePluginMetadata findMetadataByType(String filterType) {
+        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, EndpointResponsePlugin.class);
+        for (Class clz : allClasses) {
+            if (filterType.equals(AnnotationUtils.findAnnotation(clz, EndpointResponsePlugin.class).filterType())) {
+                return new EndpointResponsePluginMetadata(clz);
+            }
+        }
+        return null;
+    }
+
     public static String validate(String pluginType, String paramJson, ServiceDTO serviceDTO, EndpointDTO endpointDTO) {
         try {
-            EndpointResponsePluginMetadata metadata = getMetadataByType(pluginType);
-            if (metadata == null || metadata.getDefinitionClazz() == null) {
+            EndpointResponsePluginMetadata metadata = findMetadataByType(pluginType);
+            if (metadata == null) {
                 return paramJson;
+            } else {
+                PluginDefinition pluginDefinition = metadata.getDefinitionClazz().newInstance();
+                return pluginDefinition.validate(paramJson, serviceDTO, endpointDTO);
             }
-            return metadata.getDefinitionClazz().getDeclaredConstructor().newInstance().validate(paramJson, serviceDTO,
-                endpointDTO);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

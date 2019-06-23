@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import io.github.tesla.filter.AbstractResponsePlugin;
+import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.support.annnotation.WafResponsePlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
@@ -25,7 +26,7 @@ public class WafResponsePluginMetadata extends ResponsePluginMetadata {
         super.setDefinitionClazz(annotation.definitionClazz());
     }
 
-    public static WafResponsePluginMetadata getMetadataByType(String filterType) {
+    public static WafResponsePluginMetadata findAndCacheMetadataByType(String filterType) {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, WafResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafResponsePlugin.class).filterType())) {
@@ -36,13 +37,25 @@ public class WafResponsePluginMetadata extends ResponsePluginMetadata {
         return null;
     }
 
+    public static WafResponsePluginMetadata findMetadataByType(String filterType) {
+        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, WafResponsePlugin.class);
+        for (Class clz : allClasses) {
+            if (filterType.equals(AnnotationUtils.findAnnotation(clz, WafResponsePlugin.class).filterType())) {
+                return new WafResponsePluginMetadata(clz);
+            }
+        }
+        return null;
+    }
+
     public static String validate(String pluginType, String paramJson) {
         try {
-            WafResponsePluginMetadata metadata = getMetadataByType(pluginType);
-            if (metadata == null || metadata.getDefinitionClazz() == null) {
+            WafResponsePluginMetadata metadata = findMetadataByType(pluginType);
+            if (metadata == null) {
                 return paramJson;
+            } else {
+                PluginDefinition pluginDefinition = metadata.getDefinitionClazz().newInstance();
+                return pluginDefinition.validate(paramJson);
             }
-            return metadata.getDefinitionClazz().getDeclaredConstructor().newInstance().validate(paramJson);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

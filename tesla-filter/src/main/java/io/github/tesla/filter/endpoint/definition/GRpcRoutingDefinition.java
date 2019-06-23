@@ -68,13 +68,13 @@ public class GRpcRoutingDefinition extends PluginDefinition {
         Preconditions.checkArgument(StringUtils.isNotBlank(definition.getServiceName()), "rpc-grpc路由-服务名称不可为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(definition.getProtoFileId()), "rpc-grpc路由-grpc文件不可为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(definition.getMethodName()), "rpc-grpc路由-方法不可为空");
-        if (definition.getProtoFileId().contains(fileTabEndPoint)) {
-            String proFileId = SnowflakeIdWorker.nextId(PluginDefinition.filePrefix);
-            Preconditions.checkNotNull(PluginDefinition.uploadFileMap.get().get(definition.getProtoFileId()),
+        if (definition.getProtoFileId().contains(FILETABENDPOINT)) {
+            String proFileId = SnowflakeIdWorker.nextId(PluginDefinition.FILEPREFIX);
+            Preconditions.checkNotNull(PluginDefinition.UPLOADFILEMAP.get().get(definition.getProtoFileId()),
                 "rpc-grpc路由-grpc文件不可为空");
-            PluginDefinition.uploadFileMap.get().put(proFileId,
-                PluginDefinition.uploadFileMap.get().get(definition.getProtoFileId()));
-            PluginDefinition.uploadFileMap.get().remove(definition.getProtoFileId());
+            PluginDefinition.UPLOADFILEMAP.get().put(proFileId,
+                PluginDefinition.UPLOADFILEMAP.get().get(definition.getProtoFileId()));
+            PluginDefinition.UPLOADFILEMAP.get().remove(definition.getProtoFileId());
             definition.setProtoFileId(proFileId);
         }
         return JsonUtils.serializeToJson(definition);

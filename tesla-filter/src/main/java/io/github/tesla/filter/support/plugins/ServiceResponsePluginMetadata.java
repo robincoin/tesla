@@ -7,6 +7,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.AbstractResponsePlugin;
+import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.support.annnotation.ServiceResponsePlugin;
 import io.github.tesla.filter.utils.ClassUtils;
 
@@ -26,10 +27,7 @@ public class ServiceResponsePluginMetadata extends ResponsePluginMetadata {
         this.setDefinitionClazz(annotation.definitionClazz());
     }
 
-    public static ServiceResponsePluginMetadata getMetadataByType(String filterType) {
-        if (StringUtils.isBlank(filterType)) {
-            return null;
-        }
+    public static ServiceResponsePluginMetadata findAndCacheMetadataByType(String filterType) {
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, ServiceResponsePlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceResponsePlugin.class).filterType())) {
@@ -40,13 +38,25 @@ public class ServiceResponsePluginMetadata extends ResponsePluginMetadata {
         return null;
     }
 
+    public static ServiceResponsePluginMetadata findMetadataByType(String filterType) {
+        Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, ServiceResponsePlugin.class);
+        for (Class clz : allClasses) {
+            if (filterType.equals(AnnotationUtils.findAnnotation(clz, ServiceResponsePlugin.class).filterType())) {
+                return new ServiceResponsePluginMetadata(clz);
+            }
+        }
+        return null;
+    }
+
     public static String validate(String pluginType, String paramJson, ServiceDTO serviceDTO) {
         try {
-            ServiceResponsePluginMetadata metadata = getMetadataByType(pluginType);
-            if (metadata == null || metadata.getDefinitionClazz() == null) {
+            ServiceResponsePluginMetadata metadata = findMetadataByType(pluginType);
+            if (metadata == null) {
                 return paramJson;
+            } else {
+                PluginDefinition pluginDefinition = metadata.getDefinitionClazz().newInstance();
+                return pluginDefinition.validate(paramJson, serviceDTO);
             }
-            return metadata.getDefinitionClazz().getDeclaredConstructor().newInstance().validate(paramJson, serviceDTO);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -139,15 +139,15 @@ public class GatewayService {
         });
         List<GatewayEndpointPluginDO> endpointPluginDOS = serviceVO.getEndpointPluginDOList();
         endpointPluginDOS.forEach(pluginDO -> endpointPluginMapper.insert(pluginDO));
-        if (!MapUtils.isEmpty(PluginDefinition.uploadFileMap.get())) {
-            PluginDefinition.uploadFileMap.get().keySet().forEach(fileKey -> {
-                if (fileKey.contains(PluginDefinition.fileTabEndPoint)) {
+        if (!MapUtils.isEmpty(PluginDefinition.UPLOADFILEMAP.get())) {
+            PluginDefinition.UPLOADFILEMAP.get().keySet().forEach(fileKey -> {
+                if (fileKey.contains(PluginDefinition.FILETABENDPOINT)) {
                     return;
                 }
                 GatewayFileDO fileDO = new GatewayFileDO();
                 fileDO.setFileId(fileKey);
                 fileDO.setFileName(fileKey);
-                fileDO.setFileBlob(PluginDefinition.uploadFileMap.get().get(fileKey));
+                fileDO.setFileBlob(PluginDefinition.UPLOADFILEMAP.get().get(fileKey));
                 fileMapper.insert(fileDO);
             });
         }

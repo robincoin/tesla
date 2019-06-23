@@ -98,7 +98,7 @@ public final class ClassUtils {
             if (clazz == null) {
                 return null;
             }
-            T object = (T)clazz.getDeclaredConstructor().newInstance();
+            T object = (T)clazz.newInstance();
             return object;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -120,7 +120,7 @@ public final class ClassUtils {
                         if (annotation.getDeclaredMethod(methodName)
                             .invoke(AnnotationUtils.findAnnotation(classes, annotation)).equals(value)) {
                             try {
-                                BEAN_CACHE.put(key, classes.getDeclaredConstructor().newInstance());
+                                BEAN_CACHE.put(key, classes.newInstance());
                             } catch (Exception e) {
                                 log.error(e.getMessage(), e);
                                 throw e;
