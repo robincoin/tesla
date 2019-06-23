@@ -45,8 +45,7 @@ public class CreateTokenTypeEnum {
             return paramJson;
         }
         try {
-            return fromType(tokenType).definitionClazz.getDeclaredConstructor().newInstance().validate(paramJson,
-                serviceDTO);
+            return fromType(tokenType).definitionClazz.newInstance().validate(paramJson, serviceDTO);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

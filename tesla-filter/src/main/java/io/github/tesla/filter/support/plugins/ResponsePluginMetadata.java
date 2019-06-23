@@ -6,6 +6,7 @@ import java.util.WeakHashMap;
 
 import io.github.tesla.filter.AbstractResponsePlugin;
 
+@SuppressWarnings({"unchecked"})
 public class ResponsePluginMetadata extends FilterMetadata {
 
     private static final long serialVersionUID = 1L;
@@ -26,9 +27,8 @@ public class ResponsePluginMetadata extends FilterMetadata {
         return filterClass;
     }
 
-    @SuppressWarnings({"unchecked"})
     public <T extends AbstractResponsePlugin> T getInstance() throws Exception {
-        return (T)RESPONSEPLUGIN_INSTANCE_CACHE.putIfAbsent(getFilterClass().getName(),
-            getFilterClass().getDeclaredConstructor().newInstance());
+        final Class<? extends AbstractResponsePlugin> clazz = this.filterClass;
+        return (T)RESPONSEPLUGIN_INSTANCE_CACHE.putIfAbsent(clazz.getName(), clazz.newInstance());
     }
 }

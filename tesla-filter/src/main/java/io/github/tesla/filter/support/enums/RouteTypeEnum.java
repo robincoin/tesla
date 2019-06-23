@@ -40,7 +40,7 @@ public enum RouteTypeEnum {
 
     public static String validate(String routerType, String paramJson, ServiceDTO serviceDTO) {
         try {
-            return fromType(routerType).clazz.getDeclaredConstructor().newInstance().validate(paramJson, serviceDTO);
+            return fromType(routerType).clazz.newInstance().validate(paramJson, serviceDTO);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -48,8 +48,7 @@ public enum RouteTypeEnum {
 
     public static String validate(String routerType, String paramJson, ServiceDTO serviceDTO, EndpointDTO endpointDTO) {
         try {
-            return fromType(routerType).clazz.getDeclaredConstructor().newInstance().validate(paramJson, serviceDTO,
-                endpointDTO);
+            return fromType(routerType).clazz.newInstance().validate(paramJson, serviceDTO, endpointDTO);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

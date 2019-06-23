@@ -28,7 +28,7 @@ public class RequestPluginMetadata extends FilterMetadata {
     }
 
     public <T extends AbstractRequestPlugin> T getInstance() throws Exception {
-        return (T)REQUESTPLUGIN_INSTANCE_CACHE.putIfAbsent(getFilterClass().getName(),
-            getFilterClass().getDeclaredConstructor().newInstance());
+        final Class<? extends AbstractRequestPlugin> clazz = this.filterClass;
+        return (T)REQUESTPLUGIN_INSTANCE_CACHE.putIfAbsent(clazz.getName(), clazz.newInstance());
     }
 }

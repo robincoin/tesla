@@ -68,7 +68,7 @@ public class GroovyExecuteRequestPlugin extends AbstractRequestPlugin {
                     Class<?> clazz = GroovyCompiler.compile(definition.getGroovyScript());
                     if (clazz != null && GroovyExecuteRequestPlugin.class.isAssignableFrom(clazz)
                         && !Modifier.isAbstract(clazz.getModifiers()) && !clazz.isInterface()) {
-                        userFilter = (GroovyExecuteRequestPlugin)clazz.getDeclaredConstructor().newInstance();
+                        userFilter = (GroovyExecuteRequestPlugin)clazz.newInstance();
                         userFilter.setSpringCloudDiscovery(this.getSpringCloudDiscovery());
                         groovyInstance.put(definition.getGroovyScript(), userFilter);
                     }
