@@ -9,6 +9,13 @@ JAVA_OPTS="-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses $JAVA_OPTS "
 JAVA_OPTS="-XX:+CMSClassUnloadingEnabled $JAVA_OPTS "
 JAVA_OPTS="-XX:+ParallelRefProcEnabled $JAVA_OPTS "
 JAVA_OPTS="-XX:+CMSScavengeBeforeRemark $JAVA_OPTS"
+JAVA_OPTS="-XX:+HeapDumpOnOutOfMemoryError $JAVA_OPTS"
+JAVA_OPTS="-XX:+PrintClassHistogramBeforeFullGC $JAVA_OPTS"
+JAVA_OPTS="-XX:+PrintClassHistogramAfterFullGC $JAVA_OPTS"
+JAVA_OPTS="-XX:+PrintGCApplicationConcurrentTime $JAVA_OPTS"
+JAVA_OPTS="-XX:+PrintGCApplicationStoppedTime $JAVA_OPTS"
+JAVA_OPTS="-XX:+PrintTenuringDistribution $JAVA_OPTS"
+JAVA_OPTS="-XX:+PrintHeapAtGC $JAVA_OPTS"
 JAVA_OPTS="-XX:MaxDirectMemorySize=100M $JAVA_OPTS"
 JAVA_OPTS="${JAVA_OPTS} -Dio.netty.leakDetection.level=PARANOID"
 JAVA_OPTS="${JAVA_OPTS} -Dio.netty.leakDetection.maxRecords=32"
@@ -19,3 +26,4 @@ java $JAVA_OPTS -jar ./app.jar
 
 
 
+  
