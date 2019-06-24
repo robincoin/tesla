@@ -29,6 +29,13 @@ public class RequestPluginMetadata extends FilterMetadata {
 
     public <T extends AbstractRequestPlugin> T getInstance() throws Exception {
         final Class<? extends AbstractRequestPlugin> clazz = this.filterClass;
-        return (T)REQUESTPLUGIN_INSTANCE_CACHE.putIfAbsent(clazz.getName(), clazz.newInstance());
+        final String clazzName = clazz.getName();
+        if (REQUESTPLUGIN_INSTANCE_CACHE.containsKey(clazzName)) {
+            return (T)REQUESTPLUGIN_INSTANCE_CACHE.get(clazzName);
+        } else {
+            T clazzInstance = (T)clazz.newInstance();
+            REQUESTPLUGIN_INSTANCE_CACHE.put(clazzName, clazzInstance);
+            return clazzInstance;
+        }
     }
 }

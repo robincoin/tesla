@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import io.github.tesla.filter.AbstractRequestPlugin;
 import io.github.tesla.filter.AbstractResponsePlugin;
 
 @SuppressWarnings({"unchecked"})
@@ -29,6 +30,13 @@ public class ResponsePluginMetadata extends FilterMetadata {
 
     public <T extends AbstractResponsePlugin> T getInstance() throws Exception {
         final Class<? extends AbstractResponsePlugin> clazz = this.filterClass;
-        return (T)RESPONSEPLUGIN_INSTANCE_CACHE.putIfAbsent(clazz.getName(), clazz.newInstance());
+        final String clazzName = clazz.getName();
+        if (RESPONSEPLUGIN_INSTANCE_CACHE.containsKey(clazzName)) {
+            return (T)RESPONSEPLUGIN_INSTANCE_CACHE.get(clazzName);
+        } else {
+            T clazzInstance = (T)clazz.newInstance();
+            RESPONSEPLUGIN_INSTANCE_CACHE.put(clazzName, clazzInstance);
+            return clazzInstance;
+        }
     }
 }
