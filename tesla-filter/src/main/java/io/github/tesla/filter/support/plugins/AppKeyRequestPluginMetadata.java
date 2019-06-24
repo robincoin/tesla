@@ -26,14 +26,17 @@ public class AppKeyRequestPluginMetadata extends RequestPluginMetadata {
     }
 
     public static AppKeyRequestPluginMetadata getMetadataByType(String filterType) {
-        if (StringUtils.isBlank(filterType)) {
-            return null;
-        }
         Set<Class<?>> allClasses = ClassUtils.findAllClasses(FILTER_SCAN_PACKAGE, AppKeyRequestPlugin.class);
         for (Class clz : allClasses) {
             if (filterType.equals(AnnotationUtils.findAnnotation(clz, AppKeyRequestPlugin.class).filterType())) {
-                return (AppKeyRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.putIfAbsent(clz.getName(),
-                    new AppKeyRequestPluginMetadata(clz));
+                final String claaName = clz.getName();
+                if (REQUESTPLUGINMETADATA_INSTANCE_CACHE.containsKey(claaName)) {
+                    return (AppKeyRequestPluginMetadata)REQUESTPLUGINMETADATA_INSTANCE_CACHE.get(claaName);
+                } else {
+                    AppKeyRequestPluginMetadata metadata = new AppKeyRequestPluginMetadata(clz);
+                    REQUESTPLUGINMETADATA_INSTANCE_CACHE.put(claaName, metadata);
+                    return metadata;
+                }
             }
         }
         return null;
