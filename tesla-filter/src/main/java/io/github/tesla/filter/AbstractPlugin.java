@@ -24,7 +24,11 @@ public class AbstractPlugin {
 
     private static HazelcastInstance hazelcastInstance;
 
-    public static Map<String, Map<String, String>> APPKEYLOCALDEFINITIONMAP = Maps.newHashMap();
+    private static final Map<String, Map<String, String>> APPKEYLOCALDEFINITIONMAP = Maps.newHashMap();
+
+    public static Map<String, Map<String, String>> getAppKeyMap() {
+        return APPKEYLOCALDEFINITIONMAP;
+    }
 
     public static void clearLocalCache() {
         JAR_CACHE.clear();
@@ -54,8 +58,10 @@ public class AbstractPlugin {
         try {
             CacheConstant.READ_WRITE_LOCK.readLock().lock();
             if (ROUTE_CACHE.get(serviceId) == null) {
-                ROUTE_CACHE.put(serviceId, SpringContextHolder.getBean(GatewayApiTextService.class)
-                    .loadGatewayServiceByServiceId(serviceId).getRouterDTO());
+                ServiceRouterDTO routeDTO = SpringContextHolder.getBean(GatewayApiTextService.class)
+                    .loadGatewayServiceByServiceId(serviceId).getRouterDTO();
+                ROUTE_CACHE.put(serviceId, routeDTO);
+                return ROUTE_CACHE.get(serviceId);
             }
             return ROUTE_CACHE.get(serviceId);
         } finally {

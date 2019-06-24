@@ -224,7 +224,7 @@ public class FilterCache {
             if (apiLocalCacheList.size() != apiCacheList.size()) {
                 needRefreshLocalCache = true;
             }
-            if (AbstractPlugin.APPKEYLOCALDEFINITIONMAP.size() != appKeyDefinitionMap.size()) {
+            if (AbstractPlugin.getAppKeyMap().size() != appKeyDefinitionMap.size()) {
                 needRefreshLocalCache = true;
             }
         } finally {
@@ -319,7 +319,8 @@ public class FilterCache {
         Set<String> ignoreClassSet = Sets.newHashSet();
         for (GatewayWafDO waf : wafDOS) {
             try {
-                WafRequestPluginMetadata requestEnum = WafRequestPluginMetadata.findAndCacheMetadataByType(waf.getWafType());
+                WafRequestPluginMetadata requestEnum =
+                    WafRequestPluginMetadata.findAndCacheMetadataByType(waf.getWafType());
                 if (requestEnum != null) {
                     WafRequestPluginExecutor cache = new WafRequestPluginExecutor();
                     cache.setFilterName(waf.getWafName());
@@ -335,7 +336,8 @@ public class FilterCache {
                     cache.setRequestPluginEnum(requestEnum);
                     tmpWafRequestCacheList.add(cache);
                 }
-                WafResponsePluginMetadata responseEnum = WafResponsePluginMetadata.findAndCacheMetadataByType(waf.getWafType());
+                WafResponsePluginMetadata responseEnum =
+                    WafResponsePluginMetadata.findAndCacheMetadataByType(waf.getWafType());
                 if (responseEnum != null) {
                     WafResponsePluginExecutor cache = new WafResponsePluginExecutor();
                     cache.setFilterName(waf.getWafName());
@@ -477,12 +479,13 @@ public class FilterCache {
             wafRequestLocalCacheList = Lists.newArrayList(wafRequestCacheList);
             wafResponseLocalCacheList = Lists.newArrayList(wafResponseCacheList);
             apiLocalCacheList = Lists.newArrayList(apiCacheList);
-            AbstractPlugin.APPKEYLOCALDEFINITIONMAP = Maps.newHashMap(appKeyDefinitionMap);
+            AbstractPlugin.getAppKeyMap().clear();
+            AbstractPlugin.getAppKeyMap().putAll(appKeyDefinitionMap);
             AbstractPlugin.clearLocalCache();
             LOGGER.info("wafRequestLocalCache:" + JsonUtils.serializeToJson(wafRequestLocalCacheList));
             LOGGER.info("wafResponseLocalCache:" + JsonUtils.serializeToJson(wafResponseLocalCacheList));
             LOGGER.info("apiLocalCache:" + JsonUtils.serializeToJson(apiLocalCacheList));
-            LOGGER.info("appKeyLocalCache:" + JsonUtils.serializeToJson(AbstractPlugin.APPKEYLOCALDEFINITIONMAP));
+            LOGGER.info("appKeyLocalCache:" + JsonUtils.serializeToJson(AbstractPlugin.getAppKeyMap()));
         } finally {
             CacheConstant.READ_WRITE_LOCK.writeLock().unlock();
         }
