@@ -8,17 +8,11 @@ import io.github.tesla.gateway.protocol.springcloud.DynamicSpringCloudClient;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponse;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/29 16:39
- * @description:
- */
 public class ServiceRequestPluginExecutor extends CommonPluginExecutor {
 
     private RequestPluginMetadata requestPluginEnum;
 
     public ServiceRequestPluginExecutor(CommonPluginExecutor cache) {
-        super();
         this.setFilterType(cache.getFilterType());
         this.setParamJson(cache.getParamJson());
         this.setFilterName(cache.getFilterName());

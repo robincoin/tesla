@@ -7,11 +7,6 @@ import java.util.List;
 import io.github.tesla.filter.support.enums.HttpMethodEnum;
 import io.github.tesla.filter.utils.AntMatchUtil;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/27 11:42
- * @description:
- */
 public class ServiceExecutor implements Comparable<ServiceExecutor>, Serializable {
 
     private static final long serialVersionUID = 1L;
