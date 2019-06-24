@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import io.github.tesla.filter.AbstractRequestPlugin;
 import io.github.tesla.filter.AbstractResponsePlugin;
 
 @SuppressWarnings({"unchecked"})
