@@ -72,8 +72,8 @@ public class HttpFiltersAdapter {
     public HttpFiltersAdapter(HttpRequest originalRequest, ChannelHandlerContext ctx) {
         this.ctx = ctx;
         this.serveletRequest = new NettyHttpServletRequest((FullHttpRequest)originalRequest, ctx);
-        this.enableMetrcis = SpringContextHolder.getApplicationContext().getBean(Environment.class)
-            .getProperty(ENABLE_METRCIS_KEY, Boolean.class, Boolean.FALSE);
+        this.enableMetrcis = SpringContextHolder.getBean(Environment.class).getProperty(ENABLE_METRCIS_KEY,
+            Boolean.class, Boolean.FALSE);
     }
 
     private void logEnd(HttpResponse response) {

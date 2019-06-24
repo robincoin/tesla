@@ -55,8 +55,6 @@ public class EndpointExecutor implements Comparable<EndpointExecutor>, Serializa
         return endPointMethod;
     }
 
-    ;
-
     public String getEndPointPath() {
         return endPointPath;
     }

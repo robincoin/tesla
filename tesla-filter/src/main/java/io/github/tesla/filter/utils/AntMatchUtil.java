@@ -13,19 +13,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class AntMatchUtil {
-
-    private static final String pathSeparator = "/";
-
-    private static final PathMatcher pathMatcher = new AntPathMatcher();
-    private static final Pattern replacePattern = Pattern.compile("#\\{(\\d+)\\}");
-
+    private static final String PATHSEPARATOR = "/";
+    private static final PathMatcher PATHMATCHER = new AntPathMatcher();
+    private static final Pattern REPLACEPATTERN = Pattern.compile("#\\{(\\d+)\\}");
     private static Pattern HTTP_PREFIX = Pattern.compile("^https?://.*", Pattern.CASE_INSENSITIVE);
 
     public static String concatPath(String... paths) {
         StringBuilder pathBuild = new StringBuilder();
         for (String path : paths) {
             path = path(path);
-            if (path.startsWith(pathSeparator) && pathBuild.toString().endsWith(pathSeparator)) {
+            if (path.startsWith(PATHSEPARATOR) && pathBuild.toString().endsWith(PATHSEPARATOR)) {
                 pathBuild.append(path.substring(1));
             } else {
                 pathBuild.append(path);
@@ -50,7 +47,7 @@ public class AntMatchUtil {
         if (remotePath.indexOf("?") > 0) {
             remotePath = remotePath.substring(0, remotePath.indexOf("?"));
         }
-        return pathMatcher.match(path(pattern), path(remotePath));
+        return PATHMATCHER.match(path(pattern), path(remotePath));
     }
 
     public static boolean matchPrefix(String servicePrefix, String path) {
@@ -58,7 +55,7 @@ public class AntMatchUtil {
         if (remotePath.indexOf("?") > 0) {
             remotePath = remotePath.substring(0, remotePath.indexOf("?"));
         }
-        return concatPath(remotePath, pathSeparator).startsWith(concatPath(servicePrefix, pathSeparator));
+        return concatPath(remotePath, PATHSEPARATOR).startsWith(concatPath(servicePrefix, PATHSEPARATOR));
     }
 
     public static Map<String, String> parseQueryString(String queryString) {
@@ -91,20 +88,16 @@ public class AntMatchUtil {
      */
     public static String path(String path) {
         if (StringUtils.isBlank(path)) {
-            path = pathSeparator;
-        } else if (path.equalsIgnoreCase(pathSeparator)) {
-
-        } else if (path.startsWith(pathSeparator)) {
-
+            path = PATHSEPARATOR;
+        } else if (path.equalsIgnoreCase(PATHSEPARATOR)) {
+        } else if (path.startsWith(PATHSEPARATOR)) {
         } else if (path.startsWith("?")) {
-
         } else if (HTTP_PREFIX.matcher(path).matches()) {
-
         } else {
-            path = pathSeparator + path;
+            path = PATHSEPARATOR + path;
         }
-        if (!path.equalsIgnoreCase(pathSeparator) && path.endsWith(pathSeparator)) {
-            path = StringUtils.substringBeforeLast(path, pathSeparator);
+        if (!path.equalsIgnoreCase(PATHSEPARATOR) && path.endsWith(PATHSEPARATOR)) {
+            path = StringUtils.substringBeforeLast(path, PATHSEPARATOR);
         }
         return path;
     }
@@ -127,7 +120,7 @@ public class AntMatchUtil {
             targetParamStr = targetPath.substring(targetPath.indexOf("?"));
             targetPath = targetPath.substring(0, targetPath.indexOf("?"));
         }
-        if (!pathMatcher.match(patternPath, remotePath)) {
+        if (!PATHMATCHER.match(patternPath, remotePath)) {
             return null;
         }
         // 未自定义转发路径或
@@ -137,8 +130,8 @@ public class AntMatchUtil {
         targetPath = path(targetPath);
         // 包含替换占位符 仅替换Url参数即可
         if (targetPath.contains("#{")) {
-            Matcher matcher = replacePattern.matcher(targetPath);
-            String extractPath = pathMatcher.extractPathWithinPattern(patternPath, remotePath);
+            Matcher matcher = REPLACEPATTERN.matcher(targetPath);
+            String extractPath = PATHMATCHER.extractPathWithinPattern(patternPath, remotePath);
             extractPath = path(extractPath);
             List<String> extractPathList = Lists.newArrayList();
             int maxCount = 0;
@@ -149,12 +142,12 @@ public class AntMatchUtil {
                 }
             }
             for (int i = 1; i <= maxCount; i++) {
-                String mathPath = extractPath.split(pathSeparator)[1];
+                String mathPath = extractPath.split(PATHSEPARATOR)[1];
                 extractPath = extractPath.substring(mathPath.length() + 1);
                 if (i == maxCount && patternPath.endsWith("**")) {
                     mathPath = concatPath(mathPath, extractPath);
                 }
-                if (mathPath.startsWith(pathSeparator)) {
+                if (mathPath.startsWith(PATHSEPARATOR)) {
                     mathPath = mathPath.substring(1);
                 }
                 extractPathList.add(mathPath);

@@ -11,10 +11,6 @@ public class ServiceResponsePluginExecutor extends CommonPluginExecutor {
 
     private ResponsePluginMetadata responsePluginEnum;
 
-    public ServiceResponsePluginExecutor() {
-
-    }
-
     public ServiceResponsePluginExecutor(CommonPluginExecutor cache) {
         super();
         this.setFilterType(cache.getFilterType());

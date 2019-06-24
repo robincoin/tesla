@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 import io.github.tesla.common.service.SpringContextHolder;
 import io.github.tesla.filter.support.servlet.NettyHttpServletRequest;
@@ -21,18 +22,23 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 public class HttpRequestFilterChain {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestFilterChain.class);
 
+    private static final String ENABLE_WAF_KEY = "server.waf";
+
     public static HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject httpObject,
         ChannelHandlerContext channelHandlerContext) {
         FilterCache cacheComponent = SpringContextHolder.getBean(FilterCache.class);
-        List<WafRequestPluginExecutor> wafRequests = cacheComponent.loadWafRequestPlugins();
-        // 执行waf过滤器
-        for (Iterator<WafRequestPluginExecutor> it = wafRequests.iterator(); it.hasNext();) {
-            WafRequestPluginExecutor plugin = it.next();
-            LOGGER.debug("do filter,the name is:" + plugin.getFilterName());
-            HttpResponse response = plugin.doFilter(servletRequest, httpObject);
-            if (response != null) {
-                LOGGER.debug("hit " + response);
-                return response;
+        Boolean enableWaf =
+            SpringContextHolder.getBean(Environment.class).getProperty(ENABLE_WAF_KEY, Boolean.class, Boolean.FALSE);
+        if (enableWaf) {
+            List<WafRequestPluginExecutor> wafRequests = cacheComponent.loadWafRequestPlugins();
+            for (Iterator<WafRequestPluginExecutor> it = wafRequests.iterator(); it.hasNext();) {
+                WafRequestPluginExecutor plugin = it.next();
+                LOGGER.debug("do filter,the name is:" + plugin.getFilterName());
+                HttpResponse response = plugin.doFilter(servletRequest, httpObject);
+                if (response != null) {
+                    LOGGER.debug("hit " + response);
+                    return response;
+                }
             }
         }
         ServiceExecutor serviceCache = cacheComponent.loadServiceCache(servletRequest.getRequestURI());

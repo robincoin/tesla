@@ -17,10 +17,6 @@ public class ServiceRequestPluginExecutor extends CommonPluginExecutor {
 
     private RequestPluginMetadata requestPluginEnum;
 
-    public ServiceRequestPluginExecutor() {
-
-    }
-
     public ServiceRequestPluginExecutor(CommonPluginExecutor cache) {
         super();
         this.setFilterType(cache.getFilterType());

@@ -8,16 +8,7 @@ import io.github.tesla.gateway.protocol.springcloud.DynamicSpringCloudClient;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponse;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/23 13:52
- * @description:app key 过滤器会用到该cache
- */
 public class AppRequestPluginExecutor extends CommonPluginExecutor {
-
-    public AppRequestPluginExecutor() {
-
-    }
 
     public AppRequestPluginExecutor(CommonPluginExecutor cache) {
         super();
