@@ -3,12 +3,28 @@ services:
   tesla-eureka:
     container_name: tesla-eureka
     image: yunterry/spring-cloud-eureka
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
     ports: 
       - "8761:8761"
     restart: always
   tesla-mysql:
     container_name: tesla-mysql
     image: mysql:5.7
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
     ports:
       - "3306:3306"
     command: --character-set-server=utf8 --collation-server=utf8_general_ci --max-allowed-packet=104857600
@@ -24,6 +40,14 @@ services:
   tesla-backend-sample:
     container_name: tesla-backend-sample
     image: tesla-backend-sample:1.0.0
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
     ports:
       - 8902:8902
       - 2181:2181
@@ -59,10 +83,10 @@ services:
       resources:
         limits:
           cpus: '2'
-          memory: 4096M
+          memory: 8192M
         reservations:
           cpus: '1'
-          memory: 1024M
+          memory: 4096M
     command: ["dockerize", "-wait", "tcp://tesla-mysql:3306", "-wait", "tcp://tesla-backend-sample:2181", "-timeout", "1800s","./start.sh"]
     depends_on:
       - tesla-mysql
