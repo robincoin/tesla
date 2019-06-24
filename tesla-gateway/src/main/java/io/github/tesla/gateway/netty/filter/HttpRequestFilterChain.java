@@ -41,13 +41,14 @@ public class HttpRequestFilterChain {
                 }
             }
         }
-        ServiceExecutor serviceCache = cacheComponent.loadServiceCache(servletRequest.getRequestURI());
+        final String url = servletRequest.getRequestURI();
+        final String method = servletRequest.getMethod();
+        ServiceExecutor serviceCache = cacheComponent.loadServiceCache(url);
         if (serviceCache == null) {
             return PluginUtil.createResponse(HttpResponseStatus.NOT_FOUND, servletRequest.getNettyRequest(),
                 " not found match router config ");
         }
-        List<ServiceRequestPluginExecutor> serviceRequests =
-            serviceCache.matchAndGetRequestFiltes(servletRequest.getRequestURI(), servletRequest.getMethod());
+        List<ServiceRequestPluginExecutor> serviceRequests = serviceCache.matchAndGetRequestFiltes(url, method);
         // 未匹配到endpoint
         if (serviceRequests == null) {
             return PluginUtil.createResponse(HttpResponseStatus.NOT_FOUND, servletRequest.getNettyRequest(),

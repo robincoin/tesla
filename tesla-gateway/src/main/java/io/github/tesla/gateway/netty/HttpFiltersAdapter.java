@@ -63,7 +63,7 @@ public class HttpFiltersAdapter {
 
     private final Boolean enableMetrcis;
 
-    private NettyHttpServletRequest serveletRequest;
+    private final NettyHttpServletRequest serveletRequest;
 
     private long forwardTime = 0L;
 
@@ -161,18 +161,13 @@ public class HttpFiltersAdapter {
     }
 
     public HttpObject proxyToClientResponse(HttpObject httpObject) {
-        try {
-            if (httpObject instanceof HttpResponse) {
-                HttpResponse serverResponse = (HttpResponse)httpObject;
-                HttpResponse response = HttpResponseFilterChain.doFilter(serveletRequest, serverResponse, ctx);
-                this.logEnd(serverResponse);
-                return response;
-            } else {
-                return httpObject;
-            }
-        } finally {
-            // clear servletrequest
-            this.serveletRequest = null;
+        if (httpObject instanceof HttpResponse) {
+            HttpResponse serverResponse = (HttpResponse)httpObject;
+            HttpResponse response = HttpResponseFilterChain.doFilter(serveletRequest, serverResponse, ctx);
+            this.logEnd(serverResponse);
+            return response;
+        } else {
+            return httpObject;
         }
     }
 

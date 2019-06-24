@@ -35,12 +35,13 @@ public class HttpResponseFilterChain {
                 httpResponse = plugin.doFilter(servletRequest, httpResponse);
             }
         }
-        ServiceExecutor serviceCache = cacheComponent.loadServiceCache(servletRequest.getRequestURI());
+        final String url = servletRequest.getRequestURI();
+        final String method = servletRequest.getMethod();
+        ServiceExecutor serviceCache = cacheComponent.loadServiceCache(url);
         if (serviceCache == null) {
             return httpResponse;
         }
-        List<ServiceResponsePluginExecutor> serviceRequests =
-            serviceCache.matchAndGetResponseFiltes(servletRequest.getRequestURI(), servletRequest.getMethod());
+        List<ServiceResponsePluginExecutor> serviceRequests = serviceCache.matchAndGetResponseFiltes(url, method);
         // 执行service and endpoint级别过滤器
         for (Iterator<ServiceResponsePluginExecutor> it = serviceRequests.iterator(); it.hasNext();) {
             ServiceResponsePluginExecutor plugin = it.next();
