@@ -77,7 +77,6 @@ public class ServerGroup {
                     group.awaitTermination(60, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-
                     LOGGER.warn("Interrupted while shutting down event loop");
                 }
             }
