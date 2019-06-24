@@ -1,6 +1,10 @@
 package io.github.tesla.gateway.netty.transmit.connection;
 
-import static io.github.tesla.gateway.netty.transmit.ConnectionState.*;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.AWAITING_CHUNK;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.AWAITING_INITIAL;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.CONNECTING;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.DISCONNECTED;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.HANDSHAKING;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,8 +17,6 @@ import javax.net.ssl.SSLProtocolException;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.net.HostAndPort;
 
@@ -35,7 +37,17 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpMessage;
+import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpRequestEncoder;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseDecoder;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -65,7 +77,6 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
     private final String serverHostAndPort;
     private final boolean enableSSL;
     private final SslContext sslContext;
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProxyToServerConnection.class);
     private String tag;
 
     /**
@@ -152,7 +163,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
                 initialHttpRequest.headers().remove(PluginDefinition.X_TESLA_ENABLE_SSL);
                 return sslCtx;
             } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
+                LOG.error(e.getMessage(), e);
             }
         }
         return null;
