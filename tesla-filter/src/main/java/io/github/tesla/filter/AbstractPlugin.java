@@ -76,7 +76,12 @@ public class AbstractPlugin {
     private SpringCloudDiscovery springCloudDiscovery;
 
     public Map<String, String> getAppKeyMap(String appKey) {
-        return APPKEYLOCALDEFINITIONMAP.get(appKey);
+        try {
+            CacheConstant.READ_WRITE_LOCK.readLock().lock();
+            return APPKEYLOCALDEFINITIONMAP.get(appKey);
+        } finally {
+            CacheConstant.READ_WRITE_LOCK.readLock().unlock();
+        }
     }
 
     public SpringCloudDiscovery getSpringCloudDiscovery() {
