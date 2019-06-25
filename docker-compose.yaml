@@ -104,3 +104,16 @@ services:
       - EUREKA_SERVER=http://tesla-eureka:8761/eureka/
       - ZOOKEEPER_SERVER=zookeeper://tesla-backend-sample:2181
     restart: always
+  tesla-springcloudgateway:
+    container_name: tesla-springcloudgateway
+    image: tesla-springcloudgateway:1.0.0
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 8192M
+        reservations:
+          cpus: '1'
+          memory: 4096M
+    command: ["./start.sh"]
+    restart: always

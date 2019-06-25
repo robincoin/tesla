@@ -7,7 +7,8 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>tesla-backend-sample</module>
-	</modules>
+    <module>tesla-springcloudgateway-sample</module>
+  </modules>
 	<properties>
 		<saluki.version>1.5.8.RELEASE</saluki.version>
 	</properties>
