@@ -16,6 +16,6 @@ public class GatewaySampleApplication {
 
     @Bean
     public RouteLocator myRoutes(RouteLocatorBuilder builder) {
-        return builder.routes().route(p -> p.path("/index").uri("http://172.17.44.129/index.html")).build();
+        return builder.routes().route(p -> p.path("/index").uri("http://www.baidu.com")).build();
     }
 }
