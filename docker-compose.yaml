@@ -116,4 +116,6 @@ services:
           cpus: '1'
           memory: 4096M
     command: ["./start.sh"]
+    ports:
+      - 9000:9001
     restart: always
