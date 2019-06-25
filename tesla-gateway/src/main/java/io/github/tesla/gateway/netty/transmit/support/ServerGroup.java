@@ -19,8 +19,8 @@ public class ServerGroup {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerGroup.class);
 
     public static final int DEFAULT_INCOMING_ACCEPTOR_THREADS = 2;
-    public static final int DEFAULT_INCOMING_WORKER_THREADS = 16;
-    public static final int DEFAULT_OUTGOING_WORKER_THREADS = 16;
+    public static final int DEFAULT_INCOMING_WORKER_THREADS = Runtime.getRuntime().availableProcessors() * 10;
+    public static final int DEFAULT_OUTGOING_WORKER_THREADS = Runtime.getRuntime().availableProcessors() * 10;
     private static final AtomicInteger serverGroupCount = new AtomicInteger(0);
     private static final SelectorProvider selectorProvider = SelectorProvider.provider();
     private static final List<HttpProxyServer> registeredServers = new ArrayList<HttpProxyServer>(1);

@@ -132,17 +132,17 @@ public class HttpFiltersAdapter {
     public HttpResponse clientToProxyRequest(HttpObject httpObject) {
         this.logStart();
         HttpResponse httpResponse = null;
-//        try {
-//            httpResponse = HttpRequestFilterChain.doFilter(serveletRequest, httpObject, ctx);
-//            if (httpResponse != null) {
-//                return httpResponse;
-//            }
-//        } catch (Throwable e) {
-//            httpResponse = ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY);
-//            HttpUtil.setKeepAlive(httpResponse, false);
-//            logger.error("Client connectTo proxy request failed", e);
-//            return httpResponse;
-//        }
+        try {
+            httpResponse = HttpRequestFilterChain.doFilter(serveletRequest, httpObject, ctx);
+            if (httpResponse != null) {
+                return httpResponse;
+            }
+        } catch (Throwable e) {
+            httpResponse = ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY);
+            HttpUtil.setKeepAlive(httpResponse, false);
+            logger.error("Client connectTo proxy request failed", e);
+            return httpResponse;
+        }
         // 路由
         ServiceRouterExecutor routerCache = SpringContextHolder.getBean(FilterCache.class)
             .loadServiceCache(serveletRequest.getRequestURI()).getRouterCache();
@@ -161,15 +161,14 @@ public class HttpFiltersAdapter {
     }
 
     public HttpObject proxyToClientResponse(HttpObject httpObject) {
-//        if (httpObject instanceof HttpResponse) {
-//            HttpResponse serverResponse = (HttpResponse)httpObject;
-//            HttpResponse response = HttpResponseFilterChain.doFilter(serveletRequest, serverResponse, ctx);
-//            this.logEnd(serverResponse);
-//            return response;
-//        } else {
-//            return httpObject;
-//        }
-        return httpObject;
+        if (httpObject instanceof HttpResponse) {
+            HttpResponse serverResponse = (HttpResponse)httpObject;
+            HttpResponse response = HttpResponseFilterChain.doFilter(serveletRequest, serverResponse, ctx);
+            this.logEnd(serverResponse);
+            return response;
+        } else {
+            return httpObject;
+        }
     }
 
     public void proxyToServerConnectionFailed() {}
