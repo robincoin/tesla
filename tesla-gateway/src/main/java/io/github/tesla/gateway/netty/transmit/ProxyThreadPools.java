@@ -20,15 +20,12 @@ public class ProxyThreadPools {
         int outgoingWorkerThreads, String serverGroupName, int serverGroupId) {
         clientToProxyAcceptorPool = new NioEventLoopGroup(incomingAcceptorThreads,
             new CategorizedThreadFactory(serverGroupName, "ClientToProxyAcceptor", serverGroupId), selectorProvider);
-
-        clientToProxyWorkerPool = new NioEventLoopGroup(incomingWorkerThreads,
-            new CategorizedThreadFactory(serverGroupName, "ClientToProxyWorker", serverGroupId), selectorProvider);
-        clientToProxyWorkerPool.setIoRatio(90);
-
-        proxyToServerWorkerPool = new NioEventLoopGroup(outgoingWorkerThreads,
-            new CategorizedThreadFactory(serverGroupName, "ProxyToServerWorker", serverGroupId), selectorProvider);
-
-        proxyToServerWorkerPool.setIoRatio(90);
+        NioEventLoopGroup eventLoogGroup = new NioEventLoopGroup(incomingWorkerThreads + outgoingWorkerThreads,
+            new CategorizedThreadFactory(serverGroupName, "ClientToProxyWorkerAndProxyToServerWorker", serverGroupId),
+            selectorProvider);
+        eventLoogGroup.setIoRatio(90);
+        clientToProxyWorkerPool = eventLoogGroup;
+        proxyToServerWorkerPool = eventLoogGroup;
     }
 
     public List<EventLoopGroup> getAllEventLoops() {

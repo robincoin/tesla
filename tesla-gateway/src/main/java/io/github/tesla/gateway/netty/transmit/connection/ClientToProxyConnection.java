@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.utils.NetworkUtil;
@@ -69,11 +70,9 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
     /**
      * Keep track of all ProxyToServerConnections by host+port.
      */
-    private final Map<String, ProxyToServerConnection> oneToOneServerConnectionsByHostAndPort =
-        Collections.synchronizedMap(new WeakHashMap<String, ProxyToServerConnection>());
+    private final Map<String, ProxyToServerConnection> oneToOneServerConnectionsByHostAndPort = Maps.newConcurrentMap();
 
-    private final Map<String, ProxyToServerConnection> oneToManyServerConnectionsByHostAndPort =
-        Collections.synchronizedMap(new WeakHashMap<String, ProxyToServerConnection>());
+    private final Map<String, ProxyToServerConnection> oneToManyServerConnectionsByHostAndPort = Maps.newConcurrentMap();
     /**
      * Keep track of how many servers are currently in the process of connecting.
      */
