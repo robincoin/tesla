@@ -19,8 +19,7 @@ public class ServerGroup {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerGroup.class);
 
     public static final int DEFAULT_INCOMING_ACCEPTOR_THREADS = 2;
-    public static final int DEFAULT_INCOMING_WORKER_THREADS = 8;
-    public static final int DEFAULT_OUTGOING_WORKER_THREADS = 8;
+    public static final int DEFAULT_INCOMING_OUTING_WORKER_THREADS = 8;
     private static final AtomicInteger serverGroupCount = new AtomicInteger(0);
     private static final SelectorProvider selectorProvider = SelectorProvider.provider();
     private static final List<HttpProxyServer> registeredServers = new ArrayList<HttpProxyServer>(1);
@@ -29,21 +28,17 @@ public class ServerGroup {
     private final Object SERVER_REGISTRATION_LOCK = new Object();
     private final AtomicBoolean stopped = new AtomicBoolean(false);
 
-    public ServerGroup(String name, int incomingAcceptorThreads, int incomingWorkerThreads, int outgoingWorkerThreads) {
-        this.proxyThreadPools = new ProxyThreadPools(selectorProvider, incomingAcceptorThreads, incomingWorkerThreads,
-            outgoingWorkerThreads, name, serverGroupCount.getAndIncrement());
+    public ServerGroup(String name, int incomingAcceptorThreads, int incomingAndOutingWorkerThreads) {
+        this.proxyThreadPools = new ProxyThreadPools(selectorProvider, incomingAcceptorThreads,
+            incomingAndOutingWorkerThreads, name, serverGroupCount.getAndIncrement());
     }
 
     public EventLoopGroup getClientToProxyAcceptorPoolForTransport() {
         return proxyThreadPools.getClientToProxyAcceptorPool();
     }
 
-    public EventLoopGroup getClientToProxyWorkerPoolForTransport() {
+    public EventLoopGroup getClientToProxyWorkerPoolAndProxyToServerWorkerForTransport() {
         return proxyThreadPools.getClientToProxyWorkerPool();
-    }
-
-    public EventLoopGroup getProxyToServerWorkerPoolForTransport() {
-        return proxyThreadPools.getProxyToServerWorkerPool();
     }
 
     public boolean isStopped() {

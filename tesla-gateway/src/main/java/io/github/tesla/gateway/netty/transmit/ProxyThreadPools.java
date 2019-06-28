@@ -12,25 +12,21 @@ public class ProxyThreadPools {
 
     private final NioEventLoopGroup clientToProxyAcceptorPool;
 
-    private final NioEventLoopGroup clientToProxyWorkerPool;
-
-    private final NioEventLoopGroup proxyToServerWorkerPool;
+    private final NioEventLoopGroup clientToProxyWorkerPoolAndProxyServerWorker;
 
     public ProxyThreadPools(SelectorProvider selectorProvider, int incomingAcceptorThreads, int incomingWorkerThreads,
-        int outgoingWorkerThreads, String serverGroupName, int serverGroupId) {
+        String serverGroupName, int serverGroupId) {
         clientToProxyAcceptorPool = new NioEventLoopGroup(incomingAcceptorThreads,
             new CategorizedThreadFactory(serverGroupName, "ClientToProxyAcceptor", serverGroupId), selectorProvider);
-        NioEventLoopGroup eventLoogGroup = new NioEventLoopGroup(incomingWorkerThreads + outgoingWorkerThreads,
+        NioEventLoopGroup eventLoogGroup = new NioEventLoopGroup(incomingWorkerThreads,
             new CategorizedThreadFactory(serverGroupName, "ClientToProxyWorkerAndProxyToServerWorker", serverGroupId),
             selectorProvider);
         eventLoogGroup.setIoRatio(90);
-        clientToProxyWorkerPool = eventLoogGroup;
-        proxyToServerWorkerPool = eventLoogGroup;
+        clientToProxyWorkerPoolAndProxyServerWorker = eventLoogGroup;
     }
 
     public List<EventLoopGroup> getAllEventLoops() {
-        return ImmutableList.<EventLoopGroup>of(clientToProxyAcceptorPool, clientToProxyWorkerPool,
-            proxyToServerWorkerPool);
+        return ImmutableList.<EventLoopGroup>of(clientToProxyAcceptorPool, clientToProxyWorkerPoolAndProxyServerWorker);
     }
 
     public NioEventLoopGroup getClientToProxyAcceptorPool() {
@@ -38,10 +34,7 @@ public class ProxyThreadPools {
     }
 
     public NioEventLoopGroup getClientToProxyWorkerPool() {
-        return clientToProxyWorkerPool;
+        return clientToProxyWorkerPoolAndProxyServerWorker;
     }
 
-    public NioEventLoopGroup getProxyToServerWorkerPool() {
-        return proxyToServerWorkerPool;
-    }
 }

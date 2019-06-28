@@ -1,7 +1,7 @@
 package io.github.tesla.gateway.netty.transmit.connection;
 
 import static io.github.tesla.gateway.netty.transmit.ConnectionState.*;
-import static io.github.tesla.gateway.netty.transmit.support.ServerGroup.DEFAULT_INCOMING_WORKER_THREADS;
+import static io.github.tesla.gateway.netty.transmit.support.ServerGroup.DEFAULT_INCOMING_OUTING_WORKER_THREADS;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -65,7 +65,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
     private static final Pattern HTTP_SCHEME = Pattern.compile("^http://.*", Pattern.CASE_INSENSITIVE);
 
     private static final ExecutorService oneToManyThreadPool = Executors.newFixedThreadPool(
-        DEFAULT_INCOMING_WORKER_THREADS * 2, new CategorizedThreadFactory("Tesla", "ProxySendRequest", 1));
+        DEFAULT_INCOMING_OUTING_WORKER_THREADS * 2, new CategorizedThreadFactory("Tesla", "ProxySendRequest", 1));
 
     /**
      * Keep track of all ProxyToServerConnections by host+port.

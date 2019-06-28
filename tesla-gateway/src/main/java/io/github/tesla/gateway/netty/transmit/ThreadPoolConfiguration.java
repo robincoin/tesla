@@ -8,19 +8,14 @@ import io.github.tesla.gateway.netty.transmit.support.ServerGroup;
  */
 public class ThreadPoolConfiguration {
     private int acceptorThreads = ServerGroup.DEFAULT_INCOMING_ACCEPTOR_THREADS;
-    private int clientToProxyWorkerThreads = ServerGroup.DEFAULT_INCOMING_WORKER_THREADS;
-    private int proxyToServerWorkerThreads = ServerGroup.DEFAULT_OUTGOING_WORKER_THREADS;
+    private int clientToProxyAndProxyToServerWorkerThreads = ServerGroup.DEFAULT_INCOMING_OUTING_WORKER_THREADS;
 
     public int getAcceptorThreads() {
         return acceptorThreads;
     }
 
-    public int getClientToProxyWorkerThreads() {
-        return clientToProxyWorkerThreads;
-    }
-
-    public int getProxyToServerWorkerThreads() {
-        return proxyToServerWorkerThreads;
+    public int getClientToProxyAndProxyToServerWorkerThreads() {
+        return clientToProxyAndProxyToServerWorkerThreads;
     }
 
     /**
@@ -28,7 +23,8 @@ public class ThreadPoolConfiguration {
      * them for processing by client-to-proxy worker threads. The default value is
      * {@link ServerGroup#DEFAULT_INCOMING_ACCEPTOR_THREADS}.
      *
-     * @param acceptorThreads number of acceptor threads to create
+     * @param acceptorThreads
+     *            number of acceptor threads to create
      * @return this thread pool configuration instance, for chaining
      */
     public ThreadPoolConfiguration withAcceptorThreads(int acceptorThreads) {
@@ -38,26 +34,14 @@ public class ThreadPoolConfiguration {
 
     /**
      * Set the number of client-to-proxy worker threads to create. Worker threads perform the actual processing of
-     * client requests. The default value is {@link ServerGroup#DEFAULT_INCOMING_WORKER_THREADS}.
+     * client requests. The default value is {@link ServerGroup#DEFAULT_INCOMING_OUTING_WORKER_THREADS}.
      *
-     * @param clientToProxyWorkerThreads number of client-to-proxy worker threads to create
+     * @param clientToProxyWorkerThreads
+     *            number of client-to-proxy worker threads to create
      * @return this thread pool configuration instance, for chaining
      */
-    public ThreadPoolConfiguration withClientToProxyWorkerThreads(int clientToProxyWorkerThreads) {
-        this.clientToProxyWorkerThreads = clientToProxyWorkerThreads;
-        return this;
-    }
-
-    /**
-     * Set the number of proxy-to-server worker threads to create. Proxy-to-server worker threads make requests to
-     * upstream servers and process responses from the server. The default value is
-     * {@link ServerGroup#DEFAULT_OUTGOING_WORKER_THREADS}.
-     *
-     * @param proxyToServerWorkerThreads number of proxy-to-server worker threads to create
-     * @return this thread pool configuration instance, for chaining
-     */
-    public ThreadPoolConfiguration withProxyToServerWorkerThreads(int proxyToServerWorkerThreads) {
-        this.proxyToServerWorkerThreads = proxyToServerWorkerThreads;
+    public ThreadPoolConfiguration withClientToProxyAndProxyToServerWorkerThreads(int clientToProxyWorkerThreads) {
+        this.clientToProxyAndProxyToServerWorkerThreads = clientToProxyWorkerThreads;
         return this;
     }
 

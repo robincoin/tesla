@@ -47,15 +47,13 @@ public class HttpProxyServerBootstrap {
     private InetSocketAddress localAddress;
     private String proxyAlias;
     private int clientToProxyAcceptorThreads = ServerGroup.DEFAULT_INCOMING_ACCEPTOR_THREADS;
-    private int clientToProxyWorkerThreads = ServerGroup.DEFAULT_INCOMING_WORKER_THREADS;
-    private int proxyToServerWorkerThreads = ServerGroup.DEFAULT_OUTGOING_WORKER_THREADS;
+    private int clientToProxyAndProxyToServerWorkerThreads = ServerGroup.DEFAULT_INCOMING_OUTING_WORKER_THREADS;
     private int maxInitialLineLength = MAX_INITIAL_LINE_LENGTH_DEFAULT;
     private int maxHeaderSize = MAX_HEADER_SIZE_DEFAULT;
     private int maxChunkSize = MAX_CHUNK_SIZE_DEFAULT;
     private boolean allowRequestToOriginServer = false;
 
-    public HttpProxyServerBootstrap() {
-    }
+    public HttpProxyServerBootstrap() {}
 
     public HttpProxyServerBootstrap(Properties props) {
         this.withUseDnsSec(ProxyUtils.extractBooleanDefaultFalse(props, "dnssec"));
@@ -97,8 +95,7 @@ public class HttpProxyServerBootstrap {
         if (this.serverGroup != null) {
             serverGroup = this.serverGroup;
         } else {
-            serverGroup = new ServerGroup(name, clientToProxyAcceptorThreads, clientToProxyWorkerThreads,
-                proxyToServerWorkerThreads);
+            serverGroup = new ServerGroup(name, clientToProxyAcceptorThreads, clientToProxyAndProxyToServerWorkerThreads);
         }
 
         return new HttpProxyServer(serverGroup, determineListenAddress(), filtersSource, transparent,
@@ -198,8 +195,7 @@ public class HttpProxyServerBootstrap {
 
     public HttpProxyServerBootstrap withThreadPoolConfiguration(ThreadPoolConfiguration configuration) {
         this.clientToProxyAcceptorThreads = configuration.getAcceptorThreads();
-        this.clientToProxyWorkerThreads = configuration.getClientToProxyWorkerThreads();
-        this.proxyToServerWorkerThreads = configuration.getProxyToServerWorkerThreads();
+        this.clientToProxyAndProxyToServerWorkerThreads = configuration.getClientToProxyAndProxyToServerWorkerThreads();
         return this;
     }
 
