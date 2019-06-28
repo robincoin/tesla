@@ -33,7 +33,7 @@ public class ProxyThreadPools {
         return clientToProxyAcceptorPool;
     }
 
-    public NioEventLoopGroup getClientToProxyWorkerPool() {
+    public NioEventLoopGroup getClientToProxyWorkerAndProxyToServerPool() {
         return clientToProxyWorkerPoolAndProxyServerWorker;
     }
 

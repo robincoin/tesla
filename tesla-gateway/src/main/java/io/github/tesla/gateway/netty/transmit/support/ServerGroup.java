@@ -38,7 +38,7 @@ public class ServerGroup {
     }
 
     public EventLoopGroup getClientToProxyWorkerPoolAndProxyToServerWorkerForTransport() {
-        return proxyThreadPools.getClientToProxyWorkerPool();
+        return proxyThreadPools.getClientToProxyWorkerAndProxyToServerPool();
     }
 
     public boolean isStopped() {
