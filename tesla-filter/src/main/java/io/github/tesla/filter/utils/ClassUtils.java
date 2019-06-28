@@ -62,16 +62,16 @@ public final class ClassUtils {
     }
 
     public static Set<Class<?>> findAllClasses(String scanPackages, Class<? extends Annotation> anno) {
+        Set<Class<?>> allClasses;
         if (CLASS_CACHE.containsKey(scanPackages)) {
-            return CLASS_CACHE.get(scanPackages);
+            allClasses = CLASS_CACHE.get(scanPackages);
         } else {
-            Set<Class<?>> allClasses = findAllClasses(scanPackages);
-            Set<Class<?>> filterCLasses = allClasses.stream()
-                .filter(clazz -> AnnotationUtils.isAnnotationDeclaredLocally(anno, clazz)).collect(Collectors.toSet());
-            CLASS_CACHE.put(scanPackages, filterCLasses);
-            return filterCLasses;
+            allClasses = findAllClasses(scanPackages);
+            CLASS_CACHE.put(scanPackages, allClasses);
         }
-
+        Set<Class<?>> filterCLasses = allClasses.stream()
+            .filter(clazz -> AnnotationUtils.isAnnotationDeclaredLocally(anno, clazz)).collect(Collectors.toSet());
+        return filterCLasses;
     }
 
     public static Set<Class<?>> findAllClasses(String scanPackages) {
