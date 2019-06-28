@@ -14,11 +14,9 @@ package io.github.tesla.filter.utils;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -42,8 +40,8 @@ import io.github.tesla.filter.support.classLoader.BytesClassLoader;
 public final class ClassUtils {
     private static final Map<String, Reflections> REFLECTIONS_CACHE = Maps.newConcurrentMap();
     private static final Map<String, Object> BEAN_CACHE = Maps.newConcurrentMap();
-    private static final Map<Pair<String, String>, AbstractPlugin> USER_RULE_JAR_FILTER_CACHE =
-        Collections.synchronizedMap(new WeakHashMap<Pair<String, String>, AbstractPlugin>());
+    private static final Map<Pair<String, String>, AbstractPlugin> USER_RULE_JAR_FILTER_CACHE = Maps.newConcurrentMap();
+    private static final Map<String, Set<Class<?>>> CLASS_CACHE = Maps.newConcurrentMap();
     private static final Logger log = LoggerFactory.getLogger(ClassUtils.class);
 
     private ClassUtils() {}
@@ -64,9 +62,16 @@ public final class ClassUtils {
     }
 
     public static Set<Class<?>> findAllClasses(String scanPackages, Class<? extends Annotation> anno) {
-        Set<Class<?>> allClasses = findAllClasses(scanPackages);
-        return allClasses.stream().filter(clazz -> AnnotationUtils.isAnnotationDeclaredLocally(anno, clazz))
-            .collect(Collectors.toSet());
+        if (CLASS_CACHE.containsKey(scanPackages)) {
+            return CLASS_CACHE.get(scanPackages);
+        } else {
+            Set<Class<?>> allClasses = findAllClasses(scanPackages);
+            Set<Class<?>> filterCLasses = allClasses.stream()
+                .filter(clazz -> AnnotationUtils.isAnnotationDeclaredLocally(anno, clazz)).collect(Collectors.toSet());
+            CLASS_CACHE.put(scanPackages, filterCLasses);
+            return filterCLasses;
+        }
+
     }
 
     public static Set<Class<?>> findAllClasses(String scanPackages) {
