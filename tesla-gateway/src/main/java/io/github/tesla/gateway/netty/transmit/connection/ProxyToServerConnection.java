@@ -468,7 +468,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
 
         @Override
         public Future<?> execute() {
-            Bootstrap cb = new Bootstrap().group(proxyServer.getProxyToServerWorkerFor())//
+            Bootstrap cb = new Bootstrap().group(ProxyToServerConnection.this.clientConnection.channel.eventLoop())//
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, proxyServer.getConnectTimeout())
                 .handler(new ChannelInitializer<Channel>() {
