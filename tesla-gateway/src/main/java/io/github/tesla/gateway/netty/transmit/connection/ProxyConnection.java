@@ -451,7 +451,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
     }
 
     @Override
-    public final void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
         try {
             connected();
         } finally {
