@@ -586,27 +586,39 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        int totalSize = 0;
         try {
-            kpiThreadPool.scheduleAtFixedRate(new Runnable() {
-
-                @Override
-                public void run() {
-                    Iterator<EventExecutor> executorGroups = ctx.executor().parent().iterator();
-                    while (executorGroups.hasNext()) {
-                        SingleThreadEventExecutor executor = (SingleThreadEventExecutor)executorGroups.next();
-                        int size = executor.pendingTasks();
-                        if (executor == ctx.executor())
-                            LOG.error(ctx.channel() + ":" + executor + " pending size in queue is:" + size + "");
-                        else
-                            LOG.error(executor + " pending size in queue is :" + size);
-                    }
-                }
-            }, 0, 1000, TimeUnit.MILLISECONDS);
+            Iterator<EventExecutor> executorGroups = ctx.executor().parent().iterator();
+            while (executorGroups.hasNext()) {
+                SingleThreadEventExecutor executor = (SingleThreadEventExecutor)executorGroups.next();
+                int size = executor.pendingTasks();
+                totalSize = totalSize + size;
+            }
+            if (totalSize > 0) {
+                LOG.error("When Channel Active totalPendingSize : " + totalSize);
+            }
         } finally {
             super.channelActive(ctx);
         }
     }
 
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        int totalSize = 0;
+        try {
+            Iterator<EventExecutor> executorGroups = ctx.executor().parent().iterator();
+            while (executorGroups.hasNext()) {
+                SingleThreadEventExecutor executor = (SingleThreadEventExecutor)executorGroups.next();
+                int size = executor.pendingTasks();
+                totalSize = totalSize + size;
+            }
+            if (totalSize > 0) {
+                LOG.error("When Channel InActive totalPendingSize :  : " + totalSize);
+            }
+        } finally {
+           super.channelInactive(ctx);
+        }
+    }
     /**
      * If the {@link ProxyToServerConnection} completes its connection lifecycle successfully, this method is called to
      * let us know about it.
