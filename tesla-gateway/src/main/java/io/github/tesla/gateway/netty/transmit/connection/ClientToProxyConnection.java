@@ -586,17 +586,23 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        int totalSize = 0;
         try {
-            Iterator<EventExecutor> executorGroups = ctx.executor().parent().iterator();
-            while (executorGroups.hasNext()) {
-                SingleThreadEventExecutor executor = (SingleThreadEventExecutor)executorGroups.next();
-                int size = executor.pendingTasks();
-                totalSize = totalSize + size;
-            }
-            if (totalSize > 0) {
-                LOG.error("When Channel Active totalPendingSize : " + totalSize);
-            }
+            kpiThreadPool.scheduleAtFixedRate(new Runnable() {
+
+                @Override
+                public void run() {
+                    int totalSize = 0;
+                    Iterator<EventExecutor> executorGroups = ctx.executor().parent().iterator();
+                    while (executorGroups.hasNext()) {
+                        SingleThreadEventExecutor executor = (SingleThreadEventExecutor)executorGroups.next();
+                        int size = executor.pendingTasks();
+                        totalSize = totalSize + size;
+                    }
+                    if (totalSize > 0) {
+                        LOG.error("When Channel Active totalPendingSize : " + totalSize);
+                    }
+                }
+            }, 0, 1000, TimeUnit.MILLISECONDS);
         } finally {
             super.channelActive(ctx);
         }
@@ -604,19 +610,25 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        int totalSize = 0;
         try {
-            Iterator<EventExecutor> executorGroups = ctx.executor().parent().iterator();
-            while (executorGroups.hasNext()) {
-                SingleThreadEventExecutor executor = (SingleThreadEventExecutor)executorGroups.next();
-                int size = executor.pendingTasks();
-                totalSize = totalSize + size;
-            }
-            if (totalSize > 0) {
-                LOG.error("When Channel InActive totalPendingSize :  : " + totalSize);
-            }
+            kpiThreadPool.scheduleAtFixedRate(new Runnable() {
+
+                @Override
+                public void run() {
+                    int totalSize = 0;
+                    Iterator<EventExecutor> executorGroups = ctx.executor().parent().iterator();
+                    while (executorGroups.hasNext()) {
+                        SingleThreadEventExecutor executor = (SingleThreadEventExecutor)executorGroups.next();
+                        int size = executor.pendingTasks();
+                        totalSize = totalSize + size;
+                    }
+                    if (totalSize > 0) {
+                        LOG.error("When Channel InActive totalPendingSize : " + totalSize);
+                    }
+                }
+            }, 0, 1000, TimeUnit.MILLISECONDS);
         } finally {
-           super.channelInactive(ctx);
+            super.channelInactive(ctx);
         }
     }
     /**
