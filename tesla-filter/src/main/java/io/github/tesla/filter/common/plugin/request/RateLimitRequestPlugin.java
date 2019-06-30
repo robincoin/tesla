@@ -52,7 +52,7 @@ public class RateLimitRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
         RateLimitDefinition configBean = JsonUtils.json2Definition(filterParam, RateLimitDefinition.class);
         if (configBean == null) {
             return null;

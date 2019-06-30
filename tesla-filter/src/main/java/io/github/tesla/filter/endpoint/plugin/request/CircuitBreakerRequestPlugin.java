@@ -28,7 +28,7 @@ public class CircuitBreakerRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
         CircuitBreakerDefinition definition = JsonUtils.json2Definition(filterParam, CircuitBreakerDefinition.class);
         if (definition == null) {
             return null;

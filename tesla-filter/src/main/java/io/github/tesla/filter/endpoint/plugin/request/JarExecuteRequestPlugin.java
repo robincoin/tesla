@@ -21,7 +21,7 @@ public class JarExecuteRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
         JarExecuteDefinition definition = JsonUtils.json2Definition(filterParam, JarExecuteDefinition.class);
         if (definition == null) {
             return null;

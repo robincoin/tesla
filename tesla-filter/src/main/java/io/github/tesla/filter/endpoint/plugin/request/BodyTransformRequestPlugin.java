@@ -23,7 +23,7 @@ public class BodyTransformRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
         BodyTransformDefinition definition = JsonUtils.json2Definition(filterParam, BodyTransformDefinition.class);
         if (definition == null) {
             return null;

@@ -24,7 +24,7 @@ public class QuotaRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
 
         QuotaDefinition definition = JsonUtils.json2Definition(filterParam, QuotaDefinition.class);
         if (definition == null) {

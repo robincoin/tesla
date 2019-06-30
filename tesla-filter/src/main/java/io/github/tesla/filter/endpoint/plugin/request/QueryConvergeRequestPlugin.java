@@ -27,7 +27,7 @@ public class QueryConvergeRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
         QueryConvergeDefinition definition = JsonUtils.json2Definition(filterParam, QueryConvergeDefinition.class);
         if (definition == null) {
             return null;

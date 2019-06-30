@@ -117,7 +117,7 @@ public class JsonUtils {
         }
     }
 
-    public static <T> T json2Definition(Object filterParam, Class<T> classOfT) {
+    public static <T> T json2Definition(String  filterParam, Class<T> classOfT) {
         if (filterParam == null) {
             return null;
         }

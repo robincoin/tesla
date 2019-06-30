@@ -22,7 +22,7 @@ public class CreateTokenResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         CreateTokenDefinition createTokenDefinition =
             JsonUtils.json2Definition(filterParam, CreateTokenDefinition.class);
 

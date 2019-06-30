@@ -32,7 +32,7 @@ public class CreateJwtTokenRequestPlugin extends CreateTokenRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
         CreateJwtTokenDefinition tokenDefinition =
             JsonUtils.json2Definition(filterParam, CreateJwtTokenDefinition.class);
         return hs256TokenGenerator(servletRequest, realHttpObject, tokenDefinition);

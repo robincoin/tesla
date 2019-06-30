@@ -33,7 +33,7 @@ public class PathTransformRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
         PathTransformDefinition definition = JsonUtils.json2Definition(filterParam, PathTransformDefinition.class);
         if (definition == null) {
             return null;

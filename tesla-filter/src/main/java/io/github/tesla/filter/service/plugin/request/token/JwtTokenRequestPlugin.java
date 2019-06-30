@@ -62,7 +62,7 @@ public class JwtTokenRequestPlugin extends AuthRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
 
         JWTTokenDefinition jwtTokenDefinition = JsonUtils.fromJson((String)filterParam, JWTTokenDefinition.class);
         LOGGER.info("tokenHeaderKey" + ": {}", servletRequest.getHeader(AUTHORIZATION));

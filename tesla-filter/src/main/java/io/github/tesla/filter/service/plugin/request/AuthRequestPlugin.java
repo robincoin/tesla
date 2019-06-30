@@ -34,7 +34,7 @@ public class AuthRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
         AuthCommonDefinition authDefinition = JsonUtils.json2Definition(filterParam, AuthCommonDefinition.class);
         // 不启用auth，则返回
         if (authDefinition == null || YesOrNoEnum.NO.getCode().equals(authDefinition.getEnabled())) {

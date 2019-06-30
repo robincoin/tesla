@@ -18,6 +18,6 @@ import io.netty.handler.codec.http.HttpResponse;
 public abstract class AbstractResponsePlugin extends AbstractPlugin {
 
     public abstract HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam);
+        String filterParam);
 
 }

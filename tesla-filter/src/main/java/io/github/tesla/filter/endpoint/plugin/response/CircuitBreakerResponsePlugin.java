@@ -21,7 +21,7 @@ public class CircuitBreakerResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         String uri = servletRequest.getRequestURI();
         Optional<CircuitBreaker> cboptional = CircuitBreakerRegistry.ofDefaults().find(uri);
         long start = (Long)servletRequest.getAttribute("_CircuitBreakerStart");

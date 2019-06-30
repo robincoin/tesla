@@ -37,7 +37,7 @@ public class BlackCookieRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
 
         BlackCookieDefinition configBean = JsonUtils.json2Definition(filterParam, BlackCookieDefinition.class);
         if (configBean == null) {

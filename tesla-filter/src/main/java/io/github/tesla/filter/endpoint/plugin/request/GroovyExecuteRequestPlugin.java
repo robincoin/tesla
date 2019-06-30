@@ -55,7 +55,7 @@ public class GroovyExecuteRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
         HttpResponse response = null;
         GroovyExecuteDefinition definition = JsonUtils.json2Definition(filterParam, GroovyExecuteDefinition.class);
         if (definition == null) {

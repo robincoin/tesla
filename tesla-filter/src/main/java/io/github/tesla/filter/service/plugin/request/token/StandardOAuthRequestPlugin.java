@@ -31,7 +31,7 @@ public class StandardOAuthRequestPlugin extends AuthRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
 
         // 从JSON中转出自己需要的类型
         StandardOauthDefinition definition = JsonUtils.fromJson((String)filterParam, StandardOauthDefinition.class);

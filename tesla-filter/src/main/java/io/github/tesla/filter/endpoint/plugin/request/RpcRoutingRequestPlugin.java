@@ -21,7 +21,7 @@ public class RpcRoutingRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
         RpcRoutingDefinition definition = JsonUtils.json2Definition(filterParam, RpcRoutingDefinition.class);
         if (definition == null) {
             return null;

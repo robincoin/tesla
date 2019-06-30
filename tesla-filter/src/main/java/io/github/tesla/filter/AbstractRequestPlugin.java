@@ -28,7 +28,7 @@ public abstract class AbstractRequestPlugin extends AbstractPlugin {
     }
 
     public abstract HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam);
+        String filterParam);
 
     protected void writeFilterLog(Class<?> type, String reason, Throwable... cause) {
         PluginUtil.writeFilterLog(type, reason, cause);

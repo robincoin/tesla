@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -106,6 +107,9 @@ public class FilterCache {
 
     // 服务级别配置本地缓存
     private List<ServiceExecutor> apiLocalCacheList = Lists.newArrayList();
+
+    // URL级别的cache
+    private Map<String, ServiceExecutor> URLSERVICEEXECUTOR = new WeakHashMap<String, ServiceExecutor>();
 
     private void buildAndAddApiCaches(List<ServiceRequestPluginExecutor> requestFilterCaches,
         List<ServiceResponsePluginExecutor> reponseFilterCaches, CommonPluginDTO servicePluginDTO,
@@ -417,12 +421,21 @@ public class FilterCache {
     }
 
     public ServiceExecutor loadServiceCache(String uri) {
-        for (ServiceExecutor serviceCache : apiLocalCacheList) {
-            if (AntMatchUtil.matchPrefix(serviceCache.getServicePrefix(), uri)) {
-                return serviceCache;
+        if (URLSERVICEEXECUTOR.containsKey(uri)) {
+            return URLSERVICEEXECUTOR.get(uri);
+        } else {
+            ServiceExecutor hitserviceExecutor = null;
+            for (ServiceExecutor serviceCache : apiLocalCacheList) {
+                if (AntMatchUtil.matchPrefix(serviceCache.getServicePrefix(), uri)) {
+                    hitserviceExecutor = serviceCache;
+                }
             }
+            if (hitserviceExecutor != null) {
+                URLSERVICEEXECUTOR.put(uri, hitserviceExecutor);
+            }
+            return hitserviceExecutor;
         }
-        return null;
+
     }
 
     public List<WafRequestPluginExecutor> loadWafRequestPlugins() {
@@ -482,6 +495,7 @@ public class FilterCache {
             AbstractPlugin.getAppKeyMap().clear();
             AbstractPlugin.getAppKeyMap().putAll(appKeyDefinitionMap);
             AbstractPlugin.clearLocalCache();
+            URLSERVICEEXECUTOR.clear();
             LOGGER.info("wafRequestLocalCache:" + JsonUtils.serializeToJson(wafRequestLocalCacheList));
             LOGGER.info("wafResponseLocalCache:" + JsonUtils.serializeToJson(wafResponseLocalCacheList));
             LOGGER.info("apiLocalCache:" + JsonUtils.serializeToJson(apiLocalCacheList));

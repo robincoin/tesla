@@ -27,7 +27,7 @@ public class AppKeyControlRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
         HttpRequest request = servletRequest.getNettyRequest();
         if (isPreflightRequest(request)) {
             return null;
