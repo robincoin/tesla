@@ -18,13 +18,10 @@ import io.netty.handler.codec.http.HttpResponse;
 public class HttpResponseFilterChain {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpResponseFilterChain.class);
 
-    private static final String ENABLE_WAF_KEY = "server.waf";
-
     public static HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
         ChannelHandlerContext channelHandlerContext) {
         FilterCache cacheComponent = SpringContextHolder.getBean(FilterCache.class);
-        String enableWaf = SpringContextHolder.getProperty(ENABLE_WAF_KEY);
-        if (enableWaf != null && Boolean.getBoolean(enableWaf)) {
+        if (SpringContextHolder.isEnableWaf()) {
             List<WafResponsePluginExecutor> wafResponses = cacheComponent.loadWafResonsePlugins();
             // 执行waf过滤器
             for (Iterator<WafResponsePluginExecutor> it = wafResponses.iterator(); it.hasNext();) {

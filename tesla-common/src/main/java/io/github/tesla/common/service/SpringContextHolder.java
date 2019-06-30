@@ -14,6 +14,7 @@ public class SpringContextHolder
 
     private static final Logger log = LoggerFactory.getLogger(SpringContextHolder.class);
     private static ApplicationContext applicationContext = null;
+    private static Boolean enableWaf = false;
 
     public static void clearHolder() {
         applicationContext = null;
@@ -37,8 +38,8 @@ public class SpringContextHolder
         return (T)applicationContext.getBean(name);
     }
 
-    public static String getProperty(String key) {
-        return applicationContext.getEnvironment().getProperty(key);
+    public static Boolean isEnableWaf() {
+        return enableWaf;
     }
 
     @Override
@@ -49,5 +50,7 @@ public class SpringContextHolder
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
         SpringContextHolder.applicationContext = applicationContext;
+        SpringContextHolder.enableWaf =
+            applicationContext.getEnvironment().getProperty("eableWaf", Boolean.class, Boolean.FALSE);
     }
 }

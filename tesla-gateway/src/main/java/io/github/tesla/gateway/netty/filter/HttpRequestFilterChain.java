@@ -21,14 +21,11 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 public class HttpRequestFilterChain {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpRequestFilterChain.class);
 
-    private static final String ENABLE_WAF_KEY = "server.waf";
-
     public static HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject httpObject,
         ChannelHandlerContext channelHandlerContext) {
         FilterCache cacheComponent = SpringContextHolder.getBean(FilterCache.class);
-        String enableWaf = SpringContextHolder.getProperty(ENABLE_WAF_KEY);
-        if (enableWaf != null && Boolean.getBoolean(enableWaf)) {
-            List<WafRequestPluginExecutor> wafRequests = cacheComponent.loadWafRequestPlugins();
+        List<WafRequestPluginExecutor> wafRequests = cacheComponent.loadWafRequestPlugins();
+        if (SpringContextHolder.isEnableWaf()) {
             for (Iterator<WafRequestPluginExecutor> it = wafRequests.iterator(); it.hasNext();) {
                 WafRequestPluginExecutor plugin = it.next();
                 LOGGER.debug("do filter,the name is:" + plugin.getFilterName());
