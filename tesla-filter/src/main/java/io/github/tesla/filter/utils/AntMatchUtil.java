@@ -31,7 +31,6 @@ public class AntMatchUtil {
         return pathBuild.toString();
     }
 
-    // 计算字符串在给定字符串出现的次数
     public static int findCount(String src, String des) {
         int index = 0;
         int count = 0;
@@ -81,11 +80,6 @@ public class AntMatchUtil {
         return argMap;
     }
 
-    /**
-     * 
-     * @date: 2018/11/16 14:55
-     * @description: 统一处理path
-     */
     public static String path(String path) {
         if (StringUtils.isBlank(path)) {
             path = PATHSEPARATOR;
@@ -102,11 +96,6 @@ public class AntMatchUtil {
         return path;
     }
 
-    /**
-     * 
-     * @date: 2018/11/16 14:20
-     * @description:返回null证明不匹配 最复杂的情况下支持的匹配串请看AntMatchTestTest的junit case
-     */
     public static String replacePathWithinPattern(String patternPath, String remotePath, String targetPath) {
         patternPath = path(patternPath);
         remotePath = path(remotePath);
@@ -123,12 +112,10 @@ public class AntMatchUtil {
         if (!PATHMATCHER.match(patternPath, remotePath)) {
             return null;
         }
-        // 未自定义转发路径或
         if (StringUtils.isBlank(targetPath)) {
             return remotePath;
         }
         targetPath = path(targetPath);
-        // 包含替换占位符 仅替换Url参数即可
         if (targetPath.contains("#{")) {
             Matcher matcher = REPLACEPATTERN.matcher(targetPath);
             String extractPath = PATHMATCHER.extractPathWithinPattern(patternPath, remotePath);
@@ -178,26 +165,16 @@ public class AntMatchUtil {
         return changedPath;
     }
 
-    /**
-     * 
-     * @date: 2018/11/16 15:20
-     * @description: 校验是否满足path规则
-     */
     public static boolean validatePattern(String patternPath) {
         if (StringUtils.isBlank(patternPath)) {
             return false;
         }
         patternPath = path(patternPath);
-        /*if (!pathMatcher.isPattern(patternPath)) {
-            return false;
-        }*/
         if (!patternPath.contains("**")) {
             return true;
         }
-        // 不支持url参数
         if (patternPath.contains("{") && patternPath.contains("}")) {
             return false;
-            // patternPath = patternPath.substring(0, patternPath.indexOf("{")-1);
         }
         if (patternPath.split("\\*\\*").length > 1) {
             return false;
