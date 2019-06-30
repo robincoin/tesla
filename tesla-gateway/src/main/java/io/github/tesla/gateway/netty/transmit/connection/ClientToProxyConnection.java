@@ -93,10 +93,9 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
     /**
      * Keep track of all ProxyToServerConnections by host+port.
      */
-    private final Map<String, ProxyToServerConnection> oneToOneServerConnectionsByHostAndPort = Maps.newConcurrentMap();
+    private final Map<String, ProxyToServerConnection> oneToOneServerConnectionsByHostAndPort = Maps.newHashMap();
 
-    private final Map<String, ProxyToServerConnection> oneToManyServerConnectionsByHostAndPort =
-        Maps.newConcurrentMap();
+    private final Map<String, ProxyToServerConnection> oneToManyServerConnectionsByHostAndPort = Maps.newHashMap();
     /**
      * Keep track of how many servers are currently in the process of connecting.
      */
