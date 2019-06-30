@@ -117,15 +117,11 @@ public class JsonUtils {
         }
     }
 
-    public static <T> T json2Definition(String  filterParam, Class<T> classOfT) {
-        if (filterParam == null) {
+    public static <T> T json2Definition(String filterParam, Class<T> classOfT) {
+        if (StringUtils.isBlank(filterParam)) {
             return null;
         }
-        String paramsJson = (String)filterParam;
-        if (StringUtils.isBlank(paramsJson)) {
-            return null;
-        }
-        return fromJson(paramsJson, classOfT);
+        return fromJson(filterParam, classOfT);
     }
 
     public static <T> String serializeToJson(T object) {
