@@ -7,14 +7,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class AntMatchUtil {
-    private static final String PATHSEPARATOR = "/";
-    private static final PathMatcher PATHMATCHER = new AntPathMatcher();
+    private static final String PATHSEPARATOR = AntPathMatcher.DEFAULT_PATH_SEPARATOR;
+    private static final AntPathMatcher PATHMATCHER = new AntPathMatcher();
     private static final Pattern REPLACEPATTERN = Pattern.compile("#\\{(\\d+)\\}");
     private static final Pattern HTTP_PREFIX = Pattern.compile("^https?://.*", Pattern.CASE_INSENSITIVE);
 
