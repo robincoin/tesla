@@ -1,8 +1,8 @@
 package io.github.tesla.filter.support.plugins;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.WeakHashMap;
+
+import com.google.common.collect.Maps;
 
 import io.github.tesla.filter.AbstractRequestPlugin;
 
@@ -13,11 +13,9 @@ public class RequestPluginMetadata extends FilterMetadata {
 
     private final Class<? extends AbstractRequestPlugin> filterClass;
 
-    private static final Map<String, Object> REQUESTPLUGIN_INSTANCE_CACHE =
-        Collections.synchronizedMap(new WeakHashMap<String, Object>());
+    private static final Map<String, Object> REQUESTPLUGIN_INSTANCE_CACHE = Maps.newHashMap();
 
-    protected static final Map<String, RequestPluginMetadata> REQUESTPLUGINMETADATA_INSTANCE_CACHE =
-        Collections.synchronizedMap(new WeakHashMap<String, RequestPluginMetadata>());
+    protected static final Map<String, RequestPluginMetadata> REQUESTPLUGINMETADATA_INSTANCE_CACHE = Maps.newHashMap();
 
     public RequestPluginMetadata(Class<? extends AbstractRequestPlugin> filterClass) {
         this.filterClass = filterClass;
