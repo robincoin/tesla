@@ -23,8 +23,8 @@ public class HttpResponseFilterChain {
     public static HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
         ChannelHandlerContext channelHandlerContext) {
         FilterCache cacheComponent = SpringContextHolder.getBean(FilterCache.class);
-        Boolean enableWaf = SpringContextHolder.getProperty(ENABLE_WAF_KEY, Boolean.class, Boolean.FALSE);
-        if (enableWaf) {
+        String enableWaf = SpringContextHolder.getProperty(ENABLE_WAF_KEY);
+        if (enableWaf != null && Boolean.getBoolean(enableWaf)) {
             List<WafResponsePluginExecutor> wafResponses = cacheComponent.loadWafResonsePlugins();
             // 执行waf过滤器
             for (Iterator<WafResponsePluginExecutor> it = wafResponses.iterator(); it.hasNext();) {
