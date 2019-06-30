@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -19,8 +18,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
@@ -41,7 +38,6 @@ import io.github.tesla.gateway.netty.transmit.flow.ConnectionFlowStep;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -64,9 +60,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.AsciiString;
 import io.netty.util.CharsetUtil;
-import io.netty.util.concurrent.EventExecutor;
 import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.SingleThreadEventExecutor;
 
 /**
  * <p>
@@ -95,9 +89,6 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
 
     private static final ExecutorService oneToManyThreadPool = Executors.newFixedThreadPool(
         DEFAULT_INCOMING_OUTING_WORKER_THREADS / 2, new CategorizedThreadFactory("Tesla", "ProxySendRequest", 1));
-
-    private static final ScheduledExecutorService kpiThreadPool =
-        Executors.newSingleThreadScheduledExecutor(new CategorizedThreadFactory("Tesla", "kpiCalculation", 1));
 
     /**
      * Keep track of all ProxyToServerConnections by host+port.
@@ -582,29 +573,6 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
     public void serverConnectionFlowStarted(ProxyToServerConnection serverConnection) {
         stopReading();
         this.numberOfCurrentlyConnectingServers.incrementAndGet();
-    }
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        try {
-            kpiThreadPool.scheduleAtFixedRate(new Runnable() {
-
-                @Override
-                public void run() {
-                    Iterator<EventExecutor> executorGroups = ctx.executor().parent().iterator();
-                    while (executorGroups.hasNext()) {
-                        SingleThreadEventExecutor executor = (SingleThreadEventExecutor)executorGroups.next();
-                        int size = executor.pendingTasks();
-                        if (executor == ctx.executor())
-                            LOG.error(ctx.channel() + ":" + executor + " pending size in queue is:" + size + "");
-                        else
-                            LOG.error(executor + " pending size in queue is :" + size);
-                    }
-                }
-            }, 0, 1000, TimeUnit.MILLISECONDS);
-        } finally {
-            super.channelActive(ctx);
-        }
     }
 
     /**
