@@ -12,8 +12,9 @@ public enum HttpMethodEnum {
     public static boolean match(String endPointMethod, String method) {
         if (endPointMethod.equalsIgnoreCase(ALL.code)) {
             return true;
-        } else
+        } else {
             return endPointMethod.equalsIgnoreCase(method);
+        }
     }
 
     private String code;
