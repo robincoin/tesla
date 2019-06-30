@@ -146,11 +146,12 @@ public class HttpFiltersAdapter {
         // 路由
         ServiceRouterExecutor routerCache = SpringContextHolder.getBean(FilterCache.class)
             .loadServiceCache(serveletRequest.getRequestURI()).getRouterCache();
-        Object rpcParamJson = serveletRequest.getAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
         if (RouteTypeEnum.DUBBO.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
+            Object rpcParamJson = serveletRequest.getAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
             httpResponse = DubboRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
             serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
         } else if (RouteTypeEnum.GRPC.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
+            Object rpcParamJson = serveletRequest.getAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
             httpResponse = GrpcRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
             serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
         } else if (RouteTypeEnum.SpringCloud.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
