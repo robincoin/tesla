@@ -149,14 +149,15 @@ public class HttpFiltersAdapter {
         Object rpcParamJson = serveletRequest.getAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
         if (RouteTypeEnum.DUBBO.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
             httpResponse = DubboRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
+            serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
         } else if (RouteTypeEnum.GRPC.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
             httpResponse = GrpcRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
+            serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
         } else if (RouteTypeEnum.SpringCloud.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
             httpResponse = SpringCloudRouting.callRemote(serveletRequest, httpObject, routerCache.getParamJson());
         } else if (RouteTypeEnum.DirectRoute.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
             httpResponse = DirectRouting.callRemote(serveletRequest, httpObject, routerCache.getParamJson());
         }
-        serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
         return httpResponse;
     }
 
