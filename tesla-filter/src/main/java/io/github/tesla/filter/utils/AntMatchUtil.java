@@ -13,7 +13,7 @@ import com.google.common.collect.Maps;
 
 public class AntMatchUtil {
     private static final String PATHSEPARATOR = AntPathMatcher.DEFAULT_PATH_SEPARATOR;
-    private static final AntPathMatcher PATHMATCHER = new AntPathMatcher();
+    private static final AntPathMatcher ANTPATHMATCHER = new AntPathMatcher();
     private static final Pattern REPLACEPATTERN = Pattern.compile("#\\{(\\d+)\\}");
     private static final Pattern HTTP_PREFIX = Pattern.compile("^https?://.*", Pattern.CASE_INSENSITIVE);
 
@@ -45,7 +45,7 @@ public class AntMatchUtil {
         if (remotePath.indexOf("?") > 0) {
             remotePath = remotePath.substring(0, remotePath.indexOf("?"));
         }
-        return PATHMATCHER.match(path(pattern), path(remotePath));
+        return ANTPATHMATCHER.match(path(pattern), path(remotePath));
     }
 
     public static boolean matchPrefix(String servicePrefix, String path) {
@@ -108,7 +108,7 @@ public class AntMatchUtil {
             targetParamStr = targetPath.substring(targetPath.indexOf("?"));
             targetPath = targetPath.substring(0, targetPath.indexOf("?"));
         }
-        if (!PATHMATCHER.match(patternPath, remotePath)) {
+        if (!ANTPATHMATCHER.match(patternPath, remotePath)) {
             return null;
         }
         if (StringUtils.isBlank(targetPath)) {
@@ -117,7 +117,7 @@ public class AntMatchUtil {
         targetPath = path(targetPath);
         if (targetPath.contains("#{")) {
             Matcher matcher = REPLACEPATTERN.matcher(targetPath);
-            String extractPath = PATHMATCHER.extractPathWithinPattern(patternPath, remotePath);
+            String extractPath = ANTPATHMATCHER.extractPathWithinPattern(patternPath, remotePath);
             extractPath = path(extractPath);
             List<String> extractPathList = Lists.newArrayList();
             int maxCount = 0;
