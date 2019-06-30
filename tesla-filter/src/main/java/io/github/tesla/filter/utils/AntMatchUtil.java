@@ -16,7 +16,7 @@ public class AntMatchUtil {
     private static final String PATHSEPARATOR = "/";
     private static final PathMatcher PATHMATCHER = new AntPathMatcher();
     private static final Pattern REPLACEPATTERN = Pattern.compile("#\\{(\\d+)\\}");
-    private static Pattern HTTP_PREFIX = Pattern.compile("^https?://.*", Pattern.CASE_INSENSITIVE);
+    private static final Pattern HTTP_PREFIX = Pattern.compile("^https?://.*", Pattern.CASE_INSENSITIVE);
 
     public static String concatPath(String... paths) {
         StringBuilder pathBuild = new StringBuilder();
