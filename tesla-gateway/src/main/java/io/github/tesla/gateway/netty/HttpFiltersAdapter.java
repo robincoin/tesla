@@ -147,11 +147,11 @@ public class HttpFiltersAdapter {
         ServiceRouterExecutor routerCache = SpringContextHolder.getBean(FilterCache.class)
             .loadServiceCache(serveletRequest.getRequestURI()).getRouterCache();
         if (RouteTypeEnum.DUBBO.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
-            Object rpcParamJson = serveletRequest.getAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
+            String rpcParamJson = serveletRequest.getStringAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
             httpResponse = DubboRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
             serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
         } else if (RouteTypeEnum.GRPC.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
-            Object rpcParamJson = serveletRequest.getAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
+            String rpcParamJson = serveletRequest.getStringAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
             httpResponse = GrpcRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
             serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
         } else if (RouteTypeEnum.SpringCloud.getCode().equalsIgnoreCase(routerCache.getRouteType())) {

@@ -37,11 +37,11 @@ public class HttpResponseFilterChain {
         }
         final String url = servletRequest.getRequestURI();
         final String method = servletRequest.getMethod();
-        ServiceExecutor serviceCache = cacheComponent.loadServiceCache(url);
-        if (serviceCache == null) {
+        ServiceExecutor serviceExecutor = cacheComponent.loadServiceCache(url);
+        if (serviceExecutor == null) {
             return httpResponse;
         }
-        List<ServiceResponsePluginExecutor> serviceRequests = serviceCache.matchAndGetResponseFiltes(url, method);
+        List<ServiceResponsePluginExecutor> serviceRequests = serviceExecutor.matchAndGetResponseFiltes(url, method);
         // 执行service and endpoint级别过滤器
         for (Iterator<ServiceResponsePluginExecutor> it = serviceRequests.iterator(); it.hasNext();) {
             ServiceResponsePluginExecutor plugin = it.next();

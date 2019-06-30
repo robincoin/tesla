@@ -43,12 +43,12 @@ public class HttpRequestFilterChain {
         }
         final String url = servletRequest.getRequestURI();
         final String method = servletRequest.getMethod();
-        ServiceExecutor serviceCache = cacheComponent.loadServiceCache(url);
-        if (serviceCache == null) {
+        ServiceExecutor serviceExecutor = cacheComponent.loadServiceCache(url);
+        if (serviceExecutor == null) {
             return PluginUtil.createResponse(HttpResponseStatus.NOT_FOUND, servletRequest.getNettyRequest(),
                 " not found match router config ");
         }
-        List<ServiceRequestPluginExecutor> serviceRequests = serviceCache.matchAndGetRequestFiltes(url, method);
+        List<ServiceRequestPluginExecutor> serviceRequests = serviceExecutor.matchAndGetRequestFiltes(url, method);
         // 未匹配到endpoint
         if (serviceRequests == null) {
             return PluginUtil.createResponse(HttpResponseStatus.NOT_FOUND, servletRequest.getNettyRequest(),

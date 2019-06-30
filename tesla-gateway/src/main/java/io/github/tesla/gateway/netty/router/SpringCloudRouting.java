@@ -18,7 +18,7 @@ public class SpringCloudRouting {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpringCloudRouting.class);
 
     public static HttpResponse callRemote(NettyHttpServletRequest servletRequest, HttpObject httpObject,
-        Object paramJson) {
+        String paramJson) {
         SpringCloudRoutingDefinition definition =
             JsonUtils.json2Definition(paramJson, SpringCloudRoutingDefinition.class);
         if (definition == null) {
