@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 
 import io.github.tesla.common.service.SpringContextHolder;
 import io.github.tesla.filter.support.servlet.NettyHttpServletRequest;
@@ -27,8 +26,7 @@ public class HttpRequestFilterChain {
     public static HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject httpObject,
         ChannelHandlerContext channelHandlerContext) {
         FilterCache cacheComponent = SpringContextHolder.getBean(FilterCache.class);
-        Boolean enableWaf =
-            SpringContextHolder.getBean(Environment.class).getProperty(ENABLE_WAF_KEY, Boolean.class, Boolean.FALSE);
+        Boolean enableWaf = SpringContextHolder.getProperty(ENABLE_WAF_KEY, Boolean.class, Boolean.FALSE);
         if (enableWaf) {
             List<WafRequestPluginExecutor> wafRequests = cacheComponent.loadWafRequestPlugins();
             for (Iterator<WafRequestPluginExecutor> it = wafRequests.iterator(); it.hasNext();) {

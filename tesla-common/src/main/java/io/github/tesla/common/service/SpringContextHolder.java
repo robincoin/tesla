@@ -37,6 +37,10 @@ public class SpringContextHolder
         return (T)applicationContext.getBean(name);
     }
 
+    public static <T> T getProperty(String key, Class<T> targetType, T defaultValue) {
+        return applicationContext.getEnvironment().getProperty(key, targetType, defaultValue);
+    }
+
     @Override
     public void destroy() throws Exception {
         SpringContextHolder.clearHolder();
