@@ -18,7 +18,6 @@ public class ServiceExecutor implements Comparable<ServiceExecutor>, Serializabl
     private ServiceRouterExecutor routerCache;
 
     @Override
-    // 按长度倒叙排
     public int compareTo(ServiceExecutor o) {
         return o.servicePrefix.length() - this.servicePrefix.length();
     }
@@ -27,12 +26,12 @@ public class ServiceExecutor implements Comparable<ServiceExecutor>, Serializabl
         return endPointDefinitionList;
     }
 
-    private EndpointExecutor getMatchEndpoint(String uri, String method) {
-        for (EndpointExecutor endpointCache : getEndPointDefinitionList()) {
+    private EndpointExecutor getMatchEndpointExecutor(String uri, String method) {
+        for (EndpointExecutor endpointExecutor : getEndPointDefinitionList()) {
             String path = AntMatchUtil.replacePrefix(uri, servicePrefix, "");
-            if (AntMatchUtil.match(endpointCache.getEndPointPath(), path)
-                && HttpMethodEnum.match(endpointCache.getEndPointMethod(), method)) {
-                return endpointCache;
+            if (AntMatchUtil.match(endpointExecutor.getEndPointPath(), path)
+                && HttpMethodEnum.match(endpointExecutor.getEndPointMethod(), method)) {
+                return endpointExecutor;
             }
         }
         return null;
@@ -47,13 +46,13 @@ public class ServiceExecutor implements Comparable<ServiceExecutor>, Serializabl
     }
 
     public List<ServiceRequestPluginExecutor> matchAndGetRequestFiltes(String uri, String method) {
-        EndpointExecutor endpointCache = getMatchEndpoint(uri, method);
-        return endpointCache != null ? endpointCache.getRequestFiltersList() : null;
+        EndpointExecutor endpointExector = getMatchEndpointExecutor(uri, method);
+        return endpointExector != null ? endpointExector.getRequestFiltersList() : null;
     }
 
     public List<ServiceResponsePluginExecutor> matchAndGetResponseFiltes(String uri, String method) {
-        EndpointExecutor endpointCache = getMatchEndpoint(uri, method);
-        return endpointCache != null ? endpointCache.getResponseFiltersList() : Collections.emptyList();
+        EndpointExecutor endpointExector = getMatchEndpointExecutor(uri, method);
+        return endpointExector != null ? endpointExector.getResponseFiltersList() : Collections.emptyList();
     }
 
     public void setEndPointDefinitionList(List<EndpointExecutor> endPointCacheList) {
