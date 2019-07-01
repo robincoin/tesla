@@ -93,7 +93,7 @@ services:
       - tesla-mysql
       - tesla-backend-sample
     environment:
-      - DATABASE_HOST=tesla-mysql
+      - DATABASE_HOST=172.26.5.213
       - DATABASE_USER=root
       - DATABASE_PASSWORD=123456
       - DATABASE_NAME=gateway
