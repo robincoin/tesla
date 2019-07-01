@@ -82,10 +82,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: '8'
           memory: 8192M
         reservations:
-          cpus: '1'
+          cpus: '2'
           memory: 4096M
     command: ["dockerize", "-wait", "tcp://tesla-mysql:3306", "-wait", "tcp://tesla-backend-sample:2181", "-timeout", "1800s","./start.sh"]
     depends_on:
