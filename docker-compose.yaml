@@ -79,6 +79,7 @@ services:
   tesla-gateway:
     container_name: tesla-gateway
     image: tesla-gateway:1.0.0
+    network_mode: "host"
     deploy:
       resources:
         limits:
@@ -91,10 +92,6 @@ services:
     depends_on:
       - tesla-mysql
       - tesla-backend-sample
-    ports:
-      - 9000:9000
-      - 5701:5701
-      - 9091:9091
     environment:
       - DATABASE_HOST=tesla-mysql
       - DATABASE_USER=root
