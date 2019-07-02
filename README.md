@@ -43,7 +43,9 @@ tesla还与summerframework结合，通过gateway为入口，实现了整个调�
 
 具体插件使用方法请参考[PDF文档](https://github.com/ke-finance/tesla/blob/master/tesla-ops/src/main/resources/static/doc/TESLA%E6%8E%A5%E5%85%A5%E6%96%87%E6%A1%A3.pdf)
 
- 
+# 关于性能
+  https://www.jianshu.com/p/d07c6eceff05
+  
 # 使用说明
  * 构建[summerframework](https://github.com/ke-finance/summerframework)
  
