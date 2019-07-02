@@ -93,7 +93,7 @@ services:
         reservations:
           cpus: '2'
           memory: 4096M
-    command: ["dockerize", "-wait", "tcp://172.26.5.213:3306", "-wait", "tcp://172.26.5.213:2181", "-timeout", "1800s","./start.sh"]
+    command: ["dockerize", "-wait", "tcp://tesla-mysql:3306", "-wait", "tcp://tesla-backend-sample:2181", "-wait", "tcp://tesla-eureka:8761" "-timeout", "1800s","./start.sh"]
     depends_on:
       - tesla-mysql
       - tesla-backend-sample
@@ -103,6 +103,6 @@ services:
       - DATABASE_PASSWORD=123456
       - DATABASE_NAME=gateway
       - DATABASE_PORT=3306
-      - EUREKA_SERVER=http://172.26.5.213:8761/eureka/
-      - ZOOKEEPER_SERVER=zookeeper://172.26.5.213:2181
+      - EUREKA_SERVER=http://tesla-eureka:8761/eureka/
+      - ZOOKEEPER_SERVER=zookeeper://tesla-backend-sample:2181
     restart: always
