@@ -49,21 +49,12 @@ tesla还与summerframework结合，通过gateway为入口，实现了整个调�
 # 使用说明
  * 构建[summerframework](https://github.com/ke-finance/summerframework)
  
- * mvn打包及打镜像
+ * 构建及打镜像
  
  ```
-   # Tesla项目依赖于tesla-auth项目的SDK包，先install tesla-auth
-   > cd tesla-auth
-   > mvn clean -DskipTests install
-   
-   #tesla-sample下编写了一个模拟的后端服务，可直观的看到运行效果
-   > cd ../tesla-sample
-   > mvn clean -DskipTests package
-   
-   #打包tesla
-   > cd ..
-   > mvn clean package
+  sh install-all.sh
  ```
+ 
  
  * 在根目录下运行,成功如下图
  
