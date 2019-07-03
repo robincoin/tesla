@@ -17,7 +17,7 @@ public class ProxyToServerTimeoutHandler
     private static final Logger LOG = LoggerFactory.getLogger(ProxyToServerTimeoutHandler.class);
 
     public static final AttributeKey<Integer> ORIGIN_RESPONSE_READ_TIMEOUT =
-        AttributeKey.newInstance("originResponseReadTimeout");
+        AttributeKey.newInstance("originReadTimeout");
 
     public ProxyToServerTimeoutHandler(ProxyToServerConnection proxyToServerConnection) {
         super(new InboundHandler(proxyToServerConnection), new OutboundHandler(proxyToServerConnection));

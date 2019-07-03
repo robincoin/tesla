@@ -338,6 +338,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
             }
         }
         LOG.info("Writing request to ProxyToServerConnection, the orgin server is :{}", serverHostAndPort);
+        setReadTimeout(httpRequest);
         currentServerConnection.write(httpRequest, currentFilters);
         if (ProxyUtils.isCONNECT(httpRequest)) {
             return NEGOTIATING_CONNECT;
@@ -345,6 +346,27 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
             return AWAITING_CHUNK;
         } else {
             return AWAITING_INITIAL;
+        }
+    }
+
+    private void setReadTimeout(HttpRequest httpRequest) {
+        String readTimeout = httpRequest.headers().get(ProxyToServerTimeoutHandler.ORIGIN_RESPONSE_READ_TIMEOUT.name());
+        if (readTimeout != null) {
+            try {
+                Integer timeout = Integer.valueOf(readTimeout);
+                if (!this.isOneToMany()) {
+                    oneToOneServerConnectionsByHostAndPort.forEach((k, v) -> {
+                        v.channel.attr(ProxyToServerTimeoutHandler.ORIGIN_RESPONSE_READ_TIMEOUT).set(timeout);
+                    });
+                } else {
+                    Integer everyTimeout = timeout / this.oneToManyServerConnectionsByHostAndPort.size();
+                    oneToManyServerConnectionsByHostAndPort.forEach((k, v) -> {
+                        v.channel.attr(ProxyToServerTimeoutHandler.ORIGIN_RESPONSE_READ_TIMEOUT).set(everyTimeout);
+                    });
+                }
+            } catch (NumberFormatException e) {
+                return;
+            }
         }
     }
 
