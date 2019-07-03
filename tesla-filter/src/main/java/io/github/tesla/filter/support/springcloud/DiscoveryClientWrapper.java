@@ -34,7 +34,12 @@ public class DiscoveryClientWrapper extends DiscoveryClient {
     public static final String EUREKA_METADATA_GROUP = "GROUP";
     public static final String EUREKA_METADATA_VERSION = "VERSION";
 
-    private ThreadLocal<List<Map<String, String>>> groupVersionMapList = new ThreadLocal<>();
+    private ThreadLocal<List<Map<String, String>>> groupVersionMapList = new ThreadLocal<List<Map<String, String>>>() {
+        @Override
+        protected List<Map<String, String>> initialValue() {
+            return Lists.newArrayList();
+        }
+    };
 
     public DiscoveryClientWrapper(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config) {
         super(applicationInfoManager, config);
@@ -47,10 +52,8 @@ public class DiscoveryClientWrapper extends DiscoveryClient {
     private List<InstanceInfo> filterInstance(List<InstanceInfo> instanceList) {
         try {
             List<InstanceInfo> filteredInsantceList = instanceList;
-            if (groupVersionMapList.get() != null) {
-                for (Map<String, String> groupVersionMap : groupVersionMapList.get()) {
-                    filteredInsantceList = filterInstanceInner(filteredInsantceList, groupVersionMap);
-                }
+            for (Map<String, String> groupVersionMap : groupVersionMapList.get()) {
+                filteredInsantceList = filterInstanceInner(filteredInsantceList, groupVersionMap);
             }
             return filteredInsantceList;
         } finally {
