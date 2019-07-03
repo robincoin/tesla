@@ -79,6 +79,7 @@ public class HttpProxyServer {
     private volatile InetSocketAddress localAddress;
     private volatile InetSocketAddress boundAddress;
     private volatile int connectTimeout;
+    private volatile int readTimeout;
 
     private volatile int idleConnectionTimeout;
 
@@ -86,7 +87,7 @@ public class HttpProxyServer {
 
     public HttpProxyServer(ServerGroup serverGroup, InetSocketAddress requestedAddress,
         HttpFiltersSourceAdapter filtersSource, boolean transparent, int idleConnectionTimeout, int connectTimeout,
-        HostResolver serverResolver, long readThrottleBytesPerSecond, long writeThrottleBytesPerSecond,
+        int readTimeout, HostResolver serverResolver, long readThrottleBytesPerSecond, long writeThrottleBytesPerSecond,
         InetSocketAddress localAddress, String proxyAlias, int maxInitialLineLength, int maxHeaderSize,
         int maxChunkSize, boolean allowRequestsToOriginServer) {
         this.serverGroup = serverGroup;
@@ -95,6 +96,7 @@ public class HttpProxyServer {
         this.transparent = transparent;
         this.idleConnectionTimeout = idleConnectionTimeout;
         this.connectTimeout = connectTimeout;
+        this.readTimeout = readTimeout;
         this.serverResolver = serverResolver;
         if (writeThrottleBytesPerSecond > 0 || readThrottleBytesPerSecond > 0) {
             this.globalTrafficShapingHandler =
@@ -223,6 +225,10 @@ public class HttpProxyServer {
 
     public int getConnectTimeout() {
         return connectTimeout;
+    }
+
+    public int getReadTimeout() {
+        return readTimeout;
     }
 
     public HttpFiltersSourceAdapter getFiltersSource() {

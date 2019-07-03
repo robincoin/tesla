@@ -12,6 +12,7 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLProtocolException;
 import javax.net.ssl.TrustManagerFactory;
@@ -51,6 +52,7 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCounted;
@@ -304,8 +306,6 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
         }
     }
 
-    ;
-
     @Override
     public void writeHttp(HttpObject httpObject) {
         if (httpObject instanceof HttpRequest) {
@@ -549,7 +549,21 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
             aggregateContentForFiltering(pipeline, numberOfBytesToBuffer);
         }
         pipeline.addLast("idle", new IdleStateHandler(0, 0, proxyServer.getIdleConnectionTimeout()));
+        pipeline.addLast("idle", new IdleStateHandler(0, 0, proxyServer.getIdleConnectionTimeout()));
+        pipeline.addLast("timeout", new ProxyToServerTimeoutHandler(this));
         pipeline.addLast("handler", this);
+    }
+
+    public void startReadTimeoutHandler(int readTimeout) {
+        channel.pipeline().addBefore("handler", "readTimeoutHandler",
+            new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS));
+    }
+
+    public void removeReadTimeoutHandler() {
+        final ChannelPipeline pipeline = channel.pipeline();
+        if (pipeline.get("readTimeoutHandler") != null) {
+            pipeline.remove("readTimeoutHandler");
+        }
     }
 
     public void connectionSucceeded(boolean shouldForwardInitialRequest) {
