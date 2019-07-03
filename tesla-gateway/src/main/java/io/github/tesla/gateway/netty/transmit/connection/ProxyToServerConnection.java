@@ -52,6 +52,7 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.handler.timeout.ReadTimeoutException;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.AttributeKey;
@@ -379,6 +380,10 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
                     "An executor rejected a read or write operation on the ProxyToServerConnection (this is normal if the proxy is shutting down). Message: "
                         + cause.getMessage());
                 LOG.debug("A RejectedExecutionException occurred on ProxyToServerConnection", cause);
+            } else if (cause instanceof ReadTimeoutException) {
+                LOG.info("A ReadTimeout" + cause.getMessage());
+                LOG.debug("A ReadTimeout occurred on ProxyToServerConnection", cause);
+                timedOut();
             } else {
                 LOG.error("Caught an exception on ProxyToServerConnection", cause);
             }
