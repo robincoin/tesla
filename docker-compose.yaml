@@ -51,7 +51,6 @@ services:
     ports:
       - 8902:8902
       - 2181:2181
-    command: ["dockerize", "-wait", "tcp://tesla-eureka:8761", "-timeout", "1800s","./start.sh"]
     depends_on:
       - tesla-eureka
     environment:
