@@ -47,8 +47,10 @@ public class DiscoveryClientWrapper extends DiscoveryClient {
     private List<InstanceInfo> filterInstance(List<InstanceInfo> instanceList) {
         try {
             List<InstanceInfo> filteredInsantceList = instanceList;
-            for (Map<String, String> groupVersionMap : groupVersionMapList.get()) {
-                filteredInsantceList = filterInstanceInner(filteredInsantceList, groupVersionMap);
+            if (groupVersionMapList.get() != null) {
+                for (Map<String, String> groupVersionMap : groupVersionMapList.get()) {
+                    filteredInsantceList = filterInstanceInner(filteredInsantceList, groupVersionMap);
+                }
             }
             return filteredInsantceList;
         } finally {
