@@ -79,26 +79,25 @@ services:
   tesla-gateway:
     container_name: tesla-gateway
     image: tesla-gateway:1.0.0
-    network_mode: "host"
-    ulimits:
-      nproc: 65536
-      nofile:
-        soft: 65536
-        hard: 65536
     deploy:
       resources:
         limits:
-          cpus: '8'
-          memory: 10240M
-        reservations:
           cpus: '2'
+          memory: 8192M
+        reservations:
+          cpus: '1'
           memory: 4096M
     command: ["dockerize", "-wait", "tcp://tesla-mysql:3306", "-wait", "tcp://tesla-backend-sample:2181", "-wait", "tcp://tesla-eureka:8761", "-timeout", "1800s","./start.sh"]
     depends_on:
       - tesla-mysql
       - tesla-backend-sample
+      - tesla-eureka
+    ports:
+      - 9000:9000
+      - 5701:5701
+      - 9091:9091
     environment:
-      - DATABASE_HOST=172.26.5.213
+      - DATABASE_HOST=tesla-mysql
       - DATABASE_USER=root
       - DATABASE_PASSWORD=123456
       - DATABASE_NAME=gateway
