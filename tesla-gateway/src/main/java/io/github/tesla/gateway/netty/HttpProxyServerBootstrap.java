@@ -41,7 +41,7 @@ public class HttpProxyServerBootstrap {
     private boolean transparent = false;
     private int idleConnectionTimeout = 70;
     private int connectTimeout = 40000;
-    private int readTimeout = 10000;
+    private int readTimeout = 30000;
     private HostResolver serverResolver = new DefaultHostResolver();
     private long readThrottleBytesPerSecond;
     private long writeThrottleBytesPerSecond;
