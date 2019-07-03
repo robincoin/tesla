@@ -354,16 +354,9 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
         if (readTimeout != null) {
             try {
                 Integer timeout = Integer.valueOf(readTimeout);
-                if (!this.isOneToMany()) {
-                    oneToOneServerConnectionsByHostAndPort.forEach((k, v) -> {
-                        v.channel.attr(ProxyToServerTimeoutHandler.ORIGIN_RESPONSE_READ_TIMEOUT).set(timeout);
-                    });
-                } else {
-                    Integer everyTimeout = timeout / this.oneToManyServerConnectionsByHostAndPort.size();
-                    oneToManyServerConnectionsByHostAndPort.forEach((k, v) -> {
-                        v.channel.attr(ProxyToServerTimeoutHandler.ORIGIN_RESPONSE_READ_TIMEOUT).set(everyTimeout);
-                    });
-                }
+                currentServerConnectionList.forEach(connection -> {
+                    connection.channel.attr(ProxyToServerTimeoutHandler.ORIGIN_RESPONSE_READ_TIMEOUT).set(timeout);
+                });
             } catch (NumberFormatException e) {
                 return;
             }
@@ -557,6 +550,23 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
                 HttpFiltersAdapter currentFilters = this.currentFilters;
                 currentFilters.serverToProxyResponseTimedOut();
                 writeGatewayTimeout(currentRequest);
+            }
+        });
+    }
+
+    public void readTimedOut(ProxyToServerConnection serverConnection) {
+        if (currentServerConnectionList == null) {
+            return;
+        }
+        // 如果后端服务有一个超时了，则让所有的都超时
+        currentServerConnectionList.forEach(currConnection -> {
+            if (currConnection == serverConnection && this.lastReadTime > currConnection.lastReadTime
+                && this.currentRequest != null) {
+                // the idle timeout fired on the active server connection. send a timeout response to the client.
+                LOG.warn("Server timed out: {}", currConnection);
+                HttpFiltersAdapter currentFilters = this.currentFilters;
+                currentFilters.serverToProxyResponseTimedOut();
+                writeReadGatewayTimeout(currentRequest);
             }
         });
     }
@@ -1093,6 +1103,17 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
      */
     private boolean writeGatewayTimeout(HttpRequest httpRequest) {
         String body = "Gateway Timeout";
+        FullHttpResponse response =
+            ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.GATEWAY_TIMEOUT, body);
+        if (httpRequest != null && ProxyUtils.isHEAD(httpRequest)) {
+            response.content().clear();
+        }
+
+        return respondWithShortCircuitResponse(response);
+    }
+
+    private boolean writeReadGatewayTimeout(HttpRequest httpRequest) {
+        String body = "Gateway Read Timeout,May be origin server is to slow";
         FullHttpResponse response =
             ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.GATEWAY_TIMEOUT, body);
         if (httpRequest != null && ProxyUtils.isHEAD(httpRequest)) {

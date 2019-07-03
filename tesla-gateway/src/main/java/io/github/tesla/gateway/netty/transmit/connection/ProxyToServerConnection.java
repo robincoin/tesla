@@ -363,6 +363,11 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
         clientConnection.timedOut(this);
     }
 
+    public void readTimeOut() {
+        super.timedOut();
+        clientConnection.readTimedOut(this);
+    }
+
     @Override
     public void disconnected() {
         super.disconnected();
@@ -381,9 +386,9 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
                         + cause.getMessage());
                 LOG.debug("A RejectedExecutionException occurred on ProxyToServerConnection", cause);
             } else if (cause instanceof ReadTimeoutException) {
-                LOG.info("A ReadTimeout" + cause.getMessage());
-                LOG.debug("A ReadTimeout occurred on ProxyToServerConnection", cause);
-                timedOut();
+                LOG.info("A ReadTimeout,origin server have not respoonse in time");
+                LOG.debug("A ReadTimeout occurred on ProxyToServerConnection");
+                readTimeOut();
             } else {
                 LOG.error("Caught an exception on ProxyToServerConnection", cause);
             }
@@ -553,14 +558,13 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
         if (numberOfBytesToBuffer > 0) {
             aggregateContentForFiltering(pipeline, numberOfBytesToBuffer);
         }
-        pipeline.addLast("idle", new IdleStateHandler(0, 0, proxyServer.getIdleConnectionTimeout()));
-        pipeline.addLast("idle", new IdleStateHandler(0, 0, proxyServer.getIdleConnectionTimeout()));
         pipeline.addLast("timeout", new ProxyToServerTimeoutHandler(this));
+        pipeline.addLast("idle", new IdleStateHandler(0, 0, proxyServer.getIdleConnectionTimeout()));
         pipeline.addLast("handler", this);
     }
 
     public void startReadTimeoutHandler(int readTimeout) {
-        channel.pipeline().addBefore("handler", "readTimeoutHandler",
+        channel.pipeline().addBefore("timeout", "readTimeoutHandler",
             new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS));
     }
 
