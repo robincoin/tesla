@@ -9,11 +9,15 @@ import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import io.netty.channel.CombinedChannelDuplexHandler;
 import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.util.AttributeKey;
 
 public class ProxyToServerTimeoutHandler
     extends CombinedChannelDuplexHandler<ChannelInboundHandlerAdapter, ChannelOutboundHandlerAdapter> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProxyToServerTimeoutHandler.class);
+
+    public static final AttributeKey<Integer> ORIGIN_RESPONSE_READ_TIMEOUT =
+        AttributeKey.newInstance("originResponseReadTimeout");
 
     public ProxyToServerTimeoutHandler(ProxyToServerConnection proxyToServerConnection) {
         super(new InboundHandler(proxyToServerConnection), new OutboundHandler(proxyToServerConnection));
@@ -51,8 +55,13 @@ public class ProxyToServerTimeoutHandler
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
             try {
-                final Integer timeout = proxyToServerConnection.proxyServer.getReadTimeout();
+                Integer timeoutParam = ctx.channel().attr(ORIGIN_RESPONSE_READ_TIMEOUT).get();
+                if (timeoutParam == null) {
+                    timeoutParam = proxyToServerConnection.proxyServer.getReadTimeout();
+                }
+                final Integer timeout = timeoutParam;
                 if (timeout != null && msg instanceof LastHttpContent) {
+
                     promise.addListener(e -> {
                         LOG.debug("[{}] Adding read timeout handler: {}", ctx.channel().id(), timeout);
                         proxyToServerConnection.startReadTimeoutHandler(timeout);

@@ -29,48 +29,50 @@ import io.github.tesla.gateway.cache.GrayRuesCache;
 
 /**
  * @author liushiming
- * @version DynamicSpringCloudClient.java, v 0.0.1 2018年5月4日 上午11:53:15
- *          liushiming
+ * @version DynamicSpringCloudClient.java, v 0.0.1 2018年5月4日 上午11:53:15 liushiming
  */
 public class DynamicSpringCloudClient {
 
-	@Autowired
-	private DiscoveryClientWrapper discoveryClientWrapper;
+    @Autowired
+    private DiscoveryClientWrapper discoveryClientWrapper;
 
-	private final int httpPort;
+    private final int httpPort;
 
-	private SpringCloudDiscovery springCloudDiscovery;
+    private SpringCloudDiscovery springCloudDiscovery;
 
-	public DynamicSpringCloudClient(int httpPort) {
-		this.httpPort = httpPort;
-	}
+    public DynamicSpringCloudClient(int httpPort) {
+        this.httpPort = httpPort;
+    }
 
-	public SpringCloudDiscovery getSpringCloudDiscovery() {
-		if (springCloudDiscovery != null) {
-			this.springCloudDiscovery = new SpringCloudDiscovery(discoveryClientWrapper, httpPort);
-		}
-		return springCloudDiscovery;
-	}
+    public SpringCloudDiscovery getSpringCloudDiscovery() {
+        if (springCloudDiscovery != null) {
+            this.springCloudDiscovery = new SpringCloudDiscovery(discoveryClientWrapper, httpPort);
+        }
+        return springCloudDiscovery;
+    }
 
-	public String loadBalanceCall(String serviceId, String group, String version,
-			NettyHttpServletRequest servletRequest) {
-		if (StringUtils.isNotBlank(group) && StringUtils.isNotBlank(version)) {
-			Map<String, String> groupVersionMap = Maps.newHashMap();
-			groupVersionMap.put(DiscoveryClientWrapper.EUREKA_METADATA_VERSION, version);
-			groupVersionMap.put(DiscoveryClientWrapper.EUREKA_METADATA_GROUP, group);
-			discoveryClientWrapper.setGroupVersion(groupVersionMap);
-		}
-		List<Map<String, String>> pair = GrayRuesCache.getTargetApp(serviceId, servletRequest);
-		if (!CollectionUtils.isEmpty(pair)) {
-			discoveryClientWrapper.clearGroupVersionMap();
-			discoveryClientWrapper.setGroupVersion(pair);
-		}
-		InstanceInfo instanceInfo = this.nextServer(serviceId);
-		return instanceInfo.getHostName() + ":" + instanceInfo.getPort();
-	}
+    public String loadBalanceCall(String serviceId, String group, String version,
+        Map<String, String> userDefinitionMeta, NettyHttpServletRequest servletRequest) {
+        if (StringUtils.isNotBlank(group) && StringUtils.isNotBlank(version)) {
+            Map<String, String> groupVersionMap = Maps.newHashMap();
+            groupVersionMap.put(DiscoveryClientWrapper.EUREKA_METADATA_VERSION, version);
+            groupVersionMap.put(DiscoveryClientWrapper.EUREKA_METADATA_GROUP, group);
+            discoveryClientWrapper.setGroupVersion(groupVersionMap);
+        }
+        if (!userDefinitionMeta.isEmpty()) {
+            discoveryClientWrapper.setGroupVersion(userDefinitionMeta);
+        }
+        List<Map<String, String>> pair = GrayRuesCache.getTargetApp(serviceId, servletRequest);
+        if (!CollectionUtils.isEmpty(pair)) {
+            discoveryClientWrapper.clearGroupVersionMap();
+            discoveryClientWrapper.setGroupVersion(pair);
+        }
+        InstanceInfo instanceInfo = this.nextServer(serviceId);
+        return instanceInfo.getHostName() + ":" + instanceInfo.getPort();
+    }
 
-	private InstanceInfo nextServer(String serviceId) {
-		return discoveryClientWrapper.getNextServerFromEureka(serviceId, false);
-	}
+    private InstanceInfo nextServer(String serviceId) {
+        return discoveryClientWrapper.getNextServerFromEureka(serviceId, false);
+    }
 
 }
