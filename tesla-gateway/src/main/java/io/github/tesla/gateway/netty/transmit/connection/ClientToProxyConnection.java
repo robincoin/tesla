@@ -87,9 +87,6 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
         HttpHeaderNames.TRANSFER_ENCODING.toString().toLowerCase(Locale.US);
     private static final Pattern HTTP_SCHEME = Pattern.compile("^http://.*", Pattern.CASE_INSENSITIVE);
 
-    private static final ExecutorService oneToManyThreadPool = Executors.newFixedThreadPool(
-        DEFAULT_INCOMING_OUTING_WORKER_THREADS / 2, new CategorizedThreadFactory("Tesla", "ProxySendRequest", 1));
-
     /**
      * Keep track of all ProxyToServerConnections by host+port.
      */
@@ -245,8 +242,9 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
                         }
                     });
                 }
+                //提交自定义的任务给netty调度执行
                 List<java.util.concurrent.Future<ConnectionState>> results =
-                    oneToManyThreadPool.invokeAll(oneToManyTasks);
+                    this.channel.eventLoop().invokeAll(oneToManyTasks);
                 boolean success = true;
                 for (java.util.concurrent.Future<ConnectionState> state : results) {
                     if (state.get() == DISCONNECT_REQUESTED) {
