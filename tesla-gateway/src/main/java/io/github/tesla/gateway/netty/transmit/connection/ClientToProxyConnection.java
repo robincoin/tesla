@@ -4,7 +4,6 @@ import static io.github.tesla.gateway.netty.transmit.ConnectionState.AWAITING_CH
 import static io.github.tesla.gateway.netty.transmit.ConnectionState.AWAITING_INITIAL;
 import static io.github.tesla.gateway.netty.transmit.ConnectionState.DISCONNECT_REQUESTED;
 import static io.github.tesla.gateway.netty.transmit.ConnectionState.NEGOTIATING_CONNECT;
-import static io.github.tesla.gateway.netty.transmit.support.ServerGroup.DEFAULT_INCOMING_OUTING_WORKER_THREADS;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,8 +14,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -32,7 +29,6 @@ import io.github.tesla.filter.utils.NetworkUtil;
 import io.github.tesla.filter.utils.ProxyUtils;
 import io.github.tesla.gateway.netty.HttpFiltersAdapter;
 import io.github.tesla.gateway.netty.HttpProxyServer;
-import io.github.tesla.gateway.netty.transmit.CategorizedThreadFactory;
 import io.github.tesla.gateway.netty.transmit.ConnectionState;
 import io.github.tesla.gateway.netty.transmit.flow.ConnectionFlowStep;
 import io.netty.buffer.ByteBuf;
