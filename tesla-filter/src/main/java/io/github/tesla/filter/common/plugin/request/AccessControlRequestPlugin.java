@@ -18,7 +18,7 @@ public class AccessControlRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
 
         AccessControlDefinition definition = JsonUtils.json2Definition(filterParam, AccessControlDefinition.class);
         if (definition == null) {

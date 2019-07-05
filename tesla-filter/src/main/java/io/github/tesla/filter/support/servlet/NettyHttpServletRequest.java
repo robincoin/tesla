@@ -132,6 +132,10 @@ public class NettyHttpServletRequest implements HttpServletRequest {
         return attributes.get(name);
     }
 
+    public String getStringAttribute(String name) {
+        return (String)attributes.get(name);
+    }
+
     @Override
     public Enumeration<String> getAttributeNames() {
         return Collections.enumeration(attributes.keySet());

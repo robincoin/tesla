@@ -17,7 +17,7 @@ import io.netty.handler.codec.http.HttpVersion;
 public class GrpcRouting {
 
     public static HttpResponse callRemote(NettyHttpServletRequest servletRequest, HttpObject httpObject,
-        Object routerParamJson) {
+        String routerParamJson) {
         FilterCache cacheComponent = SpringContextHolder.getBean(FilterCache.class);
         GRpcRoutingDefinition definition = JsonUtils.json2Definition(routerParamJson, GRpcRoutingDefinition.class);
         if (definition != null && cacheComponent.loadFileBytes(definition.getProtoFileId()) != null) {

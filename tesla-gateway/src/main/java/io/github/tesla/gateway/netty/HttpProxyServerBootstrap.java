@@ -41,21 +41,20 @@ public class HttpProxyServerBootstrap {
     private boolean transparent = false;
     private int idleConnectionTimeout = 70;
     private int connectTimeout = 40000;
+    private int readTimeout = 30000;
     private HostResolver serverResolver = new DefaultHostResolver();
     private long readThrottleBytesPerSecond;
     private long writeThrottleBytesPerSecond;
     private InetSocketAddress localAddress;
     private String proxyAlias;
     private int clientToProxyAcceptorThreads = ServerGroup.DEFAULT_INCOMING_ACCEPTOR_THREADS;
-    private int clientToProxyWorkerThreads = ServerGroup.DEFAULT_INCOMING_WORKER_THREADS;
-    private int proxyToServerWorkerThreads = ServerGroup.DEFAULT_OUTGOING_WORKER_THREADS;
+    private int clientToProxyAndProxyToServerWorkerThreads = ServerGroup.DEFAULT_INCOMING_OUTING_WORKER_THREADS;
     private int maxInitialLineLength = MAX_INITIAL_LINE_LENGTH_DEFAULT;
     private int maxHeaderSize = MAX_HEADER_SIZE_DEFAULT;
     private int maxChunkSize = MAX_CHUNK_SIZE_DEFAULT;
     private boolean allowRequestToOriginServer = false;
 
-    public HttpProxyServerBootstrap() {
-    }
+    public HttpProxyServerBootstrap() {}
 
     public HttpProxyServerBootstrap(Properties props) {
         this.withUseDnsSec(ProxyUtils.extractBooleanDefaultFalse(props, "dnssec"));
@@ -97,12 +96,12 @@ public class HttpProxyServerBootstrap {
         if (this.serverGroup != null) {
             serverGroup = this.serverGroup;
         } else {
-            serverGroup = new ServerGroup(name, clientToProxyAcceptorThreads, clientToProxyWorkerThreads,
-                proxyToServerWorkerThreads);
+            serverGroup =
+                new ServerGroup(name, clientToProxyAcceptorThreads, clientToProxyAndProxyToServerWorkerThreads);
         }
 
         return new HttpProxyServer(serverGroup, determineListenAddress(), filtersSource, transparent,
-            idleConnectionTimeout, connectTimeout, serverResolver, readThrottleBytesPerSecond,
+            idleConnectionTimeout, connectTimeout, readTimeout, serverResolver, readThrottleBytesPerSecond,
             writeThrottleBytesPerSecond, localAddress, proxyAlias, maxInitialLineLength, maxHeaderSize, maxChunkSize,
             allowRequestToOriginServer);
     }
@@ -142,6 +141,11 @@ public class HttpProxyServerBootstrap {
 
     public HttpProxyServerBootstrap withConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
+        return this;
+    }
+
+    public HttpProxyServerBootstrap withReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
         return this;
     }
 
@@ -198,8 +202,7 @@ public class HttpProxyServerBootstrap {
 
     public HttpProxyServerBootstrap withThreadPoolConfiguration(ThreadPoolConfiguration configuration) {
         this.clientToProxyAcceptorThreads = configuration.getAcceptorThreads();
-        this.clientToProxyWorkerThreads = configuration.getClientToProxyWorkerThreads();
-        this.proxyToServerWorkerThreads = configuration.getProxyToServerWorkerThreads();
+        this.clientToProxyAndProxyToServerWorkerThreads = configuration.getClientToProxyAndProxyToServerWorkerThreads();
         return this;
     }
 

@@ -79,6 +79,7 @@ public class HttpProxyServer {
     private volatile InetSocketAddress localAddress;
     private volatile InetSocketAddress boundAddress;
     private volatile int connectTimeout;
+    private volatile int readTimeout;
 
     private volatile int idleConnectionTimeout;
 
@@ -86,7 +87,7 @@ public class HttpProxyServer {
 
     public HttpProxyServer(ServerGroup serverGroup, InetSocketAddress requestedAddress,
         HttpFiltersSourceAdapter filtersSource, boolean transparent, int idleConnectionTimeout, int connectTimeout,
-        HostResolver serverResolver, long readThrottleBytesPerSecond, long writeThrottleBytesPerSecond,
+        int readTimeout, HostResolver serverResolver, long readThrottleBytesPerSecond, long writeThrottleBytesPerSecond,
         InetSocketAddress localAddress, String proxyAlias, int maxInitialLineLength, int maxHeaderSize,
         int maxChunkSize, boolean allowRequestsToOriginServer) {
         this.serverGroup = serverGroup;
@@ -95,6 +96,7 @@ public class HttpProxyServer {
         this.transparent = transparent;
         this.idleConnectionTimeout = idleConnectionTimeout;
         this.connectTimeout = connectTimeout;
+        this.readTimeout = readTimeout;
         this.serverResolver = serverResolver;
         if (writeThrottleBytesPerSecond > 0 || readThrottleBytesPerSecond > 0) {
             this.globalTrafficShapingHandler =
@@ -159,7 +161,8 @@ public class HttpProxyServer {
 
     private GlobalTrafficShapingHandler createGlobalTrafficShapingHandler(long readThrottleBytesPerSecond,
         long writeThrottleBytesPerSecond) {
-        EventLoopGroup proxyToServerEventLoop = this.getProxyToServerWorkerFor();
+        EventLoopGroup proxyToServerEventLoop =
+            this.serverGroup.getClientToProxyWorkerPoolAndProxyToServerWorkerForTransport();
         return new GlobalTrafficShapingHandler(proxyToServerEventLoop, writeThrottleBytesPerSecond,
             readThrottleBytesPerSecond, TRAFFIC_SHAPING_CHECK_INTERVAL_MS, Long.MAX_VALUE);
     }
@@ -167,7 +170,7 @@ public class HttpProxyServer {
     private void doStart() {
         ServerBootstrap serverBootstrap =
             new ServerBootstrap().group(serverGroup.getClientToProxyAcceptorPoolForTransport(),
-                serverGroup.getClientToProxyWorkerPoolForTransport());
+                serverGroup.getClientToProxyWorkerPoolAndProxyToServerWorkerForTransport());
         ChannelInitializer<Channel> initializer = new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
@@ -224,6 +227,10 @@ public class HttpProxyServer {
         return connectTimeout;
     }
 
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
     public HttpFiltersSourceAdapter getFiltersSource() {
         return filtersSource;
     }
@@ -254,10 +261,6 @@ public class HttpProxyServer {
 
     public String getProxyAlias() {
         return proxyAlias;
-    }
-
-    public EventLoopGroup getProxyToServerWorkerFor() {
-        return serverGroup.getProxyToServerWorkerPoolForTransport();
     }
 
     public long getReadThrottle() {

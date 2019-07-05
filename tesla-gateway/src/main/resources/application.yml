@@ -17,6 +17,9 @@ eureka:
       defaultZone: ${EUREKA_SERVER}
 hazelcast:
   version: 1.0.0
+filter:
+   enabledWaf: false
+   enabledMetrcis: false
 dubbo:
   registryAddress: ${ZOOKEEPER_SERVER}
 management:

@@ -32,7 +32,7 @@ public class ModifyHeaderResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
 
         ModifyHeaderDefinition definition = JsonUtils.json2Definition(filterParam, ModifyHeaderDefinition.class);
         if (definition == null) {

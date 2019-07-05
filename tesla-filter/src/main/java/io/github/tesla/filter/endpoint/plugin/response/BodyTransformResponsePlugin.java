@@ -38,7 +38,7 @@ public class BodyTransformResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         if (httpResponse instanceof FullHttpResponse) {
             FullHttpResponse fullHttpResponse = (FullHttpResponse)httpResponse;
             ByteBuf responseBuffer = fullHttpResponse.content();

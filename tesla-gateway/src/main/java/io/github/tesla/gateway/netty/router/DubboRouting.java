@@ -16,7 +16,7 @@ import io.netty.handler.codec.http.HttpVersion;
 public class DubboRouting {
 
     public static HttpResponse callRemote(NettyHttpServletRequest servletRequest, HttpObject httpObject,
-        Object routerParamJson) {
+        String routerParamJson) {
         DubboRpcRoutingDefinition definition =
             JsonUtils.json2Definition(routerParamJson, DubboRpcRoutingDefinition.class);
         if (definition == null) {

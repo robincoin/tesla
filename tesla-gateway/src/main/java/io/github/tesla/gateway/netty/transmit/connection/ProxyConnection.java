@@ -460,7 +460,7 @@ public abstract class ProxyConnection<I extends HttpObject> extends SimpleChanne
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public final void channelInactive(ChannelHandlerContext ctx) throws Exception {
         try {
             disconnected();
         } finally {

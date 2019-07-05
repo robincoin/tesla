@@ -63,12 +63,10 @@ public class EndpointExecutor implements Comparable<EndpointExecutor>, Serializa
     }
 
     public List<ServiceRequestPluginExecutor> matchAndGetFiltes(NettyHttpServletRequest servletRequest) {
-
         return requestFiltersList;
     }
 
     public List<ServiceResponsePluginExecutor> matchAndGetFiltes(NettyHttpServletResponse servletResponse) {
-
         return responseFiltersList;
     }
 

@@ -15,6 +15,10 @@ public class SpringCloudRoutingDefinition extends PluginDefinition {
 
     private String version;
 
+    private String userDefinitionKey;
+
+    private String userDefinitionValue;
+
     private String servicePrefix;
 
     private String targetPrefix;
@@ -57,6 +61,22 @@ public class SpringCloudRoutingDefinition extends PluginDefinition {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getUserDefinitionKey() {
+        return userDefinitionKey;
+    }
+
+    public void setUserDefinitionKey(String userDefinitionKey) {
+        this.userDefinitionKey = userDefinitionKey;
+    }
+
+    public String getUserDefinitionValue() {
+        return userDefinitionValue;
+    }
+
+    public void setUserDefinitionValue(String userDefinitionValue) {
+        this.userDefinitionValue = userDefinitionValue;
     }
 
     @Override

@@ -19,7 +19,7 @@ public class DirectRouting {
     private static final Logger LOGGER = LoggerFactory.getLogger(DirectRouting.class);
 
     public static HttpResponse callRemote(NettyHttpServletRequest servletRequest, HttpObject httpObject,
-        Object paramJson) {
+        String paramJson) {
         DirectRoutingDefinition definition = JsonUtils.json2Definition(paramJson, DirectRoutingDefinition.class);
         if (definition == null) {
             return PluginUtil.createResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR, servletRequest.getNettyRequest(),
@@ -27,7 +27,6 @@ public class DirectRouting {
         }
         final FullHttpRequest realRequest = (FullHttpRequest)httpObject;
         realRequest.headers().set(HttpHeaderNames.HOST, ProxyUtils.parseHostAndPort(definition.getTargetHostPort()));
-
         String changedPath =
             AntMatchUtil.replacePrefix(realRequest.uri(), definition.getServicePrefix(), definition.getTargetPrefix());
         LOGGER.info("Direct process! request url:" + servletRequest.getRequestURI() + ";targetHost:"

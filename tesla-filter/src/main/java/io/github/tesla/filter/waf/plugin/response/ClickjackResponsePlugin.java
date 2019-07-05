@@ -14,7 +14,7 @@ public class ClickjackResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         HttpRequest request = servletRequest.getNettyRequest();
         if (!isPreflightRequest(request)) {
             httpResponse.headers().add("X-FRAME-OPTIONS", X_Frame_Option);

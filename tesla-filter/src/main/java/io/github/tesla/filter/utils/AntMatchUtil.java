@@ -7,16 +7,15 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class AntMatchUtil {
-    private static final String PATHSEPARATOR = "/";
-    private static final PathMatcher PATHMATCHER = new AntPathMatcher();
+    private static final String PATHSEPARATOR = AntPathMatcher.DEFAULT_PATH_SEPARATOR;
+    private static final AntPathMatcher ANTPATHMATCHER = new AntPathMatcher();
     private static final Pattern REPLACEPATTERN = Pattern.compile("#\\{(\\d+)\\}");
-    private static Pattern HTTP_PREFIX = Pattern.compile("^https?://.*", Pattern.CASE_INSENSITIVE);
+    private static final Pattern HTTP_PREFIX = Pattern.compile("^https?://.*", Pattern.CASE_INSENSITIVE);
 
     public static String concatPath(String... paths) {
         StringBuilder pathBuild = new StringBuilder();
@@ -31,7 +30,6 @@ public class AntMatchUtil {
         return pathBuild.toString();
     }
 
-    // 计算字符串在给定字符串出现的次数
     public static int findCount(String src, String des) {
         int index = 0;
         int count = 0;
@@ -47,7 +45,7 @@ public class AntMatchUtil {
         if (remotePath.indexOf("?") > 0) {
             remotePath = remotePath.substring(0, remotePath.indexOf("?"));
         }
-        return PATHMATCHER.match(path(pattern), path(remotePath));
+        return ANTPATHMATCHER.match(path(pattern), path(remotePath));
     }
 
     public static boolean matchPrefix(String servicePrefix, String path) {
@@ -81,11 +79,6 @@ public class AntMatchUtil {
         return argMap;
     }
 
-    /**
-     * 
-     * @date: 2018/11/16 14:55
-     * @description: 统一处理path
-     */
     public static String path(String path) {
         if (StringUtils.isBlank(path)) {
             path = PATHSEPARATOR;
@@ -102,11 +95,6 @@ public class AntMatchUtil {
         return path;
     }
 
-    /**
-     * 
-     * @date: 2018/11/16 14:20
-     * @description:返回null证明不匹配 最复杂的情况下支持的匹配串请看AntMatchTestTest的junit case
-     */
     public static String replacePathWithinPattern(String patternPath, String remotePath, String targetPath) {
         patternPath = path(patternPath);
         remotePath = path(remotePath);
@@ -120,18 +108,16 @@ public class AntMatchUtil {
             targetParamStr = targetPath.substring(targetPath.indexOf("?"));
             targetPath = targetPath.substring(0, targetPath.indexOf("?"));
         }
-        if (!PATHMATCHER.match(patternPath, remotePath)) {
+        if (!ANTPATHMATCHER.match(patternPath, remotePath)) {
             return null;
         }
-        // 未自定义转发路径或
         if (StringUtils.isBlank(targetPath)) {
             return remotePath;
         }
         targetPath = path(targetPath);
-        // 包含替换占位符 仅替换Url参数即可
         if (targetPath.contains("#{")) {
             Matcher matcher = REPLACEPATTERN.matcher(targetPath);
-            String extractPath = PATHMATCHER.extractPathWithinPattern(patternPath, remotePath);
+            String extractPath = ANTPATHMATCHER.extractPathWithinPattern(patternPath, remotePath);
             extractPath = path(extractPath);
             List<String> extractPathList = Lists.newArrayList();
             int maxCount = 0;
@@ -178,26 +164,16 @@ public class AntMatchUtil {
         return changedPath;
     }
 
-    /**
-     * 
-     * @date: 2018/11/16 15:20
-     * @description: 校验是否满足path规则
-     */
     public static boolean validatePattern(String patternPath) {
         if (StringUtils.isBlank(patternPath)) {
             return false;
         }
         patternPath = path(patternPath);
-        /*if (!pathMatcher.isPattern(patternPath)) {
-            return false;
-        }*/
         if (!patternPath.contains("**")) {
             return true;
         }
-        // 不支持url参数
         if (patternPath.contains("{") && patternPath.contains("}")) {
             return false;
-            // patternPath = patternPath.substring(0, patternPath.indexOf("{")-1);
         }
         if (patternPath.split("\\*\\*").length > 1) {
             return false;

@@ -46,7 +46,7 @@ public class XssResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         if (policy != null) {
             FullHttpResponse fullHttpResonse = (FullHttpResponse)httpResponse;
             String contentType = fullHttpResonse.headers().get(HttpHeaderNames.CONTENT_TYPE);

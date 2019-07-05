@@ -16,7 +16,7 @@ public class CorsResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         CorsDefinition definition = JsonUtils.json2Definition(filterParam, CorsDefinition.class);
         if (definition == null) {
             return httpResponse;

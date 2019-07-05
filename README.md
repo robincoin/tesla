@@ -26,7 +26,7 @@ tesla还与summerframework结合，通过gateway为入口，实现了整个调�
 
 # 插件列表
 * 请求头转换插件：可对请求头和响应头进行配置化定制
-* 鉴权配置插件：支持JWT和OAUTH2鉴权
+* 鉴权配置插件：支持JWT和OAUTH2鉴权和自定义Jar鉴权
 * 限流配置插件：使用分布式令牌桶的形式对每个服务进行差别化限流
 * 熔断降级配置插件：使用resilience4j来进行熔断降级，如果后端服务有异常处理，可以进行降级
 * 请求报文校验插件：采用json schema对报文体或部分报文体的格式校验
@@ -43,25 +43,18 @@ tesla还与summerframework结合，通过gateway为入口，实现了整个调�
 
 具体插件使用方法请参考[PDF文档](https://github.com/ke-finance/tesla/blob/master/tesla-ops/src/main/resources/static/doc/TESLA%E6%8E%A5%E5%85%A5%E6%96%87%E6%A1%A3.pdf)
 
- 
+# 关于性能
+  https://www.jianshu.com/p/d07c6eceff05
+  
 # 使用说明
  * 构建[summerframework](https://github.com/ke-finance/summerframework)
  
- * mvn打包及打镜像
+ * 构建及打镜像
  
  ```
-   # Tesla项目依赖于tesla-auth项目的SDK包，先install tesla-auth
-   > cd tesla-auth
-   > mvn clean -DskipTests install
-   
-   #tesla-sample下编写了一个模拟的后端服务，可直观的看到运行效果
-   > cd ../tesla-sample
-   > mvn clean -DskipTests package
-   
-   #打包tesla
-   > cd ..
-   > mvn clean package
+  sh install-all.sh
  ```
+ 
  
  * 在根目录下运行,成功如下图
  

@@ -1,15 +1,19 @@
 package io.github.tesla.gateway.netty.transmit.connection;
 
-import static io.github.tesla.gateway.netty.transmit.ConnectionState.*;
-import static io.github.tesla.gateway.netty.transmit.support.ServerGroup.DEFAULT_INCOMING_WORKER_THREADS;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.AWAITING_CHUNK;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.AWAITING_INITIAL;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.DISCONNECT_REQUESTED;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.NEGOTIATING_CONNECT;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -18,20 +22,36 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.utils.NetworkUtil;
 import io.github.tesla.filter.utils.ProxyUtils;
 import io.github.tesla.gateway.netty.HttpFiltersAdapter;
 import io.github.tesla.gateway.netty.HttpProxyServer;
-import io.github.tesla.gateway.netty.transmit.CategorizedThreadFactory;
 import io.github.tesla.gateway.netty.transmit.ConnectionState;
 import io.github.tesla.gateway.netty.transmit.flow.ConnectionFlowStep;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.AsciiString;
@@ -63,17 +83,12 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
         HttpHeaderNames.TRANSFER_ENCODING.toString().toLowerCase(Locale.US);
     private static final Pattern HTTP_SCHEME = Pattern.compile("^http://.*", Pattern.CASE_INSENSITIVE);
 
-    private static final ExecutorService oneToManyThreadPool = Executors.newFixedThreadPool(
-        DEFAULT_INCOMING_WORKER_THREADS * 2, new CategorizedThreadFactory("Tesla", "ProxySendRequest", 1));
-
     /**
      * Keep track of all ProxyToServerConnections by host+port.
      */
-    private final Map<String, ProxyToServerConnection> oneToOneServerConnectionsByHostAndPort =
-        Collections.synchronizedMap(new WeakHashMap<String, ProxyToServerConnection>());
+    private final Map<String, ProxyToServerConnection> oneToOneServerConnectionsByHostAndPort = Maps.newHashMap();
 
-    private final Map<String, ProxyToServerConnection> oneToManyServerConnectionsByHostAndPort =
-        Collections.synchronizedMap(new WeakHashMap<String, ProxyToServerConnection>());
+    private final Map<String, ProxyToServerConnection> oneToManyServerConnectionsByHostAndPort = Maps.newHashMap();
     /**
      * Keep track of how many servers are currently in the process of connecting.
      */
@@ -223,8 +238,9 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
                         }
                     });
                 }
+                //提交自定义的任务给netty调度执行
                 List<java.util.concurrent.Future<ConnectionState>> results =
-                    oneToManyThreadPool.invokeAll(oneToManyTasks);
+                    this.channel.eventLoop().invokeAll(oneToManyTasks);
                 boolean success = true;
                 for (java.util.concurrent.Future<ConnectionState> state : results) {
                     if (state.get() == DISCONNECT_REQUESTED) {
@@ -316,6 +332,7 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
             }
         }
         LOG.info("Writing request to ProxyToServerConnection, the orgin server is :{}", serverHostAndPort);
+        setReadTimeout(httpRequest);
         currentServerConnection.write(httpRequest, currentFilters);
         if (ProxyUtils.isCONNECT(httpRequest)) {
             return NEGOTIATING_CONNECT;
@@ -323,6 +340,20 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
             return AWAITING_CHUNK;
         } else {
             return AWAITING_INITIAL;
+        }
+    }
+
+    private void setReadTimeout(HttpRequest httpRequest) {
+        String readTimeout = httpRequest.headers().get(ProxyToServerTimeoutHandler.ORIGIN_RESPONSE_READ_TIMEOUT.name());
+        if (readTimeout != null) {
+            try {
+                Integer timeout = Integer.valueOf(readTimeout);
+                currentServerConnectionList.forEach(connection -> {
+                    connection.channel.attr(ProxyToServerTimeoutHandler.ORIGIN_RESPONSE_READ_TIMEOUT).set(timeout);
+                });
+            } catch (NumberFormatException e) {
+                return;
+            }
         }
     }
 
@@ -513,6 +544,23 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
                 HttpFiltersAdapter currentFilters = this.currentFilters;
                 currentFilters.serverToProxyResponseTimedOut();
                 writeGatewayTimeout(currentRequest);
+            }
+        });
+    }
+
+    public void readTimedOut(ProxyToServerConnection serverConnection) {
+        if (currentServerConnectionList == null) {
+            return;
+        }
+        // 如果后端服务有一个超时了，则让所有的都超时
+        currentServerConnectionList.forEach(currConnection -> {
+            if (currConnection == serverConnection && this.lastReadTime > currConnection.lastReadTime
+                && this.currentRequest != null) {
+                // the idle timeout fired on the active server connection. send a timeout response to the client.
+                LOG.warn("Server timed out: {}", currConnection);
+                HttpFiltersAdapter currentFilters = this.currentFilters;
+                currentFilters.serverToProxyResponseTimedOut();
+                writeReadGatewayTimeout(currentRequest);
             }
         });
     }
@@ -1049,6 +1097,17 @@ public class ClientToProxyConnection extends ProxyConnection<HttpRequest> {
      */
     private boolean writeGatewayTimeout(HttpRequest httpRequest) {
         String body = "Gateway Timeout";
+        FullHttpResponse response =
+            ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.GATEWAY_TIMEOUT, body);
+        if (httpRequest != null && ProxyUtils.isHEAD(httpRequest)) {
+            response.content().clear();
+        }
+
+        return respondWithShortCircuitResponse(response);
+    }
+
+    private boolean writeReadGatewayTimeout(HttpRequest httpRequest) {
+        String body = "Gateway Read Timeout,May be origin server is to slow";
         FullHttpResponse response =
             ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.GATEWAY_TIMEOUT, body);
         if (httpRequest != null && ProxyUtils.isHEAD(httpRequest)) {

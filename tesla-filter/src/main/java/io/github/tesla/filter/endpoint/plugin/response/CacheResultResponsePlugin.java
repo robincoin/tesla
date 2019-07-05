@@ -36,7 +36,7 @@ public class CacheResultResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         // 与 CacheResultRequestPlugin 配合，缓存结果,只缓存200的结果
         CacheResultDefinition definition = JsonUtils.json2Definition(filterParam, CacheResultDefinition.class);
         if (definition == null) {

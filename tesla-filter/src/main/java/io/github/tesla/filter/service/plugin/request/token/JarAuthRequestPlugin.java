@@ -16,7 +16,7 @@ public class JarAuthRequestPlugin extends AuthRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
         JarAuthDefinition definition = JsonUtils.json2Definition(filterParam, JarAuthDefinition.class);
         if (definition == null) {
             return null;

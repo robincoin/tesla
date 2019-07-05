@@ -40,7 +40,7 @@ public class SecurityScannerRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
         this.headers = this.getAllHeaders(servletRequest);
         boolean acunetixAspect = this.contains("Acunetix-Aspect");
         boolean acunetixAspectPassword = this.contains("Acunetix-Aspect-Password");

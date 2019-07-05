@@ -23,7 +23,7 @@ public class BlackURLParamRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
         BlackURLParamDefinition configBean = JsonUtils.json2Definition(filterParam, BlackURLParamDefinition.class);
         if (configBean == null) {
             return null;

@@ -40,7 +40,7 @@ public class GroovyExecuteResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         HttpResponse response = httpResponse;
         GroovyExecuteDefinition definition = JsonUtils.json2Definition(filterParam, GroovyExecuteDefinition.class);
         if (definition == null) {
