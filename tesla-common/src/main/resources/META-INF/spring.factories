@@ -1,1 +1,2 @@
 org.springframework.context.ApplicationContextInitializer=io.github.tesla.common.service.SpringContextHolder
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.github.tesla.common.utils.UtilAutoConfiguration

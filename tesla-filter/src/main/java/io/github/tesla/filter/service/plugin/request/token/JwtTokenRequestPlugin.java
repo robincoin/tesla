@@ -12,7 +12,13 @@
  */
 package io.github.tesla.filter.service.plugin.request.token;
 
-import static io.github.tesla.auth.sdk.jwt.impl.PublicClaims.*;
+import static io.github.tesla.auth.sdk.jwt.impl.PublicClaims.AUDIENCE;
+import static io.github.tesla.auth.sdk.jwt.impl.PublicClaims.EXPIRES_AT;
+import static io.github.tesla.auth.sdk.jwt.impl.PublicClaims.ISSUED_AT;
+import static io.github.tesla.auth.sdk.jwt.impl.PublicClaims.ISSUER;
+import static io.github.tesla.auth.sdk.jwt.impl.PublicClaims.JWT_ID;
+import static io.github.tesla.auth.sdk.jwt.impl.PublicClaims.NOT_BEFORE;
+import static io.github.tesla.auth.sdk.jwt.impl.PublicClaims.SUBJECT;
 
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +37,6 @@ import io.github.tesla.auth.sdk.signer.Constants;
 import io.github.tesla.filter.service.annotation.AuthType;
 import io.github.tesla.filter.service.definition.JWTTokenDefinition;
 import io.github.tesla.filter.service.plugin.request.AuthRequestPlugin;
-import io.github.tesla.filter.support.ResponseMessage;
 import io.github.tesla.filter.support.enums.YesOrNoEnum;
 import io.github.tesla.filter.support.servlet.NettyHttpServletRequest;
 import io.github.tesla.filter.utils.JsonUtils;
