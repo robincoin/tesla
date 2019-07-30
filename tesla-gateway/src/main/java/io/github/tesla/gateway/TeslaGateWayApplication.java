@@ -12,22 +12,10 @@
  */
 package io.github.tesla.gateway;
 
-import static com.hazelcast.util.EmptyStatement.ignore;
-
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.SocketException;
-import java.util.Collections;
-import java.util.stream.Collectors;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -49,49 +37,9 @@ import io.github.tesla.gateway.netty.HttpProxyServer;
 @SpringBootApplication(exclude = {ValidationAutoConfiguration.class, DataSourceAutoConfiguration.class})
 public class TeslaGateWayApplication implements CommandLineRunner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TeslaGateWayApplication.class);
-
     protected static final String SCAN_MAPPER_PACKAGE = "io.github.tesla.common";
 
     protected static final String SCAN_COMPONENT_PACKAGE = "io.github.tesla";
-
-    private static final int MAX_PORT = 100;
-
-    static {
-        System.setProperty("hazelcast.port", String.valueOf(getNextPort(5701)));
-        System.setProperty("hazelcast.host", findHostRemoteIp());
-        LOGGER.info(
-            "[JVM] " + ManagementFactory.getRuntimeMXBean().getInputArguments().stream().collect(Collectors.joining()));
-    }
-
-    private static String findHostRemoteIp() {
-        try {
-            for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                for (InetAddress inetAddress : Collections.list(networkInterface.getInetAddresses())) {
-                    if (inetAddress instanceof Inet4Address) {
-                        if (!"127.0.0.1".equals(inetAddress.getHostAddress())) {
-                            return inetAddress.getHostAddress();
-                        }
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        return "127.0.0.1";
-    }
-
-    private static int getNextPort(int start) {
-        for (int port = start; port < start + MAX_PORT; port++) {
-            try {
-                new ServerSocket(port).close();
-                return port;
-            } catch (IOException portInUse) {
-                ignore(portInUse);
-            }
-        }
-        return -1;
-    }
 
     public static void main(String[] args) {
         SpringApplication.run(TeslaGateWayApplication.class, args);

@@ -15,7 +15,7 @@ package io.github.tesla.gateway.config.eureka.util;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.StringUtils;
 
-import io.github.tesla.filter.support.springcloud.SpringEnvironmentUtil;
+import io.github.tesla.common.utils.InetUtils;
 
 /**
  * @author liushiming
