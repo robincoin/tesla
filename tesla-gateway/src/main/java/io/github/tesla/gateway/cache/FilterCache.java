@@ -239,7 +239,7 @@ public class FilterCache {
         }
     }
 
-    @Scheduled(cron = "0 */1 * * * ?")
+    @Scheduled(cron = "${filter.doCacheCorn}")
     protected void doCache() {
         try {
             if (cacheRefreshService.isRefreshCache(cacheRefreshTime)) {
