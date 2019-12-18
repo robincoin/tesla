@@ -17,7 +17,7 @@
 		<summerframework.version>2.0.0.RELEASE</summerframework.version>
 		<saluki.version>1.5.9.RELEASE</saluki.version>
 		<dubbo.version>2.6.0</dubbo.version>
-		<netty.version>4.1.16.Final</netty.version>
+		<netty.version>4.1.42.Final</netty.version>
 		<drools.version>6.4.0.Final</drools.version>
 		<eureka.version>1.6.2</eureka.version>
 		<orika.version>1.5.0</orika.version>
