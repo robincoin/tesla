@@ -33,7 +33,7 @@ public class CreateJwtTokenResponsePlugin extends CreateTokenResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         CreateJwtTokenDefinition tokenDefinition =
             JsonUtils.json2Definition(filterParam, CreateJwtTokenDefinition.class);
 

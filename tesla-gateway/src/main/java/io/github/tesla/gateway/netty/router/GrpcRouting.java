@@ -5,25 +5,26 @@ import io.github.tesla.filter.endpoint.definition.GRpcRoutingDefinition;
 import io.github.tesla.filter.support.servlet.NettyHttpServletRequest;
 import io.github.tesla.filter.utils.JsonUtils;
 import io.github.tesla.filter.utils.PluginUtil;
+import io.github.tesla.filter.utils.ProxyUtils;
 import io.github.tesla.gateway.cache.FilterCache;
 import io.github.tesla.gateway.protocol.grpc.DynamicGrpcClient;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
-import io.netty.util.CharsetUtil;
+import io.netty.handler.codec.http.HttpVersion;
 
 public class GrpcRouting {
 
     public static HttpResponse callRemote(NettyHttpServletRequest servletRequest, HttpObject httpObject,
-        Object routerParamJson) {
+        String routerParamJson) {
         FilterCache cacheComponent = SpringContextHolder.getBean(FilterCache.class);
         GRpcRoutingDefinition definition = JsonUtils.json2Definition(routerParamJson, GRpcRoutingDefinition.class);
         if (definition != null && cacheComponent.loadFileBytes(definition.getProtoFileId()) != null) {
             String jsonOutput =
                 SpringContextHolder.getBean(DynamicGrpcClient.class).doRpcRemoteCall(definition, servletRequest);
             HttpResponse response =
-                PluginUtil.createResponse(HttpResponseStatus.OK, jsonOutput.getBytes(CharsetUtil.UTF_8));
+                ProxyUtils.createJsonFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, jsonOutput);
             HttpUtil.setKeepAlive(response, false);
             return response;
         } else {

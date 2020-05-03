@@ -22,14 +22,14 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 public class CreateTokenRequestPlugin extends AbstractRequestPlugin {
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
         CreateTokenDefinition createTokenDefinition =
             JsonUtils.json2Definition(filterParam, CreateTokenDefinition.class);
-
         // 根据注解得到对应的实现filter，并执行
         try {
-            CreateTokenRequestPlugin createTokenRequestPlugin = ClassUtils.getSingleBeanWithAnno(
-                this.getClass().getPackageName(), CreateTokenType.class, createTokenDefinition.getTokenType(), "value");
+            CreateTokenRequestPlugin createTokenRequestPlugin =
+                ClassUtils.getSingleBeanWithAnno(this.getClass().getPackage().getName(), CreateTokenType.class,
+                    createTokenDefinition.getTokenType(), "value");
             return createTokenRequestPlugin.doFilter(servletRequest, realHttpObject,
                 createTokenDefinition.getTokenParamJson());
         } catch (Exception e) {

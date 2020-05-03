@@ -15,6 +15,7 @@ package io.github.tesla.gateway.metrics;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -24,7 +25,11 @@ import java.net.URLDecoder;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.ThreadFactory;
 import java.util.zip.GZIPOutputStream;
 
 import com.google.common.net.MediaType;
@@ -83,7 +88,10 @@ public class MetricsHttpServer {
                     responseString = GrayRuesCache.getAllRules();
                 } else if (requestUrl.getPath().equalsIgnoreCase(MetricsHttpServer.grayApi + "/gray/rules")
                     && httpExchange.getRequestMethod().equalsIgnoreCase("put")) {
-                    GrayRuesCache.initCache(new String(httpExchange.getRequestBody().readAllBytes()));
+                    InputStream stream = httpExchange.getRequestBody();
+                    byte[] bytes = new byte[stream.available()];
+                    stream.read(bytes);
+                    GrayRuesCache.initCache(new String(bytes));
                 }
             } catch (Exception e) {
                 status = 400;

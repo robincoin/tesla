@@ -37,7 +37,7 @@ public class BodyValidateRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
         BodyValidateDefinition definition = JsonUtils.json2Definition(filterParam, BodyValidateDefinition.class);
         if (definition == null || definition.getEnable().equals(YesOrNoEnum.NO.getCode())) {
             return null;

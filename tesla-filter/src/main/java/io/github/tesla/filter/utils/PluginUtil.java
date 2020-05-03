@@ -44,17 +44,16 @@ public class PluginUtil {
         }
     }
 
-    public static HttpResponse createResponse(HttpResponseStatus httpResponseStatus, byte[] content) {
-        HttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, httpResponseStatus);
-        HttpHeaders httpHeaders = new DefaultHttpHeaders();
-        if (content != null) {
-            httpHeaders.set(HttpHeaderNames.CONTENT_LENGTH, content.length);
-            ((DefaultFullHttpResponse)httpResponse).content().writeBytes(content);
+    public static String convertByteBufToString(ByteBuf buf) {
+        String str;
+        if (buf.hasArray()) {
+            str = new String(buf.array(), buf.arrayOffset() + buf.readerIndex(), buf.readableBytes());
         } else {
-            httpHeaders.set(HttpHeaderNames.CONTENT_LENGTH, HttpHeaderValues.ZERO);
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.getBytes(buf.readerIndex(), bytes);
+            str = new String(bytes, 0, buf.readableBytes());
         }
-        httpResponse.headers().add(httpHeaders);
-        return httpResponse;
+        return str;
     }
 
     public static HttpResponse createResponse(HttpResponseStatus httpResponseStatus, HttpRequest originalRequest,

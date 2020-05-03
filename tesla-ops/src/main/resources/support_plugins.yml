@@ -56,3 +56,6 @@ endpoint:
   BodyValidateRequestPlugin:
     type: BodyValidate
     name: 请求报文校验
+  CircuitBreakerRequestPlugin:
+    type: CircuitBreaker
+    name: 熔断降级

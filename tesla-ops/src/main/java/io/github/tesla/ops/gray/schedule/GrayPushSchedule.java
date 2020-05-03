@@ -37,7 +37,7 @@ import io.github.tesla.ops.utils.EurekaClientUtil;
 import io.github.tesla.ops.utils.MD5Utils;
 
 /**
- * @author: zhipingzhang
+ * 
  * @date: 2018/11/5 17:28
  * @description: 推送灰度计划
  */

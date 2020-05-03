@@ -1,6 +1,6 @@
 package io.github.tesla.filter.waf.plugin.request;
 
-import static io.github.tesla.filter.support.CorsHandlerSupport.isPreflightRequest;
+import static io.github.tesla.filter.support.cors.CorsHandlerSupport.isPreflightRequest;
 
 import java.util.Map;
 
@@ -20,11 +20,6 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/12/3 10:23
- * @description: 通过key对访问方做限制
- */
 @WafRequestPlugin(filterType = "AppKeyControlRequestPlugin", definitionClazz = AppKeyControlDefinition.class,
     filterOrder = 7, filterName = "访问方限流及权限控制插件")
 public class AppKeyControlRequestPlugin extends AbstractRequestPlugin {
@@ -32,7 +27,7 @@ public class AppKeyControlRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
         HttpRequest request = servletRequest.getNettyRequest();
         if (isPreflightRequest(request)) {
             return null;

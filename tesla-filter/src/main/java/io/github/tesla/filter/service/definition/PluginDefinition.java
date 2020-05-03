@@ -7,9 +7,11 @@ import io.github.tesla.common.dto.ServiceDTO;
 
 public class PluginDefinition {
 
-    public static final String filePrefix = "file_";
+    public static final String FILEPREFIX = "file_";
 
-    public static final String fileTab = "::";
+    public static final String FILETABENDPOINT = "::";
+
+    public static final String FILETABSERVICE = ":::";
 
     public final static String CONVERGE_ATTR_KEY = "QueryConvergeAttr";
 
@@ -25,17 +27,17 @@ public class PluginDefinition {
 
     public static final String X_TESLA_SELF_SIGN_CRT = "X-Tesla-Self-Sign-Crt";
 
-    public static ThreadLocal<Map<String, byte[]>> uploadFileMap = new ThreadLocal<>();
+    public static final ThreadLocal<Map<String, byte[]>> UPLOADFILEMAP = new ThreadLocal<Map<String, byte[]>>();
 
     public String validate(String paramJson) {
-        return paramJson;
+        throw new UnsupportedOperationException("this operration is not support");
     }
 
     public String validate(String paramJson, ServiceDTO serviceDTO) {
-        return paramJson;
+        throw new UnsupportedOperationException("this operration is not support");
     }
 
     public String validate(String paramJson, ServiceDTO serviceDTO, EndpointDTO endpointDTO) {
-        return paramJson;
+        throw new UnsupportedOperationException("this operration is not support");
     }
 }

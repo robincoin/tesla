@@ -22,14 +22,15 @@ public class CreateTokenResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         CreateTokenDefinition createTokenDefinition =
             JsonUtils.json2Definition(filterParam, CreateTokenDefinition.class);
 
         // 根据注解得到对应的实现filter，并执行
         try {
-            CreateTokenResponsePlugin createTokenResponsePlugin = ClassUtils.getSingleBeanWithAnno(
-                this.getClass().getPackageName(), CreateTokenType.class, createTokenDefinition.getTokenType(), "value");
+            CreateTokenResponsePlugin createTokenResponsePlugin =
+                ClassUtils.getSingleBeanWithAnno(this.getClass().getPackage().getName(), CreateTokenType.class,
+                    createTokenDefinition.getTokenType(), "value");
             return createTokenResponsePlugin.doFilter(servletRequest, httpResponse,
                 createTokenDefinition.getTokenParamJson());
         } catch (Exception e) {

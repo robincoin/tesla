@@ -17,29 +17,20 @@ import io.netty.handler.codec.http.HttpResponse;
     filterOrder = 2, filterName = "执行上传jar包插件")
 public class JarExecuteResponsePlugin extends AbstractResponsePlugin {
 
-    /**
-     * @desc: 上传的Jar包执行类需实现该方法
-     * @method: doFilter
-     * @param: [servletRequest,
-     *             realHttpObject]
-     * @return: io.netty.handler.codec.http.HttpResponse
-     * @auther: zhipingzhang
-     * @date: 2018/11/29 14:36
-     */
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse) {
         return httpResponse;
     }
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
-
+        String  filterParam) {
         JarExecuteDefinition definition = JsonUtils.json2Definition(filterParam, JarExecuteDefinition.class);
         if (definition == null) {
             return httpResponse;
         }
-        JarExecuteResponsePlugin userFilter = ClassUtils.getUserJarFilterRule(JarExecuteResponsePlugin.class.getName(),
-            definition.getFileId(), getFileBytesByKey(definition.getFileId()));
+        String className = definition.getClassName();
+        JarExecuteResponsePlugin userFilter = ClassUtils.getUserJarFilterRule(className, definition.getFileId(),
+            getFileBytesByKey(definition.getFileId()));
         if (userFilter == null) {
             LOGGER.error(" response not found jar file ,fileId:" + definition.getFileId());
             return httpResponse;

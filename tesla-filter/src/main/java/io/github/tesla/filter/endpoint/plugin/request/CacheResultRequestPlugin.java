@@ -29,7 +29,7 @@ public class CacheResultRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
         CacheResultDefinition definition = JsonUtils.json2Definition(filterParam, CacheResultDefinition.class);
         if (definition == null) {
             return null;

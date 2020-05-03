@@ -1,6 +1,10 @@
 package io.github.tesla.gateway.netty.transmit.connection;
 
-import static io.github.tesla.gateway.netty.transmit.ConnectionState.*;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.AWAITING_CHUNK;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.AWAITING_INITIAL;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.CONNECTING;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.DISCONNECTED;
+import static io.github.tesla.gateway.netty.transmit.ConnectionState.HANDSHAKING;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -8,13 +12,12 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLProtocolException;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.net.HostAndPort;
 
@@ -35,10 +38,22 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpMessage;
+import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpRequestEncoder;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseDecoder;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.handler.timeout.ReadTimeoutException;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCounted;
@@ -65,7 +80,6 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
     private final String serverHostAndPort;
     private final boolean enableSSL;
     private final SslContext sslContext;
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProxyToServerConnection.class);
     private String tag;
 
     /**
@@ -152,7 +166,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
                 initialHttpRequest.headers().remove(PluginDefinition.X_TESLA_ENABLE_SSL);
                 return sslCtx;
             } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
+                LOG.error(e.getMessage(), e);
             }
         }
         return null;
@@ -184,6 +198,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
             HttpUtil.setKeepAlive(substituteResponse, false);
             httpResponse = substituteResponse;
         }
+        HttpFiltersAdapter currentFilters = this.currentFilters;
         currentFilters.serverToProxyResponseReceiving();
         rememberCurrentResponse(httpResponse);
         respondWith(httpResponse);
@@ -292,8 +307,6 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
         }
     }
 
-    ;
-
     @Override
     public void writeHttp(HttpObject httpObject) {
         if (httpObject instanceof HttpRequest) {
@@ -308,6 +321,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
      **************************************************************************/
     @Override
     public void become(ConnectionState newState) {
+        HttpFiltersAdapter currentFilters = this.currentFilters;
         if (getCurrentState() == DISCONNECTED && newState == CONNECTING) {
             currentFilters.proxyToServerConnectionStarted();
         } else if (getCurrentState() == CONNECTING) {
@@ -349,6 +363,11 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
         clientConnection.timedOut(this);
     }
 
+    public void readTimeOut() {
+        super.timedOut();
+        clientConnection.readTimedOut(this);
+    }
+
     @Override
     public void disconnected() {
         super.disconnected();
@@ -366,6 +385,10 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
                     "An executor rejected a read or write operation on the ProxyToServerConnection (this is normal if the proxy is shutting down). Message: "
                         + cause.getMessage());
                 LOG.debug("A RejectedExecutionException occurred on ProxyToServerConnection", cause);
+            } else if (cause instanceof ReadTimeoutException) {
+                LOG.info("A ReadTimeout,origin server have not respoonse in time");
+                LOG.debug("A ReadTimeout occurred on ProxyToServerConnection");
+                readTimeOut();
             } else {
                 LOG.error("Caught an exception on ProxyToServerConnection", cause);
             }
@@ -455,7 +478,7 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
 
         @Override
         public Future<?> execute() {
-            Bootstrap cb = new Bootstrap().group(proxyServer.getProxyToServerWorkerFor())//
+            Bootstrap cb = new Bootstrap().group(ProxyToServerConnection.this.clientConnection.channel.eventLoop())//
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, proxyServer.getConnectTimeout())
                 .handler(new ChannelInitializer<Channel>() {
@@ -499,7 +522,8 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
     }
 
     private void setupConnectionParameters() throws UnknownHostException {
-        this.remoteAddress = this.currentFilters.proxyToServerResolutionStarted(serverHostAndPort);
+        HttpFiltersAdapter currentFilters = this.currentFilters;
+        this.remoteAddress = currentFilters.proxyToServerResolutionStarted(serverHostAndPort);
         String hostAndPort = null;
         try {
             if (this.remoteAddress == null) {
@@ -534,8 +558,21 @@ public class ProxyToServerConnection extends ProxyConnection<HttpResponse> {
         if (numberOfBytesToBuffer > 0) {
             aggregateContentForFiltering(pipeline, numberOfBytesToBuffer);
         }
+        pipeline.addLast("timeout", new ProxyToServerTimeoutHandler(this));
         pipeline.addLast("idle", new IdleStateHandler(0, 0, proxyServer.getIdleConnectionTimeout()));
         pipeline.addLast("handler", this);
+    }
+
+    public void startReadTimeoutHandler(int readTimeout) {
+        channel.pipeline().addBefore("timeout", "readTimeoutHandler",
+            new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS));
+    }
+
+    public void removeReadTimeoutHandler() {
+        final ChannelPipeline pipeline = channel.pipeline();
+        if (pipeline.get("readTimeoutHandler") != null) {
+            pipeline.remove("readTimeoutHandler");
+        }
     }
 
     public void connectionSucceeded(boolean shouldForwardInitialRequest) {

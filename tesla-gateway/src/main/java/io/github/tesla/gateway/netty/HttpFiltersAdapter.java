@@ -42,21 +42,23 @@ import io.github.tesla.gateway.netty.router.DirectRouting;
 import io.github.tesla.gateway.netty.router.DubboRouting;
 import io.github.tesla.gateway.netty.router.GrpcRouting;
 import io.github.tesla.gateway.netty.router.SpringCloudRouting;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.*;
-import io.netty.util.CharsetUtil;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.HttpVersion;
 
-/**
- * @author liushiming
- * @version HttpFiltersAdapter.java, v 0.0.1 2018年1月24日 下午3:06:25 liushiming
- */
 public class HttpFiltersAdapter {
     private static Logger logger = LoggerFactory.getLogger(HttpFiltersAdapter.class);
 
-    private final NettyHttpServletRequest serveletRequest;
-
     private final ChannelHandlerContext ctx;
+
+    private final NettyHttpServletRequest serveletRequest;
 
     private long forwardTime = 0L;
 
@@ -67,57 +69,9 @@ public class HttpFiltersAdapter {
         this.serveletRequest = new NettyHttpServletRequest((FullHttpRequest)originalRequest, ctx);
     }
 
-    public HttpResponse clientToProxyRequest(HttpObject httpObject) {
-        this.logStart();
-        HttpResponse httpResponse = null;
-        try {
-            httpResponse = HttpRequestFilterChain.doFilter(serveletRequest, httpObject, ctx);
-            if (httpResponse != null) {
-                return httpResponse;
-            }
-        } catch (Throwable e) {
-            httpResponse = createResponse(HttpResponseStatus.BAD_GATEWAY, serveletRequest.getNettyRequest());
-            logger.error("Client connectTo proxy request failed", e);
-            return httpResponse;
-        }
-        // 路由
-        ServiceRouterExecutor routerCache = SpringContextHolder.getBean(FilterCache.class)
-            .loadServiceCache(serveletRequest.getRequestURI()).getRouterCache();
-        Object rpcParamJson = serveletRequest.getAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
-        if (RouteTypeEnum.DUBBO.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
-            httpResponse = DubboRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
-        } else if (RouteTypeEnum.GRPC.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
-            httpResponse = GrpcRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
-        } else if (RouteTypeEnum.SpringCloud.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
-            httpResponse = SpringCloudRouting.callRemote(serveletRequest, httpObject, routerCache.getParamJson());
-        } else if (RouteTypeEnum.DirectRoute.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
-            httpResponse = DirectRouting.callRemote(serveletRequest, httpObject, routerCache.getParamJson());
-        }
-        serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
-        return httpResponse;
-    }
-
-    private String convertByteBufToString(ByteBuf buf) {
-        String str;
-        if (buf.hasArray()) {
-            str = new String(buf.array(), buf.arrayOffset() + buf.readerIndex(), buf.readableBytes());
-        } else {
-            byte[] bytes = new byte[buf.readableBytes()];
-            buf.getBytes(buf.readerIndex(), bytes);
-            str = new String(bytes, 0, buf.readableBytes());
-        }
-        return str;
-    }
-
-    private HttpResponse createResponse(HttpResponseStatus httpResponseStatus, HttpRequest originalRequest) {
-        HttpHeaders httpHeaders = new DefaultHttpHeaders();
-        httpHeaders.add("Transfer-Encoding", "chunked");
-        HttpResponse httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, httpResponseStatus);
-        httpResponse.headers().add(httpHeaders);
-        return httpResponse;
-    }
-
     private void logEnd(HttpResponse response) {
+        if (!SpringContextHolder.isEnabledMetrcis())
+            return;
         long forwardTime = System.currentTimeMillis() - (this.forwardTime == 0L ? this.receivedTime : this.forwardTime);
         long completeTime = System.currentTimeMillis() - this.receivedTime;
         logger.info(serveletRequest.getRequestURI() + " gateway, forward took [" + forwardTime + " ms], complete took ["
@@ -126,7 +80,7 @@ public class HttpFiltersAdapter {
             FullHttpResponse fullHttpResponse = (FullHttpResponse)response;
             logger.info("gateway return request! method:{},url:{},status:{},param:{}", serveletRequest.getMethod(),
                 serveletRequest.getRequestURI(), response.status().code(),
-                convertByteBufToString(fullHttpResponse.content().copy()));
+                PluginUtil.convertByteBufToString(fullHttpResponse.content().copy()));
             MetricsExporter.returnedSize(serveletRequest.getMethod(), serveletRequest.getRequestURI(),
                 fullHttpResponse.status().code(), fullHttpResponse.content().readableBytes());
             MetricsExporter.returned(serveletRequest.getMethod(), serveletRequest.getRequestURI(),
@@ -137,19 +91,23 @@ public class HttpFiltersAdapter {
     }
 
     private void logForward(HttpObject httpObject) {
+        if (!SpringContextHolder.isEnabledMetrcis())
+            return;
         this.forwardTime = System.currentTimeMillis();
         FullHttpRequest fullHttpRequest = (FullHttpRequest)httpObject;
         try {
             logger.info("gateway forward request! method:{},url:{},host:{}", fullHttpRequest.method().name(),
                 fullHttpRequest.uri(), fullHttpRequest.headers().get(HttpHeaderNames.HOST));
             MetricsExporter.forward(serveletRequest.getMethod(), serveletRequest.getRequestURI(),
-                convertByteBufToString(fullHttpRequest.content().copy()), serveletRequest);
+                PluginUtil.convertByteBufToString(fullHttpRequest.content().copy()), serveletRequest);
         } catch (Throwable e) {
             logger.warn("log metrics failed", e);
         }
     }
 
     private void logStart() {
+        if (!SpringContextHolder.isEnabledMetrcis())
+            return;
         this.receivedTime = System.currentTimeMillis();
         try {
             String requestParam = JsonUtils.serializeToJson(serveletRequest.getParameterMap());
@@ -164,16 +122,48 @@ public class HttpFiltersAdapter {
         }
     }
 
+    public HttpResponse clientToProxyRequest(HttpObject httpObject) {
+        logStart();
+        HttpResponse httpResponse = null;
+        try {
+            httpResponse = HttpRequestFilterChain.doFilter(serveletRequest, httpObject, ctx);
+            if (httpResponse != null) {
+                return httpResponse;
+            }
+        } catch (Throwable e) {
+            httpResponse = ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY);
+            HttpUtil.setKeepAlive(httpResponse, false);
+            logger.error("Client connectTo proxy request failed", e);
+            return httpResponse;
+        }
+        // 路由
+        ServiceRouterExecutor routerCache = SpringContextHolder.getBean(FilterCache.class)
+            .loadServiceCache(serveletRequest.getRequestURI()).getRouterCache();
+        if (RouteTypeEnum.DUBBO.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
+            String rpcParamJson = serveletRequest.getStringAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
+            httpResponse = DubboRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
+            serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
+        } else if (RouteTypeEnum.GRPC.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
+            String rpcParamJson = serveletRequest.getStringAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
+            httpResponse = GrpcRouting.callRemote(serveletRequest, httpObject, rpcParamJson);
+            serveletRequest.removeAttribute(RpcRoutingRequestPlugin.RPC_PARAM_JSON);
+        } else if (RouteTypeEnum.SpringCloud.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
+            httpResponse = SpringCloudRouting.callRemote(serveletRequest, httpObject, routerCache.getParamJson());
+        } else if (RouteTypeEnum.DirectRoute.getCode().equalsIgnoreCase(routerCache.getRouteType())) {
+            httpResponse = DirectRouting.callRemote(serveletRequest, httpObject, routerCache.getParamJson());
+        }
+        return httpResponse;
+    }
+
     public HttpObject proxyToClientResponse(HttpObject httpObject) {
         if (httpObject instanceof HttpResponse) {
             HttpResponse serverResponse = (HttpResponse)httpObject;
             HttpResponse response = HttpResponseFilterChain.doFilter(serveletRequest, serverResponse, ctx);
-            this.logEnd(serverResponse);
+            logEnd(serverResponse);
             return response;
         } else {
             return httpObject;
         }
-
     }
 
     public void proxyToServerConnectionFailed() {}
@@ -187,7 +177,7 @@ public class HttpFiltersAdapter {
     public void proxyToServerConnectionSucceeded(ChannelHandlerContext serverCtx) {}
 
     public HttpResponse proxyToServerRequest(HttpObject httpObject) {
-        this.logForward(httpObject);
+        logForward(httpObject);
         return null;
     }
 
@@ -199,7 +189,7 @@ public class HttpFiltersAdapter {
 
     public void proxyToServerResolutionSucceeded(String serverHostAndPort, InetSocketAddress resolvedRemoteAddress) {
         if (resolvedRemoteAddress == null) {
-            ctx.writeAndFlush(createResponse(HttpResponseStatus.BAD_GATEWAY, serveletRequest.getNettyRequest()));
+            ctx.writeAndFlush(ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_GATEWAY));
         }
     }
 
@@ -254,18 +244,18 @@ public class HttpFiltersAdapter {
         try {
             for (Pair<String, String> responseBody : httpResponses) {
                 if (StringUtils.isNotBlank(responseBody.getRight()) && !JsonUtils.isJson(responseBody.getRight())) {
-                    return PluginUtil.createResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                        String.format("responseBody:%s is not json ", responseBody).getBytes(CharsetUtil.UTF_8));
+                    return ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1,
+                        HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                        String.format("responseBody:%s is not json ", responseBody));
                 }
             }
-            HttpResponse httpResponse = PluginUtil.createResponse(HttpResponseStatus.OK,
-                JsonUtils.convergeJson(httpResponses).getBytes(CharsetUtil.UTF_8));
-            httpResponse.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/json;charset=UTF-8");
+            HttpResponse httpResponse = ProxyUtils.createJsonFullHttpResponse(HttpVersion.HTTP_1_1,
+                HttpResponseStatus.OK, JsonUtils.convergeJson(httpResponses));
             return httpResponse;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            HttpResponse httpResponse = PluginUtil.createResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                e.getMessage().getBytes(CharsetUtil.UTF_8));
+            HttpResponse httpResponse = ProxyUtils.createFullHttpResponse(HttpVersion.HTTP_1_1,
+                HttpResponseStatus.INTERNAL_SERVER_ERROR, e.getMessage());
             return httpResponse;
         }
     }

@@ -1,4 +1,4 @@
-FROM openjdk:11.0.3-jre-stretch
+FROM openjdk:8u212-jre
 
 RUN apt-get update && apt-get install -y wget
 
@@ -8,6 +8,8 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 ADD target/tesla-gateway-1.0.0.jar /root/app.jar
+ADD target/application.yml /root/config/application.yml
+ADD target/logback-spring.xml /root/config/logback-spring.xml
 ADD bin/start.sh /root/
 RUN chmod +x /root/*.sh;mkdir /root/logs 
 ENV APP_NAME tesla-gateway

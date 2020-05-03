@@ -17,7 +17,13 @@ import io.github.tesla.gateway.netty.transmit.connection.ClientToProxyConnection
 import io.github.tesla.gateway.netty.transmit.support.HostResolver;
 import io.github.tesla.gateway.netty.transmit.support.ServerGroup;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFactory;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.ServerChannel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -73,6 +79,7 @@ public class HttpProxyServer {
     private volatile InetSocketAddress localAddress;
     private volatile InetSocketAddress boundAddress;
     private volatile int connectTimeout;
+    private volatile int readTimeout;
 
     private volatile int idleConnectionTimeout;
 
@@ -80,7 +87,7 @@ public class HttpProxyServer {
 
     public HttpProxyServer(ServerGroup serverGroup, InetSocketAddress requestedAddress,
         HttpFiltersSourceAdapter filtersSource, boolean transparent, int idleConnectionTimeout, int connectTimeout,
-        HostResolver serverResolver, long readThrottleBytesPerSecond, long writeThrottleBytesPerSecond,
+        int readTimeout, HostResolver serverResolver, long readThrottleBytesPerSecond, long writeThrottleBytesPerSecond,
         InetSocketAddress localAddress, String proxyAlias, int maxInitialLineLength, int maxHeaderSize,
         int maxChunkSize, boolean allowRequestsToOriginServer) {
         this.serverGroup = serverGroup;
@@ -89,6 +96,7 @@ public class HttpProxyServer {
         this.transparent = transparent;
         this.idleConnectionTimeout = idleConnectionTimeout;
         this.connectTimeout = connectTimeout;
+        this.readTimeout = readTimeout;
         this.serverResolver = serverResolver;
         if (writeThrottleBytesPerSecond > 0 || readThrottleBytesPerSecond > 0) {
             this.globalTrafficShapingHandler =
@@ -153,7 +161,8 @@ public class HttpProxyServer {
 
     private GlobalTrafficShapingHandler createGlobalTrafficShapingHandler(long readThrottleBytesPerSecond,
         long writeThrottleBytesPerSecond) {
-        EventLoopGroup proxyToServerEventLoop = this.getProxyToServerWorkerFor();
+        EventLoopGroup proxyToServerEventLoop =
+            this.serverGroup.getClientToProxyWorkerPoolAndProxyToServerWorkerForTransport();
         return new GlobalTrafficShapingHandler(proxyToServerEventLoop, writeThrottleBytesPerSecond,
             readThrottleBytesPerSecond, TRAFFIC_SHAPING_CHECK_INTERVAL_MS, Long.MAX_VALUE);
     }
@@ -161,14 +170,12 @@ public class HttpProxyServer {
     private void doStart() {
         ServerBootstrap serverBootstrap =
             new ServerBootstrap().group(serverGroup.getClientToProxyAcceptorPoolForTransport(),
-                serverGroup.getClientToProxyWorkerPoolForTransport());
+                serverGroup.getClientToProxyWorkerPoolAndProxyToServerWorkerForTransport());
         ChannelInitializer<Channel> initializer = new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
                 new ClientToProxyConnection(HttpProxyServer.this, ch.pipeline(), globalTrafficShapingHandler);
-            }
-
-            ;
+            };
         };
         serverBootstrap.channelFactory(new ChannelFactory<ServerChannel>() {
 
@@ -194,8 +201,7 @@ public class HttpProxyServer {
         }
 
         this.boundAddress = ((InetSocketAddress)future.channel().localAddress());
-        LOG.info("Proxy started at address: " + this.boundAddress);
-
+        System.out.println("Tesla Proxy started at address: " + this.boundAddress);
         Runtime.getRuntime().addShutdownHook(jvmShutdownHook);
     }
 
@@ -219,6 +225,10 @@ public class HttpProxyServer {
 
     public int getConnectTimeout() {
         return connectTimeout;
+    }
+
+    public int getReadTimeout() {
+        return readTimeout;
     }
 
     public HttpFiltersSourceAdapter getFiltersSource() {
@@ -251,10 +261,6 @@ public class HttpProxyServer {
 
     public String getProxyAlias() {
         return proxyAlias;
-    }
-
-    public EventLoopGroup getProxyToServerWorkerFor() {
-        return serverGroup.getProxyToServerWorkerPoolForTransport();
     }
 
     public long getReadThrottle() {

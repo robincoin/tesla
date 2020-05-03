@@ -2,11 +2,6 @@ package io.github.tesla.gateway.excutor;
 
 import java.io.Serializable;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/23 11:05
- * @description:
- */
 public class ServiceRouterExecutor implements Serializable {
     private static final long serialVersionUID = 1L;
 

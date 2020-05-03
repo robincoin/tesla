@@ -7,11 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import io.github.tesla.filter.service.definition.PluginDefinition;
 import io.github.tesla.filter.utils.JsonUtils;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 15:21
- * @description:
- */
 public class BlackCookieDefinition extends PluginDefinition {
 
     private List<String> blackCookies;

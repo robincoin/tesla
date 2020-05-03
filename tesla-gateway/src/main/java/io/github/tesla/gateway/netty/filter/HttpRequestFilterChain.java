@@ -25,23 +25,25 @@ public class HttpRequestFilterChain {
         ChannelHandlerContext channelHandlerContext) {
         FilterCache cacheComponent = SpringContextHolder.getBean(FilterCache.class);
         List<WafRequestPluginExecutor> wafRequests = cacheComponent.loadWafRequestPlugins();
-        // 执行waf过滤器
-        for (Iterator<WafRequestPluginExecutor> it = wafRequests.iterator(); it.hasNext();) {
-            WafRequestPluginExecutor plugin = it.next();
-            LOGGER.debug("do filter,the name is:" + plugin.getFilterName());
-            HttpResponse response = plugin.doFilter(servletRequest, httpObject);
-            if (response != null) {
-                LOGGER.debug("hit " + response);
-                return response;
+        if (SpringContextHolder.isEnableWaf()) {
+            for (Iterator<WafRequestPluginExecutor> it = wafRequests.iterator(); it.hasNext();) {
+                WafRequestPluginExecutor plugin = it.next();
+                LOGGER.debug("do filter,the name is:" + plugin.getFilterName());
+                HttpResponse response = plugin.doFilter(servletRequest, httpObject);
+                if (response != null) {
+                    LOGGER.debug("hit " + response);
+                    return response;
+                }
             }
         }
-        ServiceExecutor serviceCache = cacheComponent.loadServiceCache(servletRequest.getRequestURI());
-        if (serviceCache == null) {
+        final String url = servletRequest.getRequestURI();
+        final String method = servletRequest.getMethod();
+        ServiceExecutor serviceExecutor = cacheComponent.loadServiceCache(url);
+        if (serviceExecutor == null) {
             return PluginUtil.createResponse(HttpResponseStatus.NOT_FOUND, servletRequest.getNettyRequest(),
                 " not found match router config ");
         }
-        List<ServiceRequestPluginExecutor> serviceRequests =
-            serviceCache.matchAndGetRequestFiltes(servletRequest.getRequestURI(), servletRequest.getMethod());
+        List<ServiceRequestPluginExecutor> serviceRequests = serviceExecutor.matchAndGetRequestFiltes(url, method);
         // 未匹配到endpoint
         if (serviceRequests == null) {
             return PluginUtil.createResponse(HttpResponseStatus.NOT_FOUND, servletRequest.getNettyRequest(),

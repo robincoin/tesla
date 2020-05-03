@@ -45,7 +45,7 @@ public class GroovyCompiler {
         try {
             if (groovyScript != null) {
                 Class<?> clazz = GroovyCompiler.compile(groovyScript);
-                GroovyObject groovyObject = (GroovyObject)clazz.getDeclaredConstructor().newInstance();
+                GroovyObject groovyObject = (GroovyObject)clazz.newInstance();
                 Object[] objects = new Object[] {servletRequest, httpObject};
                 shouldRunFilter = (Boolean)groovyObject.invokeMethod("runFilter", objects);
             }

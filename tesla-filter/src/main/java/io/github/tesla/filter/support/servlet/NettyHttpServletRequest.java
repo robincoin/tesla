@@ -1,6 +1,8 @@
 package io.github.tesla.filter.support.servlet;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.*;
+import static io.netty.handler.codec.http.HttpHeaders.Names.AUTHORIZATION;
+import static io.netty.handler.codec.http.HttpHeaders.Names.COOKIE;
+import static io.netty.handler.codec.http.HttpHeaders.Names.WWW_AUTHENTICATE;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,17 +11,43 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 import io.github.tesla.filter.utils.ServletUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.CookieDecoder;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpHeaders.Names;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
@@ -29,7 +57,6 @@ import io.netty.handler.ssl.SslHandler;
 
 @SuppressWarnings("deprecation")
 public class NettyHttpServletRequest implements HttpServletRequest {
-    public static final String TRACING_SPAN_KEY = "tracing_span";
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     private final FullHttpRequest request;
     private final Map<String, Object> attributes = new HashMap<String, Object>();
@@ -102,16 +129,16 @@ public class NettyHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Object getAttribute(String name) {
-        synchronized (attributes) {
-            return attributes.get(name);
-        }
+        return attributes.get(name);
+    }
+
+    public String getStringAttribute(String name) {
+        return (String)attributes.get(name);
     }
 
     @Override
     public Enumeration<String> getAttributeNames() {
-        synchronized (attributes) {
-            return Collections.enumeration(attributes.keySet());
-        }
+        return Collections.enumeration(attributes.keySet());
     }
 
     @Override
@@ -498,16 +525,12 @@ public class NettyHttpServletRequest implements HttpServletRequest {
 
     @Override
     public void removeAttribute(String name) {
-        synchronized (attributes) {
-            attributes.remove(name);
-        }
+        attributes.remove(name);
     }
 
     @Override
     public void setAttribute(String name, Object o) {
-        synchronized (attributes) {
-            attributes.put(name, o);
-        }
+        attributes.put(name, o);
     }
 
     @Override

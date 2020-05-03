@@ -21,19 +21,22 @@ public class HttpResponseFilterChain {
     public static HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
         ChannelHandlerContext channelHandlerContext) {
         FilterCache cacheComponent = SpringContextHolder.getBean(FilterCache.class);
-        List<WafResponsePluginExecutor> wafResponses = cacheComponent.loadWafResonsePlugins();
-        // 执行waf过滤器
-        for (Iterator<WafResponsePluginExecutor> it = wafResponses.iterator(); it.hasNext();) {
-            WafResponsePluginExecutor plugin = it.next();
-            LOGGER.debug("do filter,the name is:" + plugin.getFilterName());
-            httpResponse = plugin.doFilter(servletRequest, httpResponse);
+        if (SpringContextHolder.isEnableWaf()) {
+            List<WafResponsePluginExecutor> wafResponses = cacheComponent.loadWafResonsePlugins();
+            // 执行waf过滤器
+            for (Iterator<WafResponsePluginExecutor> it = wafResponses.iterator(); it.hasNext();) {
+                WafResponsePluginExecutor plugin = it.next();
+                LOGGER.debug("do filter,the name is:" + plugin.getFilterName());
+                httpResponse = plugin.doFilter(servletRequest, httpResponse);
+            }
         }
-        ServiceExecutor serviceCache = cacheComponent.loadServiceCache(servletRequest.getRequestURI());
-        if (serviceCache == null) {
+        final String url = servletRequest.getRequestURI();
+        final String method = servletRequest.getMethod();
+        ServiceExecutor serviceExecutor = cacheComponent.loadServiceCache(url);
+        if (serviceExecutor == null) {
             return httpResponse;
         }
-        List<ServiceResponsePluginExecutor> serviceRequests =
-            serviceCache.matchAndGetResponseFiltes(servletRequest.getRequestURI(), servletRequest.getMethod());
+        List<ServiceResponsePluginExecutor> serviceRequests = serviceExecutor.matchAndGetResponseFiltes(url, method);
         // 执行service and endpoint级别过滤器
         for (Iterator<ServiceResponsePluginExecutor> it = serviceRequests.iterator(); it.hasNext();) {
             ServiceResponsePluginExecutor plugin = it.next();

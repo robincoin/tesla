@@ -1,11 +1,33 @@
-version: '3.1'
+version: '3.7'
 services:
+  tesla-eureka:
+    container_name: tesla-eureka
+    image: yunterry/spring-cloud-eureka
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+    ports: 
+      - "8761:8761"
+    restart: always
   tesla-mysql:
     container_name: tesla-mysql
     image: mysql:5.7
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
     ports:
       - "3306:3306"
-    command: --character-set-server=utf8 --collation-server=utf8_general_ci
+    command: --character-set-server=utf8 --collation-server=utf8_general_ci --max-allowed-packet=104857600
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
     environment:
@@ -18,15 +40,33 @@ services:
   tesla-backend-sample:
     container_name: tesla-backend-sample
     image: tesla-backend-sample:1.0.0
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
     ports:
       - 8902:8902
       - 2181:2181
+    depends_on:
+      - tesla-eureka
     environment:
-      - EUREKA_SERVER=http://eureka.springcloud.cn/eureka/
+      - EUREKA_SERVER=http://tesla-eureka:8761/eureka/
     restart: always
   tesla-ops:
     container_name: tesla-ops
     image: tesla-ops:1.0.0
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
     command: ["dockerize", "-wait", "tcp://tesla-mysql:3306", "-timeout", "1800s","./start.sh"]
     ports:
       - 8080:8080
@@ -36,24 +76,34 @@ services:
       - DATABASE_PASSWORD=123456
       - DATABASE_NAME=gateway
       - DATABASE_PORT=3306
-      - EUREKA_SERVER=http://eureka.springcloud.cn/eureka/
+      - EUREKA_SERVER=http://tesla-eureka:8761/eureka/
     restart: always
   tesla-gateway:
     container_name: tesla-gateway
     image: tesla-gateway:1.0.0
-    command: ["dockerize", "-wait", "tcp://tesla-mysql:3306", "-wait", "tcp://tesla-backend-sample:2181", "-timeout", "1800s","./start.sh"]
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 8192M
+        reservations:
+          cpus: '1'
+          memory: 4096M
+    command: ["dockerize", "-wait", "tcp://tesla-mysql:3306", "-wait", "tcp://tesla-backend-sample:2181", "-wait", "tcp://tesla-eureka:8761", "-timeout", "1800s","./start.sh"]
     depends_on:
       - tesla-mysql
       - tesla-backend-sample
+      - tesla-eureka
     ports:
       - 9000:9000
       - 5701:5701
+      - 9091:9091
     environment:
       - DATABASE_HOST=tesla-mysql
       - DATABASE_USER=root
       - DATABASE_PASSWORD=123456
       - DATABASE_NAME=gateway
       - DATABASE_PORT=3306
-      - EUREKA_SERVER=http://eureka.springcloud.cn/eureka/
+      - EUREKA_SERVER=http://tesla-eureka:8761/eureka/
       - ZOOKEEPER_SERVER=zookeeper://tesla-backend-sample:2181
     restart: always

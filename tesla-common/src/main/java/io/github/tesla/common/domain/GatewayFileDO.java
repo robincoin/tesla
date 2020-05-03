@@ -7,11 +7,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
-/**
- * @author: zhipingzhang
- * @date: 2018/11/20 11:03
- * @description:
- */
 @TableName("gateway_file")
 public class GatewayFileDO implements Serializable {
 

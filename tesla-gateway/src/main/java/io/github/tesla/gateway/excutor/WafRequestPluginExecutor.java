@@ -8,11 +8,6 @@ import io.github.tesla.gateway.protocol.springcloud.DynamicSpringCloudClient;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponse;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/29 16:56
- * @description:
- */
 public class WafRequestPluginExecutor extends CommonPluginExecutor {
 
     private static final long serialVersionUID = 1L;

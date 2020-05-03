@@ -85,8 +85,14 @@ public class ProxyUtils {
         String body) {
         byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
         ByteBuf content = Unpooled.copiedBuffer(bytes);
-
         return createFullHttpResponse(httpVersion, status, "text/html; charset=utf-8", content, bytes.length);
+    }
+
+    public static FullHttpResponse createJsonFullHttpResponse(HttpVersion httpVersion, HttpResponseStatus status,
+        String body) {
+        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+        ByteBuf content = Unpooled.copiedBuffer(bytes);
+        return createFullHttpResponse(httpVersion, status, "application/json; charset=utf-8", content, bytes.length);
     }
 
     public static FullHttpResponse createFullHttpResponse(HttpVersion httpVersion, HttpResponseStatus status,

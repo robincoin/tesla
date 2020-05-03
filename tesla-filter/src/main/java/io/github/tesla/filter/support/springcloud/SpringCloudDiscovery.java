@@ -25,10 +25,6 @@ import com.netflix.appinfo.InstanceInfo;
 import com.squareup.okhttp.*;
 import com.squareup.okhttp.Request.Builder;
 
-/**
- * @author liushiming
- * @version UserFilter.java, v 0.0.1 2018年5月26日 上午12:33:50 liushiming
- */
 public class SpringCloudDiscovery {
 
     private static Logger LOG = LoggerFactory.getLogger(SpringCloudDiscovery.class);
@@ -45,6 +41,18 @@ public class SpringCloudDiscovery {
         super();
         this.discoveryClientWrapper = eurekaClient;
         this.gateWayPort = gateWayPort;
+    }
+
+    public OkHttpClient getOkHttpClient() {
+        return okHttpClient;
+    }
+
+    public DiscoveryClientWrapper getDiscoveryClientWrapper() {
+        return discoveryClientWrapper;
+    }
+
+    public int getGateWayPort() {
+        return gateWayPort;
     }
 
     private String buildUrl(String path, String httpHost, int port) {

@@ -8,11 +8,6 @@ import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.utils.JsonUtils;
 import io.github.tesla.filter.utils.SnowflakeIdWorker;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 15:21
- * @description:
- */
 public class DirectRoutingDefinition extends PluginDefinition {
 
     private String targetHostPort;
@@ -70,13 +65,13 @@ public class DirectRoutingDefinition extends PluginDefinition {
         DirectRoutingDefinition definition = JsonUtils.fromJson(paramJson, DirectRoutingDefinition.class);
         Preconditions.checkArgument(StringUtils.isNotBlank(definition.getTargetHostPort()), "路由目标地址不可为空");
         definition.setServicePrefix(serviceDTO.getServicePrefix());
-        if (definition.getSelfSignCrtFileId().contains(fileTab)) {
-            String fileId = SnowflakeIdWorker.nextId(PluginDefinition.filePrefix);
-            Preconditions.checkNotNull(PluginDefinition.uploadFileMap.get().get(definition.getSelfSignCrtFileId()),
+        if (definition.getSelfSignCrtFileId().contains(FILETABENDPOINT)) {
+            String fileId = SnowflakeIdWorker.nextId(PluginDefinition.FILEPREFIX);
+            Preconditions.checkNotNull(PluginDefinition.UPLOADFILEMAP.get().get(definition.getSelfSignCrtFileId()),
                 "直接路由-crt文件不可为空");
-            PluginDefinition.uploadFileMap.get().put(fileId,
-                PluginDefinition.uploadFileMap.get().get(definition.getSelfSignCrtFileId()));
-            PluginDefinition.uploadFileMap.get().remove(definition.getSelfSignCrtFileId());
+            PluginDefinition.UPLOADFILEMAP.get().put(fileId,
+                PluginDefinition.UPLOADFILEMAP.get().get(definition.getSelfSignCrtFileId()));
+            PluginDefinition.UPLOADFILEMAP.get().remove(definition.getSelfSignCrtFileId());
             definition.setSelfSignCrtFileId(fileId);
         }
         return JsonUtils.serializeToJson(definition);

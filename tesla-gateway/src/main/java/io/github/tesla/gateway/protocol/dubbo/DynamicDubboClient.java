@@ -137,8 +137,8 @@ public class DynamicDubboClient {
         throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException,
         TemplateException {
         String outPutJson = this.doDataMapping(templateKey, servletRequest);
-        Map<String, String> dubboParamters =
-            JSON.parseObject(outPutJson, new TypeReference<HashMap<String, String>>() {});
+        Map<String, String> dubboParamters = JSON.parseObject(outPutJson, new TypeReference<HashMap<String, String>>() {
+        });
         List<String> type = Lists.newArrayList();
         List<Object> value = Lists.newArrayList();
         for (Map.Entry<String, String> entry : dubboParamters.entrySet()) {
@@ -148,8 +148,8 @@ public class DynamicDubboClient {
             if (type_.startsWith("java")) {
                 value.add(value_);
             } else {
-                Map<String, String> value_map =
-                    JSON.parseObject(value_, new TypeReference<HashMap<String, String>>() {});
+                Map<String, String> value_map = JSON.parseObject(value_, new TypeReference<HashMap<String, String>>() {
+                });
                 value_map.put("class", type_);
                 value.add(value_map);
             }

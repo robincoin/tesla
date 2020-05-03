@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.ReflectionUtils;
 
 import com.google.common.collect.Lists;
@@ -29,29 +29,21 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClientConfig;
 
-/**
- * ClassName:DiscoveryClientWrapper <br/>
- * Function: TODO ADD FUNCTION. <br/>
- * Reason: TODO ADD REASON. <br/>
- * Date: 2018年7月5日 下午12:55:12 <br/>
- * 
- * @author liushiming
- * @version
- * @since JDK 10
- * @see
- */
 public class DiscoveryClientWrapper extends DiscoveryClient {
 
     public static final String EUREKA_METADATA_GROUP = "GROUP";
     public static final String EUREKA_METADATA_VERSION = "VERSION";
 
-    private ThreadLocal<List<Map<String, String>>> groupVersionMapList = new ThreadLocal<>();
+    private ThreadLocal<List<Map<String, String>>> groupVersionMapList = new ThreadLocal<List<Map<String, String>>>() {
+        @Override
+        protected List<Map<String, String>> initialValue() {
+            return Lists.newArrayList();
+        }
+    };
 
     public DiscoveryClientWrapper(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config) {
         super(applicationInfoManager, config);
     }
-
-    /* private Map<String, String> groupVersionMap;*/
 
     public void clearGroupVersionMap() {
         groupVersionMapList.remove();
@@ -59,15 +51,11 @@ public class DiscoveryClientWrapper extends DiscoveryClient {
 
     private List<InstanceInfo> filterInstance(List<InstanceInfo> instanceList) {
         try {
-            if (CollectionUtils.isEmpty(groupVersionMapList.get())) {
-                return instanceList;
-            } else {
-                List<InstanceInfo> filteredInsantceList = instanceList;
-                for (Map<String, String> groupVersionMap : groupVersionMapList.get()) {
-                    filteredInsantceList = filterInstanceInner(filteredInsantceList, groupVersionMap);
-                }
-                return filteredInsantceList;
+            List<InstanceInfo> filteredInsantceList = instanceList;
+            for (Map<String, String> groupVersionMap : groupVersionMapList.get()) {
+                filteredInsantceList = filterInstanceInner(filteredInsantceList, groupVersionMap);
             }
+            return filteredInsantceList;
         } finally {
             // Notice:这里用完了一定要清除掉，不然会污染其他的ServiceId
             clearGroupVersionMap();

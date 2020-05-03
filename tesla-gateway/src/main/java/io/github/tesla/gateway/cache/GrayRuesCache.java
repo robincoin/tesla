@@ -82,7 +82,7 @@ public class GrayRuesCache {
                 Class<?> clazz = GroovyCompiler.compile(grayRule.getGroovyScript());
                 GroovyObject groovyObject = null;
                 try {
-                    groovyObject = (GroovyObject)clazz.getDeclaredConstructor().newInstance();
+                    groovyObject = (GroovyObject)clazz.newInstance();
                     Object[] objects = new Object[] {convertRequest(httpRequest)};
                     Map<String, String> ruleMap = (Map<String, String>)groovyObject.invokeMethod("choose", objects);
                     if (ruleMap != null && ruleMap.size() == 1 && ruleMap.containsKey("match")) {

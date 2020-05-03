@@ -33,22 +33,25 @@ public abstract class AbstractSchedule {
     private static final ScheduledExecutorService SCHEDULE_EXCUTOR =
         Executors.newScheduledThreadPool(cpu, new NamedThreadFactory());
     private long INTERVAL = 60;
+    private boolean grayPlan = false;
 
     @PostConstruct
     public void doSchedule() {
-        init();
-        SCHEDULE_EXCUTOR.scheduleAtFixedRate(new Runnable() {
+        if (grayPlan) {
+            init();
+            SCHEDULE_EXCUTOR.scheduleAtFixedRate(new Runnable() {
 
-            @Override
-            public void run() {
-                try {
-                    doCache();
-                } catch (Throwable e) {
-                    LOGGER.error(e.getMessage(), e);
+                @Override
+                public void run() {
+                    try {
+                        doCache();
+                    } catch (Throwable e) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
+
                 }
-
-            }
-        }, 0, INTERVAL, TimeUnit.SECONDS);
+            }, 0, INTERVAL, TimeUnit.SECONDS);
+        }
     }
 
     protected abstract void init();

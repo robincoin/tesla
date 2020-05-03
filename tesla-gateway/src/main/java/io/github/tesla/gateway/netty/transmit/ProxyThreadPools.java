@@ -12,38 +12,29 @@ public class ProxyThreadPools {
 
     private final NioEventLoopGroup clientToProxyAcceptorPool;
 
-    private final NioEventLoopGroup clientToProxyWorkerPool;
-
-    private final NioEventLoopGroup proxyToServerWorkerPool;
+    private final NioEventLoopGroup clientToProxyWorkerPoolAndProxyServerWorker;
 
     public ProxyThreadPools(SelectorProvider selectorProvider, int incomingAcceptorThreads, int incomingWorkerThreads,
-        int outgoingWorkerThreads, String serverGroupName, int serverGroupId) {
+        String serverGroupName, int serverGroupId) {
         clientToProxyAcceptorPool = new NioEventLoopGroup(incomingAcceptorThreads,
             new CategorizedThreadFactory(serverGroupName, "ClientToProxyAcceptor", serverGroupId), selectorProvider);
-
-        clientToProxyWorkerPool = new NioEventLoopGroup(incomingWorkerThreads,
-            new CategorizedThreadFactory(serverGroupName, "ClientToProxyWorker", serverGroupId), selectorProvider);
-        clientToProxyWorkerPool.setIoRatio(90);
-
-        proxyToServerWorkerPool = new NioEventLoopGroup(outgoingWorkerThreads,
-            new CategorizedThreadFactory(serverGroupName, "ProxyToServerWorker", serverGroupId), selectorProvider);
-        proxyToServerWorkerPool.setIoRatio(90);
+        NioEventLoopGroup eventLoogGroup = new NioEventLoopGroup(incomingWorkerThreads,
+            new CategorizedThreadFactory(serverGroupName, "ClientToProxyWorkerAndProxyToServerWorker", serverGroupId),
+            selectorProvider);
+        eventLoogGroup.setIoRatio(90);
+        clientToProxyWorkerPoolAndProxyServerWorker = eventLoogGroup;
     }
 
     public List<EventLoopGroup> getAllEventLoops() {
-        return ImmutableList.<EventLoopGroup>of(clientToProxyAcceptorPool, clientToProxyWorkerPool,
-            proxyToServerWorkerPool);
+        return ImmutableList.<EventLoopGroup>of(clientToProxyAcceptorPool, clientToProxyWorkerPoolAndProxyServerWorker);
     }
 
     public NioEventLoopGroup getClientToProxyAcceptorPool() {
         return clientToProxyAcceptorPool;
     }
 
-    public NioEventLoopGroup getClientToProxyWorkerPool() {
-        return clientToProxyWorkerPool;
+    public NioEventLoopGroup getClientToProxyWorkerAndProxyToServerPool() {
+        return clientToProxyWorkerPoolAndProxyServerWorker;
     }
 
-    public NioEventLoopGroup getProxyToServerWorkerPool() {
-        return proxyToServerWorkerPool;
-    }
 }

@@ -2,6 +2,7 @@ package io.github.tesla.gateway.config;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.config.ExecutorConfig;
 import com.hazelcast.config.JoinConfig;
 import com.hazelcast.config.ListConfig;
 import com.hazelcast.config.MapConfig;
@@ -40,6 +42,13 @@ public class HazelcastConfig {
     @Bean
     public Config config(DiscoveryServiceProvider discoveryServiceProvider) {
         Config config = new Config();
+        final ExecutorConfig execconfig = new ExecutorConfig();
+        execconfig.setName("default");
+        execconfig.setPoolSize(4);
+        execconfig.setQueueCapacity(100);
+        final Map<String, ExecutorConfig> execmap = new HashMap<>();
+        execmap.put("default", execconfig);
+        config.setExecutorConfigs(execmap);
         config.getGroupConfig().setName(clusterName.toUpperCase());
         config.setProperty("hazelcast.discovery.enabled", Boolean.TRUE.toString());
         JoinConfig joinConfig = config.getNetworkConfig().getJoin();

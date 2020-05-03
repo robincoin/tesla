@@ -29,7 +29,7 @@ public class MockRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
         MockDefinition definition = JsonUtils.json2Definition(filterParam, MockDefinition.class);
         if (definition == null || YesOrNoEnum.NO.getCode().equals(definition.getEnable())) {
             return null;

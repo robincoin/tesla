@@ -10,11 +10,11 @@ public class HttpFiltersSourceAdapter {
     }
 
     public int getMaximumRequestBufferSizeInBytes() {
-        return 1024 * 1024 * 10;
+        return 10 * 1024 * 1024;
     }
 
     public int getMaximumResponseBufferSizeInBytes() {
-        return 1024 * 1024 * 10;
+        return 10 * 1024 * 1024;
     }
 
 }

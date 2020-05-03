@@ -1,0 +1,90 @@
+<script type="text/x-handlebars-template" id="endpoint_circuitBreaker_tmpl">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            后端endpoint插件配置-熔断插件
+        </div>
+        <div class="panel-body" name="endpoint_plugin_circuitBreaker" id="endpoint_plugin_circuitBreaker_content">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">后端服务失败阈值</label>
+                <div class="col-sm-6">
+                    <input name="failureRateThreshold" class="form-control" oninput="value=value.replace(/[^\d]/g,'')"
+                           type="text" value="50">
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>
+                        整数</span>
+                </div>
+                <span class="require_tip">*</span>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">OPEN到HALF_OPEN状态等待的时长</label>
+                <div class="col-sm-6">
+                    <input name="waitDurationInOpenState" class="form-control" oninput="value=value.replace(/[^\d]/g,'')"
+                           type="text" value="60">
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i>
+                        单位(秒)</span>
+                </div>
+                <span class="require_tip">*</span>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">HALF_OPEN状态下的成功失败记录数</label>
+                <div class="col-sm-6">
+                    <input name="ringBufferSizeInHalfOpenState" class="form-control" oninput="value=value.replace(/[^\d]/g,'')"
+                           type="text" value="10">
+                </div>
+                <span class="require_tip">*</span>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">CLOSED状态下的成功失败记录数</label>
+                <div class="col-sm-6">
+                    <input name="ringBufferSizeInClosedState" class="form-control" oninput="value=value.replace(/[^\d]/g,'')"
+                           type="text" value="100">
+                </div>
+                <span class="require_tip">*</span>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">熔断降级指定返回的结果</label>
+                <div class="col-sm-6">
+                     <textarea name="fallback" class="form-control"
+                                              placeholder="熔断降级指定返回的结果" rows="10"></textarea>
+                </div>
+                <span class="require_tip">*</span>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+<script>
+    circuitBreakerConfig = {
+        init: function (endpointDiv, authType) {
+            var data = {};
+            var tpl = $("#endpoint_circuitBreaker_tmpl").html();
+            var template = Handlebars.compile(tpl);
+            var html = template(data);
+            endpointDiv.find("div[name='selectedPluginConfigDiv']").append(html);
+        },
+        remove: function (endpointDiv, authType) {
+            endpointDiv.find("div[name='selectedPluginConfigDiv']").find("div[name='endpoint_plugin_circuitBreaker']").parent().remove();
+        },
+        getFormatResult: function (endpointDiv, pluginList) {
+            var circuitBreakerDefinition = {};
+            $.each($("#endpoint_plugin_circuitBreaker_content").find("input,select,textarea"), function (i, val) {
+                circuitBreakerDefinition[$(val).attr("name")] = $(val).val();
+            })
+            var plugin = {};
+            plugin.pluginType = "CircuitBreakerRequestPlugin";
+            plugin.pluginName = "熔断配置插件";
+            plugin.pluginParam = JSON.stringify(circuitBreakerDefinition);
+            pluginList.push(plugin);
+            return pluginList;
+        },
+        refreshDivByParam: function (pluginParam, endpointDiv, pluginType) {
+            var circuitBreakerDefinition = JSON.parse(pluginParam);
+            Object.keys(circuitBreakerDefinition).forEach(function (key) {
+                var obj = endpointDiv.find("div[name='endpoint_plugin_circuitBreaker']").
+                find("input[name='" + key + "'],textarea[name='" + key + "']");
+                obj.val(circuitBreakerDefinition[key]);
+                obj.change();
+            });
+        }
+    }
+</script>

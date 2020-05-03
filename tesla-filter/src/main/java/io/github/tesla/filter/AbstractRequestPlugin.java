@@ -21,11 +21,6 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 14:34
- * @description:
- */
 public abstract class AbstractRequestPlugin extends AbstractPlugin {
 
     protected HttpResponse createResponse(HttpResponseStatus httpResponseStatus, HttpRequest originalRequest) {
@@ -33,7 +28,7 @@ public abstract class AbstractRequestPlugin extends AbstractPlugin {
     }
 
     public abstract HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam);
+        String filterParam);
 
     protected void writeFilterLog(Class<?> type, String reason, Throwable... cause) {
         PluginUtil.writeFilterLog(type, reason, cause);

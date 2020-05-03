@@ -7,11 +7,6 @@ import com.google.common.base.Preconditions;
 import io.github.tesla.common.dto.ServiceDTO;
 import io.github.tesla.filter.utils.JsonUtils;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 15:21
- * @description:
- */
 public class SpringCloudRoutingDefinition extends PluginDefinition {
 
     private String serviceName;
@@ -19,6 +14,10 @@ public class SpringCloudRoutingDefinition extends PluginDefinition {
     private String group;
 
     private String version;
+
+    private String userDefinitionKey;
+
+    private String userDefinitionValue;
 
     private String servicePrefix;
 
@@ -62,6 +61,22 @@ public class SpringCloudRoutingDefinition extends PluginDefinition {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getUserDefinitionKey() {
+        return userDefinitionKey;
+    }
+
+    public void setUserDefinitionKey(String userDefinitionKey) {
+        this.userDefinitionKey = userDefinitionKey;
+    }
+
+    public String getUserDefinitionValue() {
+        return userDefinitionValue;
+    }
+
+    public void setUserDefinitionValue(String userDefinitionValue) {
+        this.userDefinitionValue = userDefinitionValue;
     }
 
     @Override

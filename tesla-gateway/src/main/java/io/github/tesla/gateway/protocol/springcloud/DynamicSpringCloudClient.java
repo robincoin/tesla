@@ -38,21 +38,29 @@ public class DynamicSpringCloudClient {
 
     private final int httpPort;
 
+    private SpringCloudDiscovery springCloudDiscovery;
+
     public DynamicSpringCloudClient(int httpPort) {
         this.httpPort = httpPort;
     }
 
     public SpringCloudDiscovery getSpringCloudDiscovery() {
-        return new SpringCloudDiscovery(discoveryClientWrapper, httpPort);
+        if (springCloudDiscovery != null) {
+            this.springCloudDiscovery = new SpringCloudDiscovery(discoveryClientWrapper, httpPort);
+        }
+        return springCloudDiscovery;
     }
 
     public String loadBalanceCall(String serviceId, String group, String version,
-        NettyHttpServletRequest servletRequest) {
+        Map<String, String> userDefinitionMeta, NettyHttpServletRequest servletRequest) {
         if (StringUtils.isNotBlank(group) && StringUtils.isNotBlank(version)) {
             Map<String, String> groupVersionMap = Maps.newHashMap();
             groupVersionMap.put(DiscoveryClientWrapper.EUREKA_METADATA_VERSION, version);
             groupVersionMap.put(DiscoveryClientWrapper.EUREKA_METADATA_GROUP, group);
             discoveryClientWrapper.setGroupVersion(groupVersionMap);
+        }
+        if (!userDefinitionMeta.isEmpty()) {
+            discoveryClientWrapper.setGroupVersion(userDefinitionMeta);
         }
         List<Map<String, String>> pair = GrayRuesCache.getTargetApp(serviceId, servletRequest);
         if (!CollectionUtils.isEmpty(pair)) {

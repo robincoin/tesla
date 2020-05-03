@@ -2,6 +2,7 @@ package io.github.tesla.backend.controller;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -58,6 +59,20 @@ public class OrderController {
     public Map queryOrder(@RequestParam("cusid") String id) {
         Map<String, String> map = Maps.newHashMap();
         map.put("orderType", orderMap.get(id));
+        map.put("orderTime", new Date().toString());
+        return map;
+    }
+
+    @RequestMapping("/timeout")
+    @ResponseBody
+    public Map timeout() {
+        try {
+            TimeUnit.SECONDS.sleep(60);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        Map<String, String> map = Maps.newHashMap();
         map.put("orderTime", new Date().toString());
         return map;
     }

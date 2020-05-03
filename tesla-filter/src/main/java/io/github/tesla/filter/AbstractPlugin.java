@@ -14,37 +14,34 @@ import io.github.tesla.common.service.SpringContextHolder;
 import io.github.tesla.filter.common.definition.CacheConstant;
 import io.github.tesla.filter.support.springcloud.SpringCloudDiscovery;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/29 15:25
- * @description:
- */
 public class AbstractPlugin {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(AbstractPlugin.class);
 
-    private static Map<String, byte[]> fileLocalCacheMap = Maps.newHashMap();
+    private static final Map<String, byte[]> JAR_CACHE = Maps.newHashMap();
 
-    private static Map<String, ServiceRouterDTO> routerLocalCache = Maps.newHashMap();
+    private static final Map<String, ServiceRouterDTO> ROUTE_CACHE = Maps.newHashMap();
 
     private static HazelcastInstance hazelcastInstance;
 
-    // 应用的接入配置缓存
-    public static Map<String, Map<String, String>> appKeyLocalDefinitionMap = Maps.newHashMap();
+    private static final Map<String, Map<String, String>> APPKEYLOCALDEFINITIONMAP = Maps.newHashMap();
+
+    public static Map<String, Map<String, String>> getAppKeyMap() {
+        return APPKEYLOCALDEFINITIONMAP;
+    }
 
     public static void clearLocalCache() {
-        fileLocalCacheMap.clear();
-        routerLocalCache.clear();
+        JAR_CACHE.clear();
+        ROUTE_CACHE.clear();
     }
 
     public static byte[] getFileBytesByKey(String key) {
         try {
             CacheConstant.READ_WRITE_LOCK.readLock().lock();
-            if (fileLocalCacheMap.get(key) == null) {
-                fileLocalCacheMap.put(key,
-                    (byte[])getHazelcastInstance().getMap(CacheConstant.FILE_CACHE_MAP).get(key));
+            if (JAR_CACHE.get(key) == null) {
+                JAR_CACHE.put(key, (byte[])getHazelcastInstance().getMap(CacheConstant.FILE_CACHE_MAP).get(key));
             }
-            return fileLocalCacheMap.get(key);
+            return JAR_CACHE.get(key);
         } finally {
             CacheConstant.READ_WRITE_LOCK.readLock().unlock();
         }
@@ -60,11 +57,13 @@ public class AbstractPlugin {
     public static ServiceRouterDTO getRouterByServiceId(String serviceId) {
         try {
             CacheConstant.READ_WRITE_LOCK.readLock().lock();
-            if (routerLocalCache.get(serviceId) == null) {
-                routerLocalCache.put(serviceId, SpringContextHolder.getBean(GatewayApiTextService.class)
-                    .loadGatewayServiceByServiceId(serviceId).getRouterDTO());
+            if (ROUTE_CACHE.get(serviceId) == null) {
+                ServiceRouterDTO routeDTO = SpringContextHolder.getBean(GatewayApiTextService.class)
+                    .loadGatewayServiceByServiceId(serviceId).getRouterDTO();
+                ROUTE_CACHE.put(serviceId, routeDTO);
+                return ROUTE_CACHE.get(serviceId);
             }
-            return routerLocalCache.get(serviceId);
+            return ROUTE_CACHE.get(serviceId);
         } finally {
             CacheConstant.READ_WRITE_LOCK.readLock().unlock();
         }
@@ -77,7 +76,12 @@ public class AbstractPlugin {
     private SpringCloudDiscovery springCloudDiscovery;
 
     public Map<String, String> getAppKeyMap(String appKey) {
-        return appKeyLocalDefinitionMap.get(appKey);
+        try {
+            CacheConstant.READ_WRITE_LOCK.readLock().lock();
+            return APPKEYLOCALDEFINITIONMAP.get(appKey);
+        } finally {
+            CacheConstant.READ_WRITE_LOCK.readLock().unlock();
+        }
     }
 
     public SpringCloudDiscovery getSpringCloudDiscovery() {

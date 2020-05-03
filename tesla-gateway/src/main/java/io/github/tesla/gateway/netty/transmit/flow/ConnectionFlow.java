@@ -29,10 +29,9 @@ public class ConnectionFlow {
      *
      * @param clientConnection
      * @param serverConnection
-     * @param connectLock
-     *            an object that's shared by {@link ConnectionFlow} and {@link ProxyToServerConnection} and that is used
-     *            for synchronizing the reader and writer threads that are both involved during the establishing of a
-     *            connection.
+     * @param connectLock an object that's shared by {@link ConnectionFlow} and {@link ProxyToServerConnection} and that
+     *        is used for synchronizing the reader and writer threads that are both involved during the establishing of
+     *        a connection.
      */
     public ConnectionFlow(ClientToProxyConnection clientConnection, ProxyToServerConnection serverConnection,
         Object connectLock) {

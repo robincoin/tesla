@@ -14,6 +14,8 @@ public class JarExecuteDefinition extends PluginDefinition {
 
     private String fileId;
 
+    private String className;
+
     public String getFileId() {
         return fileId;
     }
@@ -22,17 +24,25 @@ public class JarExecuteDefinition extends PluginDefinition {
         this.fileId = fileId;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
     @Override
     public String validate(String paramJson, ServiceDTO serviceDTO, EndpointDTO endpointDTO) {
         JarExecuteDefinition definition = JsonUtils.fromJson(paramJson, JarExecuteDefinition.class);
         Preconditions.checkArgument(StringUtils.isNotBlank(definition.getFileId()), "jar包执行插件-jar文件不可为空");
-        if (definition.getFileId().contains(fileTab)) {
-            String jarFileId = SnowflakeIdWorker.nextId(PluginDefinition.filePrefix);
-            Preconditions.checkNotNull(PluginDefinition.uploadFileMap.get().get(definition.getFileId()),
+        if (definition.getFileId().contains(FILETABENDPOINT)) {
+            String jarFileId = SnowflakeIdWorker.nextId(PluginDefinition.FILEPREFIX);
+            Preconditions.checkNotNull(PluginDefinition.UPLOADFILEMAP.get().get(definition.getFileId()),
                 "jar包执行插件-jar文件不可为空");
-            PluginDefinition.uploadFileMap.get().put(jarFileId,
-                PluginDefinition.uploadFileMap.get().get(definition.getFileId()));
-            PluginDefinition.uploadFileMap.get().remove(definition.getFileId());
+            PluginDefinition.UPLOADFILEMAP.get().put(jarFileId,
+                PluginDefinition.UPLOADFILEMAP.get().get(definition.getFileId()));
+            PluginDefinition.UPLOADFILEMAP.get().remove(definition.getFileId());
             definition.setFileId(jarFileId);
         }
         return JsonUtils.serializeToJson(definition);

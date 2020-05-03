@@ -10,6 +10,7 @@
                 <option value="open" data-authtmpl="openTmpl">开放</option>
                 <option value="standardOauth" data-authtmpl="standardOauthTmpl">标准-OAUTH2</option>
                 <option value="jwt" data-authtmpl="jwtTmpl">JWT</option>
+                <option value="jar" data-authtmpl="jarTmpl">自定义鉴权(上传Jar包)</option>
             </select>
         </div>
     </div>
@@ -18,9 +19,6 @@
 
 
 <script type="text/x-handlebars-template" id="openTmpl">
-</script>
-
-<script type="text/x-handlebars-template" id="specialTmpl">
 </script>
 
 <script type="text/x-handlebars-template" id="oauthTmpl">
@@ -116,6 +114,23 @@
     </div>
 </script>
 
+<script type="text/x-handlebars-template" id="jarTmpl">
+     <div class="form-group">
+        <label class="col-sm-3 control-label">上传jar包</label>
+        <input type="hidden" name="fileId">
+        <div class="col-sm-6">
+            <input type="file" name="jarFile" class="form-control" accept=".jar">
+            <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 请上传对于规则jar包，具体打包项目请参考tesla-jarfilter项目 </span>
+        </div>
+     </div>
+     <div class="form-group">
+        <label class="col-sm-3 control-label">插件全类名</label>
+        <div class="col-sm-6">
+            <input name="className" class="form-control" placeholder="插件全类名" type="text">
+        </div>
+        <span class="require_tip">*</span>
+    </div>
+</script>
 
 <script>
     authConfig = {
@@ -127,6 +142,14 @@
             $(divObj).html(html);
             $("#authType").change(function () {
                 authConfig.changeAuthContent()
+                var jarFile = divObj.find("input[name='jarFile']");
+                if(jarFile.size()==1){
+                   jarFile.prettyFile();
+                   jarFile.change(function () {
+                     var jarName = "service:::request:::"+jarFile.val();
+                     divObj.find("input[name='fileId']").val(jarName);
+                    });
+                 }
             });
             $("#authType").change();
         },
@@ -164,8 +187,12 @@
             $('#authType').selectpicker('val', authDefinition.authType);
             var authParam = JSON.parse(authDefinition.authParamJson);
             Object.keys(authParam).forEach(function (key) {
-                $(divObj).find("input[name='" + key + "'],select[name='" + key + "']").val(authParam[key]);
+                $(divObj).find("input[name='" + key + "'],select[name='" + key + "']").not("[type='file']").val(authParam[key]);
             });
+            var fileId = divObj.find("input[name='fileId']");
+            if(fileId){
+               fileId.val(authParam.fileId);
+            }
         }
     }
 </script>

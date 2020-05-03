@@ -38,11 +38,6 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 16:56
- * @description:
- */
 @ServiceRequestPlugin(filterType = "RateLimitRequestPlugin", definitionClazz = RateLimitDefinition.class,
     filterOrder = 1, filterName = "访问API限流插件")
 @AppKeyRequestPlugin(filterType = "RateLimitRequestPlugin", definitionClazz = RateLimitDefinition.class,
@@ -55,18 +50,9 @@ public class RateLimitRequestPlugin extends AbstractRequestPlugin {
 
     private static Map<String, BucketConfiguration> bucketConfigurationMap = Maps.newConcurrentMap();
 
-    /**
-     * @desc:
-     * @method: doFilter
-     * @param: [servletRequest,realHttpObject,
-     *             filterParam] filterParam接受json类型字符串
-     * @return: io.netty.handler.codec.http.HttpResponse
-     * @auther: zhipingzhang
-     * @date: 2018/11/20 16:57
-     */
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
         RateLimitDefinition configBean = JsonUtils.json2Definition(filterParam, RateLimitDefinition.class);
         if (configBean == null) {
             return null;

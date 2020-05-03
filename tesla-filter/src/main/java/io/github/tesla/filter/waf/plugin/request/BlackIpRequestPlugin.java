@@ -35,7 +35,7 @@ public class BlackIpRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String  filterParam) {
         BlackIpDefinition configBean = JsonUtils.json2Definition(filterParam, BlackIpDefinition.class);
         if (configBean == null) {
             return null;

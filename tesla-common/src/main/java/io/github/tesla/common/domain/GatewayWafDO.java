@@ -3,13 +3,12 @@ package io.github.tesla.common.domain;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
-/**
- * @author: zhipingzhang
- * @date: 2018/11/20 11:03
- * @description:
- */
 @TableName("gateway_waf")
 public class GatewayWafDO implements Serializable {
 

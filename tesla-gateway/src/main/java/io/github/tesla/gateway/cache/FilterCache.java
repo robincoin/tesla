@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -29,30 +30,44 @@ import com.hazelcast.map.impl.MapListenerAdapter;
 
 import io.github.tesla.common.domain.GatewayFileDO;
 import io.github.tesla.common.domain.GatewayWafDO;
-import io.github.tesla.common.dto.*;
+import io.github.tesla.common.dto.AppKeyDTO;
+import io.github.tesla.common.dto.AppKeyPluginDTO;
+import io.github.tesla.common.dto.CommonPluginDTO;
+import io.github.tesla.common.dto.EndpointDTO;
+import io.github.tesla.common.dto.EndpointPluginDTO;
+import io.github.tesla.common.dto.ServiceDTO;
+import io.github.tesla.common.dto.ServicePluginDTO;
 import io.github.tesla.common.service.GatewayApiTextService;
 import io.github.tesla.common.service.GatewayCacheRefreshService;
 import io.github.tesla.common.service.GatewayFileService;
 import io.github.tesla.common.service.GatewayWafService;
 import io.github.tesla.filter.AbstractPlugin;
 import io.github.tesla.filter.common.definition.CacheConstant;
-import io.github.tesla.filter.support.plugins.*;
+import io.github.tesla.filter.support.plugins.EndpointRequestPluginMetadata;
+import io.github.tesla.filter.support.plugins.EndpointResponsePluginMetadata;
+import io.github.tesla.filter.support.plugins.RequestPluginMetadata;
+import io.github.tesla.filter.support.plugins.ResponsePluginMetadata;
+import io.github.tesla.filter.support.plugins.ServiceRequestPluginMetadata;
+import io.github.tesla.filter.support.plugins.ServiceResponsePluginMetadata;
+import io.github.tesla.filter.support.plugins.WafRequestPluginMetadata;
+import io.github.tesla.filter.support.plugins.WafResponsePluginMetadata;
 import io.github.tesla.filter.utils.AntMatchUtil;
 import io.github.tesla.filter.utils.ClassUtils;
 import io.github.tesla.filter.utils.JsonUtils;
-import io.github.tesla.gateway.excutor.*;
+import io.github.tesla.gateway.excutor.CommonPluginExecutor;
+import io.github.tesla.gateway.excutor.EndpointExecutor;
+import io.github.tesla.gateway.excutor.ServiceExecutor;
+import io.github.tesla.gateway.excutor.ServiceRequestPluginExecutor;
+import io.github.tesla.gateway.excutor.ServiceResponsePluginExecutor;
+import io.github.tesla.gateway.excutor.ServiceRouterExecutor;
+import io.github.tesla.gateway.excutor.WafRequestPluginExecutor;
+import io.github.tesla.gateway.excutor.WafResponsePluginExecutor;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/23 14:28
- * @description:缓存刷新类
- */
 @Component
 @EnableScheduling
 public class FilterCache {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractScheduleCache.class);
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(FilterCache.class);
     @Autowired
     private GatewayWafService gatewayWafService;
     @Autowired
@@ -93,11 +108,14 @@ public class FilterCache {
     // 服务级别配置本地缓存
     private List<ServiceExecutor> apiLocalCacheList = Lists.newArrayList();
 
+    // URL级别的cache
+    private Map<String, ServiceExecutor> URLSERVICEEXECUTOR = new WeakHashMap<String, ServiceExecutor>();
+
     private void buildAndAddApiCaches(List<ServiceRequestPluginExecutor> requestFilterCaches,
         List<ServiceResponsePluginExecutor> reponseFilterCaches, CommonPluginDTO servicePluginDTO,
         Set<String> ignoreClassSet) throws Exception {
         RequestPluginMetadata requestPluginEnum =
-            ServiceRequestPluginMetadata.getMetadataByType(servicePluginDTO.getPluginType());
+            ServiceRequestPluginMetadata.findAndCacheMetadataByType(servicePluginDTO.getPluginType());
         CommonPluginExecutor cache = initBaseFilterCache(servicePluginDTO);
         if (requestPluginEnum != null) {
             cache = buildAndAddRequestFilter(requestFilterCaches, ignoreClassSet, requestPluginEnum, cache);
@@ -105,7 +123,7 @@ public class FilterCache {
                 return;
         }
         ResponsePluginMetadata responsePluginEnum =
-            ServiceResponsePluginMetadata.getMetadataByType(servicePluginDTO.getPluginType());
+            ServiceResponsePluginMetadata.findAndCacheMetadataByType(servicePluginDTO.getPluginType());
         if (responsePluginEnum != null) {
             cache = buildAndAddResponseFilter(reponseFilterCaches, ignoreClassSet, cache, responsePluginEnum);
             if (cache == null)
@@ -117,7 +135,7 @@ public class FilterCache {
         List<ServiceResponsePluginExecutor> reponseFilterCaches, CommonPluginDTO endpointPluginDTO,
         Set<String> ignoreClassSet) throws Exception {
         RequestPluginMetadata requestPluginEnum =
-            EndpointRequestPluginMetadata.getMetadataByType(endpointPluginDTO.getPluginType());
+            EndpointRequestPluginMetadata.findAndCacheMetadataByType(endpointPluginDTO.getPluginType());
         CommonPluginExecutor cache = initBaseFilterCache(endpointPluginDTO);
         if (requestPluginEnum != null) {
             cache = buildAndAddRequestFilter(requestFilterCaches, ignoreClassSet, requestPluginEnum, cache);
@@ -125,7 +143,7 @@ public class FilterCache {
                 return;
         }
         ResponsePluginMetadata responsePluginEnum =
-            EndpointResponsePluginMetadata.getMetadataByType(endpointPluginDTO.getPluginType());
+            EndpointResponsePluginMetadata.findAndCacheMetadataByType(endpointPluginDTO.getPluginType());
         if (responsePluginEnum != null) {
             cache = buildAndAddResponseFilter(reponseFilterCaches, ignoreClassSet, cache, responsePluginEnum);
             if (cache == null)
@@ -210,7 +228,7 @@ public class FilterCache {
             if (apiLocalCacheList.size() != apiCacheList.size()) {
                 needRefreshLocalCache = true;
             }
-            if (AbstractPlugin.appKeyLocalDefinitionMap.size() != appKeyDefinitionMap.size()) {
+            if (AbstractPlugin.getAppKeyMap().size() != appKeyDefinitionMap.size()) {
                 needRefreshLocalCache = true;
             }
         } finally {
@@ -221,7 +239,7 @@ public class FilterCache {
         }
     }
 
-    @Scheduled(cron = "0 */1 * * * ?")
+    @Scheduled(cron = "${filter.doCacheCorn}")
     protected void doCache() {
         try {
             if (cacheRefreshService.isRefreshCache(cacheRefreshTime)) {
@@ -305,7 +323,8 @@ public class FilterCache {
         Set<String> ignoreClassSet = Sets.newHashSet();
         for (GatewayWafDO waf : wafDOS) {
             try {
-                WafRequestPluginMetadata requestEnum = WafRequestPluginMetadata.getMetadataByType(waf.getWafType());
+                WafRequestPluginMetadata requestEnum =
+                    WafRequestPluginMetadata.findAndCacheMetadataByType(waf.getWafType());
                 if (requestEnum != null) {
                     WafRequestPluginExecutor cache = new WafRequestPluginExecutor();
                     cache.setFilterName(waf.getWafName());
@@ -321,7 +340,8 @@ public class FilterCache {
                     cache.setRequestPluginEnum(requestEnum);
                     tmpWafRequestCacheList.add(cache);
                 }
-                WafResponsePluginMetadata responseEnum = WafResponsePluginMetadata.getMetadataByType(waf.getWafType());
+                WafResponsePluginMetadata responseEnum =
+                    WafResponsePluginMetadata.findAndCacheMetadataByType(waf.getWafType());
                 if (responseEnum != null) {
                     WafResponsePluginExecutor cache = new WafResponsePluginExecutor();
                     cache.setFilterName(waf.getWafName());
@@ -401,12 +421,21 @@ public class FilterCache {
     }
 
     public ServiceExecutor loadServiceCache(String uri) {
-        for (ServiceExecutor serviceCache : apiLocalCacheList) {
-            if (AntMatchUtil.matchPrefix(serviceCache.getServicePrefix(), uri)) {
-                return serviceCache;
+        if (URLSERVICEEXECUTOR.containsKey(uri)) {
+            return URLSERVICEEXECUTOR.get(uri);
+        } else {
+            ServiceExecutor hitserviceExecutor = null;
+            for (ServiceExecutor serviceCache : apiLocalCacheList) {
+                if (AntMatchUtil.matchPrefix(serviceCache.getServicePrefix(), uri)) {
+                    hitserviceExecutor = serviceCache;
+                }
             }
+            if (hitserviceExecutor != null) {
+                URLSERVICEEXECUTOR.put(uri, hitserviceExecutor);
+            }
+            return hitserviceExecutor;
         }
-        return null;
+
     }
 
     public List<WafRequestPluginExecutor> loadWafRequestPlugins() {
@@ -460,21 +489,17 @@ public class FilterCache {
             LOGGER.info("begin refresh local cache ");
             CacheConstant.READ_WRITE_LOCK.writeLock().lock();
             ClassUtils.cleanCacheBean();
-
             wafRequestLocalCacheList = Lists.newArrayList(wafRequestCacheList);
-
             wafResponseLocalCacheList = Lists.newArrayList(wafResponseCacheList);
-
             apiLocalCacheList = Lists.newArrayList(apiCacheList);
-
-            AbstractPlugin.appKeyLocalDefinitionMap = Maps.newHashMap(appKeyDefinitionMap);
-
+            AbstractPlugin.getAppKeyMap().clear();
+            AbstractPlugin.getAppKeyMap().putAll(appKeyDefinitionMap);
             AbstractPlugin.clearLocalCache();
-
+            URLSERVICEEXECUTOR.clear();
             LOGGER.info("wafRequestLocalCache:" + JsonUtils.serializeToJson(wafRequestLocalCacheList));
             LOGGER.info("wafResponseLocalCache:" + JsonUtils.serializeToJson(wafResponseLocalCacheList));
             LOGGER.info("apiLocalCache:" + JsonUtils.serializeToJson(apiLocalCacheList));
-            LOGGER.info("appKeyLocalCache:" + JsonUtils.serializeToJson(AbstractPlugin.appKeyLocalDefinitionMap));
+            LOGGER.info("appKeyLocalCache:" + JsonUtils.serializeToJson(AbstractPlugin.getAppKeyMap()));
         } finally {
             CacheConstant.READ_WRITE_LOCK.writeLock().unlock();
         }

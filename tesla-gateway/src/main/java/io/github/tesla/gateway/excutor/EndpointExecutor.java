@@ -8,11 +8,6 @@ import io.github.tesla.filter.support.servlet.NettyHttpServletRequest;
 import io.github.tesla.filter.support.servlet.NettyHttpServletResponse;
 import io.github.tesla.filter.utils.AntMatchUtil;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/23 11:05
- * @description:
- */
 public class EndpointExecutor implements Comparable<EndpointExecutor>, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,8 +50,6 @@ public class EndpointExecutor implements Comparable<EndpointExecutor>, Serializa
         return endPointMethod;
     }
 
-    ;
-
     public String getEndPointPath() {
         return endPointPath;
     }
@@ -70,12 +63,10 @@ public class EndpointExecutor implements Comparable<EndpointExecutor>, Serializa
     }
 
     public List<ServiceRequestPluginExecutor> matchAndGetFiltes(NettyHttpServletRequest servletRequest) {
-
         return requestFiltersList;
     }
 
     public List<ServiceResponsePluginExecutor> matchAndGetFiltes(NettyHttpServletResponse servletResponse) {
-
         return responseFiltersList;
     }
 

@@ -1,6 +1,6 @@
 package io.github.tesla.filter.service.plugin.response;
 
-import static io.github.tesla.filter.support.CorsHandlerSupport.*;
+import static io.github.tesla.filter.support.cors.CorsHandlerSupport.*;
 
 import io.github.tesla.filter.AbstractResponsePlugin;
 import io.github.tesla.filter.service.definition.CorsDefinition;
@@ -16,7 +16,7 @@ public class CorsResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         CorsDefinition definition = JsonUtils.json2Definition(filterParam, CorsDefinition.class);
         if (definition == null) {
             return httpResponse;

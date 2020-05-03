@@ -26,9 +26,9 @@ import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo.InstanceStatus;
 import com.netflix.appinfo.MyDataCenterInfo;
 
-import io.github.tesla.filter.support.springcloud.SpringEnvironmentUtil;
-import io.github.tesla.gateway.config.eureka.util.InetUtils;
-import io.github.tesla.gateway.config.eureka.util.InetUtils.HostInfo;
+import io.github.tesla.common.utils.InetUtils;
+import io.github.tesla.common.utils.InetUtils.HostInfo;
+import io.github.tesla.gateway.config.eureka.util.SpringEnvironmentUtil;
 
 /**
  * @author liushiming

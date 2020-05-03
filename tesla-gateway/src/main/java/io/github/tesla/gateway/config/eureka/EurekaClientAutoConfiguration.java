@@ -32,12 +32,11 @@ import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClientConfig;
 
+import io.github.tesla.common.utils.InetUtils;
 import io.github.tesla.filter.support.springcloud.DiscoveryClientWrapper;
-import io.github.tesla.filter.support.springcloud.SpringEnvironmentUtil;
 import io.github.tesla.gateway.config.eureka.metadata.DefaultManagementMetadataProvider;
 import io.github.tesla.gateway.config.eureka.metadata.ManagementMetadata;
-import io.github.tesla.gateway.config.eureka.util.InetUtils;
-import io.github.tesla.gateway.config.eureka.util.InetUtilsProperties;
+import io.github.tesla.gateway.config.eureka.util.SpringEnvironmentUtil;
 import io.github.tesla.gateway.metrics.MetricsHttpServer;
 
 /**
@@ -51,6 +50,9 @@ public class EurekaClientAutoConfiguration {
 
     @Value("${hazelcast.version:1.0.0}")
     private String hazelcastVersion;
+
+    @Value("${hazelcast.port:5701}")
+    private String hazelcastPort;
 
     @Bean
     @ConditionalOnMissingBean(value = EurekaClientConfig.class, search = SearchStrategy.CURRENT)
@@ -96,11 +98,9 @@ public class EurekaClientAutoConfiguration {
         if (StringUtils.hasText(ipAddress)) {
             instance.setIpAddress(ipAddress);
         }
-
         if (isSecurePortEnabled) {
             instance.setSecurePort(serverPort);
         }
-
         if (StringUtils.hasText(hostname)) {
             instance.setHostname(hostname);
         }
@@ -128,8 +128,8 @@ public class EurekaClientAutoConfiguration {
                 metadataMap.put("management.port", String.valueOf(metadata.getManagementPort()));
             }
             metadataMap.put("gray.enable", "true");
-            metadataMap.put("hazelcast.port", System.getProperty("hazelcast.port"));
-            metadataMap.put("hazelcast.host", System.getProperty("hazelcast.host"));
+            metadataMap.put("hazelcast.port", hazelcastPort);
+            metadataMap.put("hazelcast.host", inetUtils.findFirstNonLoopbackHostInfo().getIpAddress());
             metadataMap.put("hazelcast.version", hazelcastVersion);
 
             metadataMap.put("management.url", DefaultManagementMetadataProvider.getGreyUrl(instance, serverPort, "",
@@ -155,17 +155,6 @@ public class EurekaClientAutoConfiguration {
             new DiscoveryClientWrapper(applicationInfoManager, eurekaClientConfigBean);
         applicationInfoManager.setInstanceStatus(InstanceInfo.InstanceStatus.UP);
         return discoveryClient;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public InetUtils inetUtils(InetUtilsProperties properties) {
-        return new InetUtils(properties);
-    }
-
-    @Bean
-    public InetUtilsProperties inetUtilsProperties() {
-        return new InetUtilsProperties();
     }
 
     @Bean

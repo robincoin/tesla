@@ -1,6 +1,6 @@
 package io.github.tesla.filter.waf.plugin.response;
 
-import static io.github.tesla.filter.support.CorsHandlerSupport.isPreflightRequest;
+import static io.github.tesla.filter.support.cors.CorsHandlerSupport.isPreflightRequest;
 
 import io.github.tesla.filter.AbstractResponsePlugin;
 import io.github.tesla.filter.support.annnotation.WafResponsePlugin;
@@ -14,7 +14,7 @@ public class ClickjackResponsePlugin extends AbstractResponsePlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam) {
+        String  filterParam) {
         HttpRequest request = servletRequest.getNettyRequest();
         if (!isPreflightRequest(request)) {
             httpResponse.headers().add("X-FRAME-OPTIONS", X_Frame_Option);

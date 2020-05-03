@@ -3,11 +3,6 @@ package io.github.tesla.common.dto;
 import java.sql.Timestamp;
 import java.util.List;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 13:56
- * @description:
- */
 public class EndpointDTO {
 
     private Long id;

@@ -1,6 +1,10 @@
 package io.github.tesla.gateway.metrics.handler;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -42,12 +46,12 @@ public class SupportPluginsHandler implements HttpHandler {
             Map<String, String> pluginsMap = Maps.newHashMap();
             switch (type) {
                 case "endpoint":
-                    pluginsMap.putAll(ClassUtils.findAllClasses(FilterMetadata.packageName, EndpointRequestPlugin.class)
+                    pluginsMap.putAll(ClassUtils.findAllClasses(FilterMetadata.FILTER_SCAN_PACKAGE, EndpointRequestPlugin.class)
                         .stream().map(clazz -> AnnotationUtils.findAnnotation(clazz, EndpointRequestPlugin.class))
                         .collect(
                             Collectors.toMap(EndpointRequestPlugin::filterType, EndpointRequestPlugin::filterName)));
                     pluginsMap.putAll(ClassUtils
-                        .findAllClasses(FilterMetadata.packageName, EndpointResponsePlugin.class).stream()
+                        .findAllClasses(FilterMetadata.FILTER_SCAN_PACKAGE, EndpointResponsePlugin.class).stream()
                         .map(clazz -> AnnotationUtils.findAnnotation(clazz, EndpointResponsePlugin.class)).collect(
                             Collectors.toMap(EndpointResponsePlugin::filterType, EndpointResponsePlugin::filterName)));
                     break;

@@ -15,14 +15,9 @@ package io.github.tesla.filter;
 import io.github.tesla.filter.support.servlet.NettyHttpServletRequest;
 import io.netty.handler.codec.http.HttpResponse;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 14:41
- * @description:
- */
 public abstract class AbstractResponsePlugin extends AbstractPlugin {
 
     public abstract HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpResponse httpResponse,
-        Object filterParam);
+        String filterParam);
 
 }

@@ -14,7 +14,6 @@ import com.squareup.okhttp.Response;
 import io.github.tesla.filter.service.annotation.AuthType;
 import io.github.tesla.filter.service.definition.StandardOauthDefinition;
 import io.github.tesla.filter.service.plugin.request.AuthRequestPlugin;
-import io.github.tesla.filter.support.ResponseMessage;
 import io.github.tesla.filter.support.servlet.NettyHttpServletRequest;
 import io.github.tesla.filter.utils.AntMatchUtil;
 import io.github.tesla.filter.utils.JsonUtils;
@@ -23,11 +22,6 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-/**
- * @author: zhangzhiping
- * @date: 2018/11/20 14:32
- * @description: auth filter之Oauth的实现
- */
 @AuthType(authType = "standardOauth", definitionClazz = StandardOauthDefinition.class)
 public class StandardOAuthRequestPlugin extends AuthRequestPlugin {
     private static final String OAUTH_ACCESS_TOKEN = "access_token";
@@ -36,7 +30,7 @@ public class StandardOAuthRequestPlugin extends AuthRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
 
         // 从JSON中转出自己需要的类型
         StandardOauthDefinition definition = JsonUtils.fromJson((String)filterParam, StandardOauthDefinition.class);

@@ -6,11 +6,6 @@ import java.sql.Timestamp;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 
-/**
- * @author: zhipingzhang
- * @date: 2018/11/20 11:03
- * @description:
- */
 public class GatewayCommonPluginDO implements Serializable {
 
     protected static final long serialVersionUID = 1L;

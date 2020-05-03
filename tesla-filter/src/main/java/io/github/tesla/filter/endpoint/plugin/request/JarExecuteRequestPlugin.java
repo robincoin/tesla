@@ -21,13 +21,14 @@ public class JarExecuteRequestPlugin extends AbstractRequestPlugin {
 
     @Override
     public HttpResponse doFilter(NettyHttpServletRequest servletRequest, HttpObject realHttpObject,
-        Object filterParam) {
+        String filterParam) {
         JarExecuteDefinition definition = JsonUtils.json2Definition(filterParam, JarExecuteDefinition.class);
         if (definition == null) {
             return null;
         }
-        JarExecuteRequestPlugin userFilter = ClassUtils.getUserJarFilterRule(JarExecuteRequestPlugin.class.getName(),
-            definition.getFileId(), getFileBytesByKey(definition.getFileId()));
+        String className = definition.getClassName();
+        JarExecuteRequestPlugin userFilter = ClassUtils.getUserJarFilterRule(className, definition.getFileId(),
+            getFileBytesByKey(definition.getFileId()));
         if (userFilter == null) {
             LOGGER.error(" request not found jar file ,fileId:" + definition.getFileId());
             return null;
